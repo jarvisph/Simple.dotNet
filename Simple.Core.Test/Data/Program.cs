@@ -9,17 +9,10 @@ using Simple.Core.Data.Repository;
 using Simple.Core.Dependency;
 using Simple.Core.Localization;
 using Simple.Core.Data;
-using Simple.Core.Dapper;
 using Simple.Test.Model;
-using Microsoft.EntityFrameworkCore;
-using System.Xml;
-using System.Xml.Linq;
-using System.Linq.Expressions;
-using System.Dynamic;
-using Newtonsoft.Json;
-using Simple.Core.Mapper;
+using Simple.Core.Test.Model;
 
-namespace Simple.Test.Data
+namespace Simple.Core.Test.Data
 {
     [TestClass]
     public class Program
@@ -27,18 +20,6 @@ namespace Simple.Test.Data
         [TestMethod]
         public void Main()
         {
-            var json = JsonConvert.SerializeObject(new { ID = 1 });
-            var val = JsonConvert.DeserializeObject<object>(json);
-            TestMethod(val);
-
-            var users = new List<User>()
-            {
-                new User{ ID=1},
-                new User{ ID=2},
-            };
-
-            var aa = GetList(users, c => new { c.ID }).ToList();
-
             string connectionString = AppsettingConfig.GetConnectionString("DbConnection");
             IServiceCollection services = new ServiceCollection();
             services.AddDepency();
@@ -46,44 +27,32 @@ namespace Simple.Test.Data
             IReadRepository ReadDB = IocCollection.Resolve<IReadRepository>();
             IWriteRepository WriteDB = IocCollection.Resolve<IWriteRepository>();
 
+            #region =======新增=====
+            //for (int i = 0; i < 1000; i++)
+            //{
+            //    WriteDB.Insert(new User
+            //    {
+            //        CreateAt = DateTime.Now,
+            //        Money = i,
+            //        Status = Core.Domain.Enums.UserStatus.Normal,
+            //        UserName = Guid.NewGuid().ToString("N").Substring(0, 8)
+            //    });
+            //}
+            #endregion
 
-            var query = ReadDB.GetAll<User>();
+            var query = ReadDB.Query<User>();
             var user = query.OrderByDescending(c => c.CreateAt).Select(c => new { c.ID }).ToList();
             foreach (var item in user)
             {
+                Console.WriteLine(item.ID);
             }
-            //bool any = query.Any();
-            //int count = query.Count();
+            bool any = query.Any();
+            int count = query.Count();
             foreach (var item in query.OrderByDescending(c => c.CreateAt).Take(100))
             {
                 Console.WriteLine($"查询/{item.ID}");
             }
         }
-        public IEnumerable<TResult> GetList<TSource, TResult>(List<TSource> list, Func<TSource, TResult> func)
-        {
-            Func<TSource, TResult> selector = (s) =>
-            {
-                var value = s.GetType().GetProperty("ID").GetValue(s);
-                var result = new { ID = value };
-                return default;
-            };
-            foreach (var item in list)
-            {
-                yield return selector(item);
-            }
-        }
-        private static void TestMethod(Object x)
-        {
-            // This is a dummy value, just to get 'a' to be of the right type
-            var a = new { ID = 0 };
-            a = Cast(a, x);
-        }
 
-        private static T Cast<T>(T typeHolder, Object x)
-        {
-            // typeHolder above is just for compiler magic
-            // to infer the type to cast x to
-            return (T)x;
-        }
     }
 }

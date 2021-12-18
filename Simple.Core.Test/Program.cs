@@ -6,8 +6,9 @@ using Simple.Core.Mapper;
 using Simple.Core.Extensions;
 using Simple.Test.Model;
 using Simple.Core.Domain.Enums;
+using Simple.Core.Test.Model;
 
-namespace Simple.Test
+namespace Simple.Core.Test
 {
     [TestClass]
     public class Program
@@ -25,8 +26,8 @@ namespace Simple.Test
                 Status = UserStatus.Deleted,
                 UserName = "张三",
                 Details = new List<UserDetail> {
-                        new UserDetail{DetailId=1 },
-                        new UserDetail{DetailId=2 }
+                        new UserDetail{DetailID=1 },
+                        new UserDetail{DetailID=2 }
                 }
             };
             long time1 = stopwatch.ElapsedMilliseconds;
