@@ -1,0 +1,43 @@
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Simple.dotNet.Core.Domain;
+
+namespace Simple.dotNet.RabbitMQ
+{
+    /// <summary>
+    /// rabbit 连接参数
+    /// </summary>
+    public class RabbitOption : QuerySetting
+    {
+        public RabbitOption(string querystring) : base(querystring)
+        {
+
+        }
+        /// <summary>
+        /// 服务地址
+        /// </summary>
+        [Column("server")]
+        public string HostName { get; set; }
+        /// <summary>
+        /// 端口
+        /// </summary>
+        [Column("port")]
+        public int Port { get; set; }
+        /// <summary>
+        /// 登录名
+        /// </summary>
+        [Column("username")]
+        public string UserName { get; set; }
+        /// <summary>
+        /// 登录密码
+        /// </summary>
+        [Column("password")]
+        public string Password { get; set; }
+
+        /// <summary>
+        /// 虚拟主机
+        /// </summary>
+        [Column("virtualhost")]
+        public string VirtualHost { get; set; }
+
+    }
+}

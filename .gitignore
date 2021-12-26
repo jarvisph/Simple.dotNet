@@ -269,3 +269,17 @@
 /test/Simple.Redis.Test/bin
 /test/Simple.Sqlite.Test/bin
 /test/Simple.Sqlite.Test/obj
+/src/Simple.dotNet.Core/obj
+/src/Simple.dotNet.Core/bin
+/src/Simple.dotNet.Elasticsearch/bin
+/src/Simple.dotNet.Elasticsearch/obj
+/src/Simple.dotNet.MySql/obj
+/src/Simple.dotNet.MySql/bin
+/src/Simple.dotNet.RabbitMQ/obj
+/src/Simple.dotNet.RabbitMQ/bin
+/src/Simple.dotNet.Redis/obj
+/src/Simple.dotNet.Redis/bin
+/src/Simple.dotNet.Sqlite/bin
+/src/Simple.dotNet.Sqlite/obj
+/src/Simple.dotNet.Web/obj
+/src/Simple.dotNet.Web/bin
