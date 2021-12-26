@@ -257,3 +257,15 @@
 /Simple.Sqlite.Test/obj
 /Simple.Net.Test/obj
 /Simple.Net.Test/bin
+/test/Simple.dotNet.Core.Test/obj
+/test/Simple.dotNet.Core.Test/bin
+/test/Simple.ElasticSearch.Test/bin
+/test/Simple.ElasticSearch.Test/obj
+/test/Simple.MySql.Test/obj
+/test/Simple.MySql.Test/bin
+/test/Simple.RabbitMQ.Test/obj
+/test/Simple.RabbitMQ.Test/bin
+/test/Simple.Redis.Test/obj
+/test/Simple.Redis.Test/bin
+/test/Simple.Sqlite.Test/bin
+/test/Simple.Sqlite.Test/obj
