@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Simple.Core.Dependency;
-using Simple.Core.Localization;
+using Simple.Net.Dependency;
+using Simple.Net.Localization;
 using Simple.RabbitMQ.Test.Queues;
 using System.Linq;
 using System;

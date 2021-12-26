@@ -255,3 +255,5 @@
 /Simple.Redis.Test/obj
 /Simple.Sqlite.Test/bin
 /Simple.Sqlite.Test/obj
+/Simple.Net.Test/obj
+/Simple.Net.Test/bin

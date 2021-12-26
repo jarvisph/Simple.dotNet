@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Simple.Core.Data.Schema;
+using Simple.Net.Data.Schema;
 
 namespace Simple.MySql.Test.Model
 {

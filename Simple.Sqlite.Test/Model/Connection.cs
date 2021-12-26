@@ -5,8 +5,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Simple.Core.Data;
-using Simple.Core.Data.Schema;
+using Simple.Net.Data;
+using Simple.Net.Data.Schema;
 
 namespace Simple.Sqlite.Test.Model
 {

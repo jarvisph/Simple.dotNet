@@ -1,8 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Simple.Core.Dependency;
-using Simple.Core.Domain.Enums;
-using Simple.Core.Localization;
+using Simple.Net.Dependency;
+using Simple.Net.Domain.Enums;
+using Simple.Net.Localization;
 
 namespace Simple.Redis.Test
 {

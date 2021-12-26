@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Simple.Core.Localization;
+using Simple.Net.Localization;
 
 namespace Simple.MySql.Test
 {

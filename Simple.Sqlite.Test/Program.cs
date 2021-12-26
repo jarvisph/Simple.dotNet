@@ -1,10 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Simple.Core.Dapper;
-using Simple.Core.Data;
-using Simple.Core.Data.Repository;
-using Simple.Core.Dependency;
-using Simple.Core.Localization;
+using Simple.Net.Dapper;
+using Simple.Net.Data;
+using Simple.Net.Data.Repository;
+using Simple.Net.Dependency;
+using Simple.Net.Localization;
 using Simple.Sqlite.Test.Model;
 
 namespace Simple.Sqlite.Test
