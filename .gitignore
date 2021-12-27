@@ -283,3 +283,15 @@
 /src/Simple.dotNet.Sqlite/obj
 /src/Simple.dotNet.Web/obj
 /src/Simple.dotNet.Web/bin
+/test/Simple.dotNet.Healthy.Test/bin
+/test/Simple.dotNet.Healthy.Test/obj
+/src/Simple.dotNet.Healthy/obj
+/src/Simple.dotNet.Healthy/bin
+/test/Simple.dotNet.MySql.Test/obj
+/test/Simple.dotNet.MySql.Test/bin
+/test/Simple.dotNet.RabbitMQ.Test/obj
+/test/Simple.dotNet.RabbitMQ.Test/bin
+/test/Simple.dotNet.Redis.Test/bin
+/test/Simple.dotNet.Redis.Test/obj
+/test/Simple.dotNet.Sqlite.Test/obj
+/test/Simple.dotNet.Sqlite.Test/bin

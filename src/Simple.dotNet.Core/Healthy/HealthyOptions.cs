@@ -1,0 +1,42 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Simple.dotNet.Core.Healthy
+{
+    public class HealthyOptions
+    {
+        /// <summary>
+        /// 服务名称
+        /// </summary>
+        public string? ServiceName { get; set; }
+
+        public string? Host { get; set; }
+
+        /// <summary>
+        /// 服务端口 没有指定端口为非Web应用程序
+        /// </summary>
+        public int? Port { get; set; }
+
+        /// <summary>
+        /// 服务健康检查地址
+        /// </summary>
+        public string? HealthCheck { get; set; }
+
+        /// <summary>
+        /// 服务端地址
+        /// </summary>
+        public string? Address { get; set; }
+
+        /// <summary>
+        /// 检查间隔时间
+        /// </summary>
+        public TimeSpan? Interval { get; set; }
+
+        /// <summary>
+        /// 超时时间
+        /// </summary>
+        public TimeSpan? Timeout { get; set; }
+
+    }
+}

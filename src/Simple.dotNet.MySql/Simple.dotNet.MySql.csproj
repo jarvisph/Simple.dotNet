@@ -11,8 +11,15 @@
     <Product>Simple.dotNet.MySql</Product>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/jarvisph/Simple.dotNet.MySql.git</RepositoryUrl>
+    <RepositoryUrl></RepositoryUrl>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\docs\zh-cn\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
 	  <PackageReference Include="MySql.Data" Version="8.0.21" />

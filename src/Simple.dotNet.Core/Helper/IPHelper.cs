@@ -4,6 +4,8 @@ using System.IO;
 using System.Text.RegularExpressions;
 using Simple.dotNet.Core.Extensions;
 using Simple.dotNet.Core.Http;
+using System.Net;
+using System.Net.Sockets;
 
 namespace Simple.dotNet.Core.Helper
 {
@@ -29,6 +31,22 @@ namespace Simple.dotNet.Core.Helper
             get
             {
                 return HttpContextAccessor.HttpContext.GetIp();
+            }
+        }
+        public static string Host
+        {
+            get
+            {
+                var host = Dns.GetHostEntry(Dns.GetHostName());
+                foreach (var ip in host.AddressList)
+                {
+                    // 下面的判断过滤 IP v4 地址
+                    if (ip.AddressFamily == AddressFamily.InterNetwork)
+                    {
+                        return ip.ToString();
+                    }
+                }
+                return null;
             }
         }
         public static bool IsIpAddress(string ip)

@@ -169,7 +169,7 @@ namespace Simple.dotNet.Sqlite
             using (IExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.Sqlite))
             {
                 IEnumerable<ColumnProperty> columns = typeof(TEntity).GetColumns();
-                string sql = $"SELECT  {string.Join(",", columns.Select(c => $"[{c.Name}]").ToArray())} FROM {typeof(TEntity).GetTableName()} WHERE {exp.GetCondition(out DynamicParameters parameters)} LIMIT 1";
+                string sql = $"SELECT  {string.Join(",", columns.Select(c => $"[{c.Name}]").ToArray())} FROM {typeof(TEntity).GetTableName()} WHERE {exp.GetCondition(out DynamicParameters parameters)} LIMIT 1;";
                 IDataReader reader = this.ExecuteReader(CommandType.Text, sql, parameters);
                 TEntity entity = default;
                 while (reader.Read())
@@ -185,7 +185,7 @@ namespace Simple.dotNet.Sqlite
         {
             using (IExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.Sqlite))
             {
-                string sql = $"SELECT [{field.GetFieldName()}] FROM {typeof(TEntity).GetTableName()} WHERE {exp.GetCondition(out DynamicParameters parameters)}";
+                string sql = $"SELECT [{field.GetFieldName()}] FROM {typeof(TEntity).GetTableName()} WHERE {exp.GetCondition(out DynamicParameters parameters)};";
                 object value = this.ExecuteScalar(CommandType.Text, sql, parameters);
                 if (value == null) return default;
                 return (TValue)value;
@@ -199,7 +199,7 @@ namespace Simple.dotNet.Sqlite
             using (IExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.Sqlite))
             {
                 IEnumerable<ColumnProperty> columns = typeof(TEntity).GetColumns();
-                string sql = $"SELECT {string.Join(",", columns.Select(c => $"[{c.Name}]").ToArray())} FROM {typeof(TEntity).GetTableName()} WHERE {exp.GetCondition(out DynamicParameters parameters)}";
+                string sql = $"SELECT {string.Join(",", columns.Select(c => $"[{c.Name}]").ToArray())} FROM {typeof(TEntity).GetTableName()} WHERE {exp.GetCondition(out DynamicParameters parameters)};";
                 IDataReader reader = this.ExecuteReader(CommandType.Text, sql, parameters);
                 while (reader.Read())
                 {
@@ -212,7 +212,7 @@ namespace Simple.dotNet.Sqlite
         public override IEnumerable<TEntity> GetAll<TEntity>()
         {
             IEnumerable<ColumnProperty> columns = typeof(TEntity).GetColumns();
-            string sql = $"SELECT {string.Join(",", columns.Select(c => $"[{c.Name}]").ToArray())} FROM {typeof(TEntity).GetTableName()}";
+            string sql = $"SELECT {string.Join(",", columns.Select(c => $"[{c.Name}]").ToArray())} FROM {typeof(TEntity).GetTableName()};";
             IDataReader reader = this.ExecuteReader(CommandType.Text, sql, null);
             while (reader.Read())
             {

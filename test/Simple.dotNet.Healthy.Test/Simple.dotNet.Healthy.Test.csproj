@@ -14,13 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Simple.dotNet.Redis\Simple.dotNet.Redis.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="appsettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <ProjectReference Include="..\..\src\Simple.dotNet.Core\Simple.dotNet.Core.csproj" />
   </ItemGroup>
 
 </Project>

@@ -51,6 +51,12 @@ namespace Simple.dotNet.Sqlite
                     case "Decimal":
                         obj = Convert.ToDecimal(value);
                         break;
+                    case "Boolean":
+                        obj = (long)value == 1 ? true : false;
+                        break;
+                    case "DateTime":
+                        obj = Convert.ToDateTime(value);
+                        break;
                     default:
                         if (property.Property.PropertyType.IsEnum)
                         {

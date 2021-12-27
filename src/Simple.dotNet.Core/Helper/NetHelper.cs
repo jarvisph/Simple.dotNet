@@ -10,6 +10,7 @@ using Simple.dotNet.Core.Domain.Enums;
 using Simple.dotNet.Core.Extensions;
 using Simple.dotNet.Core.Logger;
 using System.IO.Compression;
+using System.Threading;
 
 namespace Simple.dotNet.Core.Helper
 {
@@ -128,7 +129,7 @@ namespace Simple.dotNet.Core.Helper
         /// <param name="url">地址</param>
         /// <param name="type">格式类型</param>
         /// <param name="data">数据流</param>
-        /// <param name="header">header头</param>
+        /// <param name="headers">header头</param>
         /// <returns></returns>
         public static string Post(string url, ContentType type, byte[] data, IDictionary<string, string> headers = null)
         {
@@ -148,10 +149,12 @@ namespace Simple.dotNet.Core.Helper
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(new Uri(url));
             request.Method = method;
             request.UserAgent = null;
-            request.Timeout = 10000;//可等待10秒
+            request.Timeout = Timeout.Infinite;
+            request.KeepAlive = true;
+            request.ServicePoint.Expect100Continue = false;
             if (type != null) request.ContentType = type.GetDescription();
-            if (headers != null)//指定header头
-                foreach (var item in headers) request.Headers.Add(item.Key, item.Value);
+            if (headers == null) headers = new Dictionary<string, string>();
+            foreach (var item in headers) request.Headers.Add(item.Key, item.Value);
             if (data != null)
             {
                 request.ContentLength = data.Length;

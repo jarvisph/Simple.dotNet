@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Simple.dotNet.Core\Simple.dotNet.Core.csproj" />
+    <ProjectReference Include="..\..\src\Simple.dotNet.Core\Simple.dotNet.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
