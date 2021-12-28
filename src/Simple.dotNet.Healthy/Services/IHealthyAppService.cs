@@ -13,12 +13,12 @@ namespace Simple.dotNet.Healthy.Services
         /// 注册
         /// </summary>
         /// <returns></returns>
-        bool Register(string id, HealthyOptions options);
+        bool Register(string clientId, HealthyOptions options);
         /// <summary>
         /// 检查
         /// </summary>
         /// <returns></returns>
-        bool Check(string id);
+        bool Check(string clientId);
         /// <summary>
         /// 检查(Web)
         /// </summary>
@@ -27,7 +27,7 @@ namespace Simple.dotNet.Healthy.Services
         /// 取消
         /// </summary>
         /// <returns></returns>
-        bool Cancel(string id);
+        bool Cancel(string clientId);
         /// <summary>
         /// 获取所有服务
         /// </summary>

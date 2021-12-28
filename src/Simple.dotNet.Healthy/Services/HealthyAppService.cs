@@ -23,14 +23,14 @@ namespace Simple.dotNet.Healthy.Services
 
         }
 
-        public bool Cancel(string id)
+        public bool Cancel(string clientId)
         {
-            return WriteRepository.Delete<HealthExamination>(c => c.ID == id);
+            return WriteRepository.Delete<HealthExamination>(c => c.ID == clientId);
         }
 
-        public bool Check(string id)
+        public bool Check(string clientId)
         {
-            var health = WriteRepository.FirstOrDefault<HealthExamination>(c => c.ID == id);
+            var health = WriteRepository.FirstOrDefault<HealthExamination>(c => c.ID == clientId);
             if (health == null) return false;
             health.CheckAt = DateTime.Now;
             return WriteRepository.Update(health, c => c.CheckAt, health.CheckAt);
@@ -44,11 +44,11 @@ namespace Simple.dotNet.Healthy.Services
                 int interval = list.FirstOrDefault()?.Interval ?? 5000;
                 foreach (var item in list.Where(c => c.Port == 0))
                 {
-                    if (DateTime.Now.AddMilliseconds((item.Interval * 10) * -1) > item.CheckAt)
+                    if (DateTime.Now.AddMilliseconds((item.Interval) * -1) > item.CheckAt)
                     {
                         using (IDapperDatabase db = CreateDatabase())
                         {
-                            db.Delete<HealthExamination>(c => c.ID == item.ID);
+                            db.Update<HealthExamination, bool>(c => c.ID == item.ID, c => c.IsOnline, false);
                         }
                         action(item);
                     }
@@ -57,13 +57,18 @@ namespace Simple.dotNet.Healthy.Services
                 {
                     try
                     {
-                        string result = NetHelper.Get($"http://{item.Host}/{item.HealthCheck}");
+                        string result = NetHelper.Get($"http://{item.Host}:{item.Port}/{item.HealthCheck}");
+                        using (IDapperDatabase db = CreateDatabase())
+                        {
+                            item.CheckAt = DateTime.Now;
+                            db.Update(item, c => c.ID == item.ID, c => c.CheckAt);
+                        }
                     }
                     catch
                     {
                         using (IDapperDatabase db = CreateDatabase())
                         {
-                            db.Delete<HealthExamination>(c => c.ID == item.ID);
+                            db.Update<HealthExamination, bool>(c => c.ID == item.ID, c => c.IsOnline, false);
                         }
                         action(item);
                     }
@@ -77,18 +82,24 @@ namespace Simple.dotNet.Healthy.Services
             return WriteRepository.GetAll<HealthExamination>().ToList();
         }
 
-        public bool Register(string id, HealthyOptions options)
+        public bool Register(string clientId, HealthyOptions options)
         {
+            if (WriteRepository.Any<HealthExamination>(c => c.HostName == options.HostName && c.Host == options.Host && c.Port == options.Port && c.ServiceName == options.ServiceName))
+            {
+                WriteRepository.Delete<HealthExamination>(c => c.HostName == options.HostName && c.Host == options.Host && c.Port == options.Port && c.ServiceName == options.ServiceName);
+            }
             HealthExamination health = new HealthExamination
             {
                 CheckAt = DateTime.Now,
-                ID = id,
+                ID = clientId,
                 CreateAt = DateTime.Now,
                 HealthCheck = options.HealthCheck ?? string.Empty,
                 Host = options.Host ?? string.Empty,
                 Port = options.Port ?? 0,
                 ServiceName = options.ServiceName ?? string.Empty,
                 IsOnline = true,
+                HostName = options.HostName ?? string.Empty,
+                Tags = options.Tags ?? string.Empty,
                 Interval = options.Interval.HasValue ? options.Interval.Value.Milliseconds : 1000 * 5,
             };
             return WriteRepository.Insert(health);

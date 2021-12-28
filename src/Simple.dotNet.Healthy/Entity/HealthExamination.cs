@@ -42,6 +42,14 @@ namespace Simple.dotNet.Healthy.Entity
         public string Host { get; set; } = string.Empty;
 
         /// <summary>
+        /// 主机名称
+        /// </summary>
+        public string HostName { get; set; } = string.Empty;
+        /// <summary>
+        /// 标签
+        /// </summary>
+        public string Tags { get; set; } = string.Empty;
+        /// <summary>
         /// 服务端口
         /// </summary>
         [Column("Port")]

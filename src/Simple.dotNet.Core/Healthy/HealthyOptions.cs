@@ -10,6 +10,10 @@ namespace Simple.dotNet.Core.Healthy
         /// 服务名称
         /// </summary>
         public string? ServiceName { get; set; }
+        /// <summary>
+        /// 机器名称
+        /// </summary>
+        public string? HostName { get; set; }
 
         public string? Host { get; set; }
 
@@ -22,6 +26,10 @@ namespace Simple.dotNet.Core.Healthy
         /// 服务健康检查地址
         /// </summary>
         public string? HealthCheck { get; set; }
+        /// <summary>
+        /// 标识
+        /// </summary>
+        public string Tags { get; set; }
 
         /// <summary>
         /// 服务端地址
