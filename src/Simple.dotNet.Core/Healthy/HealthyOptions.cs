@@ -26,6 +26,9 @@ namespace Simple.dotNet.Core.Healthy
         /// 服务健康检查地址
         /// </summary>
         public string? HealthCheck { get; set; }
+
+        public string Register { get; set; } = "/healthy/register";
+
         /// <summary>
         /// 标识
         /// </summary>
@@ -35,6 +38,8 @@ namespace Simple.dotNet.Core.Healthy
         /// 服务端地址
         /// </summary>
         public string? Address { get; set; }
+
+        public string AddressCheck { get; set; } = "/healthy/check";
 
         /// <summary>
         /// 检查间隔时间

@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Simple.dotNet.Core.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Reflection;
 using System.Text;
 
@@ -30,6 +32,18 @@ namespace Simple.dotNet.Core.Localization
         public static string GetConfig(string application, string name)
         {
             return config[$"{application}:{name}"];
+        }
+        public static T GetConfig<T>(string application) where T : class, new()
+        {
+            PropertyInfo[] properties = typeof(T).GetProperties();
+            T config = new T();
+            foreach (PropertyInfo property in properties)
+            {
+                object value = GetConfig(application, property.Name);
+                if (value == null) continue;
+                property.SetValue(config, property.PropertyType.GetValue(value));
+            }
+            return config;
         }
 
         public static string GetConfig(params string[] args)

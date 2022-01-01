@@ -1,13 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Simple.dotNet.Core.Dependency;
 using Simple.dotNet.Sqlite;
-using Simple.dotNet.Core.Logger;
-using Simple.dotNet.Core.Helper;
-using System.Threading.Tasks;
-using System.Threading;
+using Simple.dotNet.Core.Dependency;
 
 namespace Simple.dotNet.Healthy
 {
@@ -15,8 +8,8 @@ namespace Simple.dotNet.Healthy
     {
         public static IServiceCollection AddHealthy(this IServiceCollection services)
         {
-            services.AddDepency();
             services.AddSqlite();
+            services.AddDepency();
             return services;
         }
     }

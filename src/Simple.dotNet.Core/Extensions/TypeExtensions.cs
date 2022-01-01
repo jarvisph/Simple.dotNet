@@ -42,6 +42,29 @@ namespace Simple.dotNet.Core.Extensions
             }
             return value;
         }
+        public static object GetValue(this Type type, object value)
+        {
+            object defaultValue = null;
+            string name = type.Name;
+            if (name == "Nullable`1")
+            {
+                var generic = type.GenericTypeArguments[0];
+                name = generic.Name;
+            }
+
+            switch (name)
+            {
+                case "String":
+                    defaultValue = (string)value;
+                    break;
+                case "Int32":
+                    defaultValue = Convert.ToInt32(value);
+                    break;
+                default:
+                    break;
+            }
+            return defaultValue;
+        }
         internal static Type GetElementType(this Type seqType)
         {
             Type ienum = FindIEnumerable(seqType);

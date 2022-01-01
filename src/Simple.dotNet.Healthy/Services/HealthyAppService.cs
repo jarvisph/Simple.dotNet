@@ -33,7 +33,8 @@ namespace Simple.dotNet.Healthy.Services
             var health = WriteRepository.FirstOrDefault<HealthExamination>(c => c.ID == clientId);
             if (health == null) return false;
             health.CheckAt = DateTime.Now;
-            return WriteRepository.Update(health, c => c.CheckAt, health.CheckAt);
+            health.IsOnline = true;
+            return WriteRepository.Update(health, c => c.ID == health.ID, c => c.CheckAt, c => c.IsOnline);
         }
 
         public void Check(Action<HealthExamination> action)
@@ -57,12 +58,14 @@ namespace Simple.dotNet.Healthy.Services
                 {
                     try
                     {
-                        string result = NetHelper.Get($"http://{item.Host}:{item.Port}/{item.HealthCheck}");
+                        string result = NetHelper.Get($"http://{item.Host}:{item.Port}{item.HealthCheck}");
                         using (IDapperDatabase db = CreateDatabase())
                         {
                             item.CheckAt = DateTime.Now;
-                            db.Update(item, c => c.ID == item.ID, c => c.CheckAt);
+                            item.IsOnline = true;
+                            db.Update(item, c => c.ID == item.ID, c => c.CheckAt, c => c.IsOnline);
                         }
+                        Thread.Sleep(1000);
                     }
                     catch
                     {
@@ -74,6 +77,7 @@ namespace Simple.dotNet.Healthy.Services
                     }
                 }
                 Thread.Sleep(interval);
+
             }
         }
 
@@ -84,6 +88,10 @@ namespace Simple.dotNet.Healthy.Services
 
         public bool Register(string clientId, HealthyOptions options)
         {
+            if (string.IsNullOrWhiteSpace(clientId)) return false;
+            if (string.IsNullOrWhiteSpace(options.ServiceName)) return false;
+            if (string.IsNullOrWhiteSpace(options.Host)) return false;
+            if (string.IsNullOrWhiteSpace(options.HostName)) return false;
             if (WriteRepository.Any<HealthExamination>(c => c.HostName == options.HostName && c.Host == options.Host && c.Port == options.Port && c.ServiceName == options.ServiceName))
             {
                 WriteRepository.Delete<HealthExamination>(c => c.HostName == options.HostName && c.Host == options.Host && c.Port == options.Port && c.ServiceName == options.ServiceName);
