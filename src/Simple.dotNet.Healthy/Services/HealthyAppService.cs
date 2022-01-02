@@ -45,7 +45,7 @@ namespace Simple.dotNet.Healthy.Services
                 int interval = list.FirstOrDefault()?.Interval ?? 5000;
                 foreach (var item in list.Where(c => c.Port == 0))
                 {
-                    if (DateTime.Now.AddMilliseconds((item.Interval) * -1) > item.CheckAt)
+                    if (DateTime.Now.AddMilliseconds((item.Interval * 5) * -1) > item.CheckAt)
                     {
                         using (IDapperDatabase db = CreateDatabase())
                         {
@@ -79,6 +79,11 @@ namespace Simple.dotNet.Healthy.Services
                 Thread.Sleep(interval);
 
             }
+        }
+
+        public bool Delete(string clientId)
+        {
+            return WriteRepository.Delete<HealthExamination>(c => c.ID == clientId);
         }
 
         public List<HealthExamination> List()

@@ -29,6 +29,12 @@ namespace Simple.dotNet.Healthy.Services
         /// <returns></returns>
         bool Cancel(string clientId);
         /// <summary>
+        /// 删除
+        /// </summary>
+        /// <param name="clientId"></param>
+        /// <returns></returns>
+        bool Delete(string clientId);
+        /// <summary>
         /// 获取所有服务
         /// </summary>
         /// <returns></returns>
