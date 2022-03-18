@@ -50,8 +50,8 @@ namespace Simple.ElasticSearch.Test
 
             //升序
             var asc = query.OrderBy(c => c.CreateAt).Paged(1, 20, out total);
-           
-            //查询订单是否存在
+
+            //查询会员是否存在
             bool exists = client.Any<UserESModel>(t => t.ID == userId);
 
             //查询会员订单总数
