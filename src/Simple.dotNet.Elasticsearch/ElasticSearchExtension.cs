@@ -1,4 +1,5 @@
 ﻿using Nest;
+using Simple.Elasticsearch.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -38,7 +39,7 @@ namespace Simple.Elasticsearch
             if (!response.IsValid) throw response.OriginalException;
             return response.IsValid;
         }
-        
+
         /// <summary>
         /// 修改指定的字段
         /// </summary>
@@ -73,7 +74,14 @@ namespace Simple.Elasticsearch
             if (!response.IsValid) throw response.OriginalException;
             return response.IsValid;
         }
-       
+        public static bool Update<TDocument>(this IElasticClient client, TDocument document, Expression<Func<TDocument, bool>> expression, Expression<Func<TDocument, object>> field)
+        {
+            return true;
+        }
+        public static bool Update<TDocument, TValue>(this IElasticClient client, Expression<Func<TDocument, TValue>> field, TValue value, Expression<Func<TDocument, bool>> expression)
+        {
+            return true;
+        }
         /// <summary>
         /// 新增
         /// </summary>
@@ -170,6 +178,17 @@ namespace Simple.Elasticsearch
         }
 
         /// <summary>
+        /// 删除
+        /// </summary>
+        /// <typeparam name="TDocument"></typeparam>
+        /// <param name="client"></param>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public static bool Delete<TDocument>(this IElasticClient client, Expression<Func<TDocument, bool>> expression)
+        {
+            return true;
+        }
+        /// <summary>
         /// 获取表总记录数
         /// </summary>
         /// <typeparam name="TDocument"></typeparam>
@@ -180,6 +199,18 @@ namespace Simple.Elasticsearch
             if (client == null) throw new NullReferenceException();
             string indexname = typeof(TDocument).GetIndexName();
             return (int)client.Count<TDocument>(c => c.Index(indexname)).Count;
+        }
+
+
+        public static int Count<TDocument>(this IElasticClient client, Expression<Func<TDocument, bool>> expression) where TDocument : class, IDocument
+        {
+            if (client == null) throw new NullReferenceException();
+            string indexname = typeof(TDocument).GetIndexName();
+            using (IElasticSearchExpressionVisitor<TDocument> visitor = new ElasticSearchExpressionVisitor<TDocument>())
+            {
+                var query = visitor.Visit(expression);
+                return (int)client.Count<TDocument>(c => c.Index(indexname).Query(q => query)).Count;
+            }
         }
         /// <summary>
         /// 根据条件获取表总记录数
@@ -250,6 +281,10 @@ namespace Simple.Elasticsearch
         {
             return client.Count(queries) > 0;
         }
+        public static bool Any<TDocument>(this IElasticClient client, Expression<Func<TDocument, bool>> expression) where TDocument : class, IDocument
+        {
+            return client.Count(expression) > 0;
+        }
         /// <summary>
         /// 查询表是否存在（指定查询条件）
         /// </summary>
@@ -287,6 +322,22 @@ namespace Simple.Elasticsearch
             string indexname = typeof(TDocument).GetIndexName();
             return client.Search<TDocument>(s => s.Index(indexname).Query(q => q.Bool(b => b.Must(queries))).Size(1)).Documents?.FirstOrDefault();
         }
+        public static TDocument? FirstOrDefault<TDocument>(this IElasticClient client, QueryContainer query) where TDocument : class, IDocument
+        {
+            if (client == null) throw new NullReferenceException();
+            string indexname = typeof(TDocument).GetIndexName();
+            return client.Search<TDocument>(s => s.Index(indexname).Query(q => query).Size(1)).Documents?.FirstOrDefault();
+        }
+        public static TDocument? FirstOrDefault<TDocument>(this IElasticClient client, Expression<Func<TDocument, bool>> expression) where TDocument : class, IDocument
+        {
+            if (client == null) throw new NullReferenceException();
+            string indexname = typeof(TDocument).GetIndexName();
+            using (IElasticSearchExpressionVisitor<TDocument> visitor = new ElasticSearchExpressionVisitor<TDocument>())
+            {
+                var query = visitor.Visit(expression);
+                return client.FirstOrDefault<TDocument>(query);
+            }
+        }
 
         /// <summary>
         /// 获取一条数据，取某个字段
@@ -316,6 +367,23 @@ namespace Simple.Elasticsearch
             string indexname = typeof(TDocument).GetIndexName();
             int size = 1000;
             var searchResponse = client.Search<TDocument>(s => s.Index(indexname).Size(size).Scroll(scrollTime).Query(q => q.Bool(b => b.Must(queries))));
+            return client.Scroll(searchResponse, size, scrollTime);
+        }
+
+        public static IEnumerable<TDocument> GetAll<TDocument>(this IElasticClient client, Expression<Func<TDocument>> expression) where TDocument : class, IDocument
+        {
+            using (IElasticSearchExpressionVisitor<TDocument> visitor = new ElasticSearchExpressionVisitor<TDocument>())
+            {
+                var query = visitor.Visit(expression);
+                return client.GetAll<TDocument>(query);
+            }
+        }
+        public static IEnumerable<TDocument> GetAll<TDocument>(this IElasticClient client, QueryContainer query) where TDocument : class, IDocument
+        {
+            var scrollTime = new Time(TimeSpan.FromSeconds(30));
+            string indexname = typeof(TDocument).GetIndexName();
+            int size = 1000;
+            var searchResponse = client.Search<TDocument>(s => s.Index(indexname).Size(size).Scroll(scrollTime).Query(q => query));
             return client.Scroll(searchResponse, size, scrollTime);
         }
         /// <summary>
@@ -412,16 +480,16 @@ namespace Simple.Elasticsearch
             return query;
         }
 
-        ///// <summary>
-        ///// 创建一个空的Queryable
-        ///// </summary>
-        ///// <typeparam name="TDocument"></typeparam>
-        ///// <param name="client"></param>
-        ///// <returns></returns>
-        //public static IQueryable<TDocument> Query<TDocument>(this IElasticClient client) where TDocument : class, IDocument
-        //{
-        //    return new ElasticSearchQueryable<TDocument>(new ElasticSearchQueryProvider(client));
-        //}
+        /// <summary>
+        /// 创建一个空的Queryable
+        /// </summary>
+        /// <typeparam name="TDocument"></typeparam>
+        /// <param name="client"></param>
+        /// <returns></returns>
+        public static IElasticSearchQueryable<TDocument> Query<TDocument>(this IElasticClient client) where TDocument : class, IDocument
+        {
+            return new ElasticSearchQueryable<TDocument>(client);
+        }
         /// <summary>
         /// 查询（真实查询）
         /// </summary>
@@ -861,6 +929,14 @@ namespace Simple.Elasticsearch
             }
             return query;
         }
+
+
+        public static IElasticSearchQueryable<TDocument> Where<TDocument>(this IElasticSearchQueryable<TDocument> query, object value, Expression<Func<TDocument, bool>> expression) where TDocument : class, IDocument
+        {
+            if (value == null) return query;
+            return query.Where(expression);
+        }
+
         /// <summary>
         /// 降序
         /// </summary>
@@ -1000,6 +1076,14 @@ namespace Simple.Elasticsearch
             {
                 return search.Invoke(s.Paged(page, limit));
             };
+        }
+        public static IEnumerable<TDocument> Paged<TDocument>(this IElasticSearchOrderedQueryable<TDocument> query, int page, int limit, out long total) where TDocument : class, IDocument
+        {
+            total = 0;
+            string indexname = typeof(TDocument).GetIndexName();
+            var response = query.Client.Search<TDocument>(s => s.Index(indexname).Query(q => query.Query).Sort(s => query.Sort).Paged(page, limit));
+            total = response.Total;
+            return response.Documents;
         }
         /// <summary>
         /// 根据字段分组

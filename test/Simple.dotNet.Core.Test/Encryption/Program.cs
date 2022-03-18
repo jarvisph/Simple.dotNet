@@ -25,7 +25,7 @@ namespace Simple.dotNet.Core.Test.Encryption
 QGKU + Z2rbyJKRvruu4okbmAkVppti2OgjSUPYChLP + tUCTsppyBG + RZJqY2RQ0fItvHKpz99OBUe
 tfWjYQ20ri0ZgVIW + eU = ";
             //var decrypt = DesEncryption.AesEncrypt(JsonConvert.SerializeObject(data), key, iv);
-            string v = DesEncryption.AesDecrypt(value, key, iv);
+            string v = AesEncryption.AesDecrypt(value, key, iv);
             Console.WriteLine(v);
         }
 
