@@ -7,12 +7,13 @@ using System.Text;
 
 namespace Simple.Elasticsearch.Linq
 {
-    public interface IElasticSearchQueryable<TDocument> : IQueryable<TDocument> where TDocument : class, IDocument
+    public interface IElasticSearchQueryable<TDocument> : IQueryable<TDocument> where TDocument : class
     {
+        QueryContainer Query { get; }
+        IElasticClient Client { get; }
+
         IElasticSearchQueryable<TDocument> Where(Expression<Func<TDocument, bool>> expression);
         IElasticSearchOrderedQueryable<TDocument> OrderByDescending<TKey>(Expression<Func<TDocument, TKey>> keySelector);
         IElasticSearchOrderedQueryable<TDocument> OrderBy<TKey>(Expression<Func<TDocument, TKey>> keySelector);
-        QueryContainer Query { get; }
-        IElasticClient Client { get; }
     }
 }

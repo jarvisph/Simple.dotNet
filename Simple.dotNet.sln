@@ -35,7 +35,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simple.dotNet.Sqlite.Test",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simple.dotNet.Healthy", "src\Simple.dotNet.Healthy\Simple.dotNet.Healthy.csproj", "{9FFC05DB-8AD9-44E9-8ECB-E89069D487AB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simple.dotNet.Healthy.Test", "test\Simple.dotNet.Healthy.Test\Simple.dotNet.Healthy.Test.csproj", "{F11147A5-9820-4205-9844-197221D94D71}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simple.dotNet.Healthy.Test", "test\Simple.dotNet.Healthy.Test\Simple.dotNet.Healthy.Test.csproj", "{F11147A5-9820-4205-9844-197221D94D71}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

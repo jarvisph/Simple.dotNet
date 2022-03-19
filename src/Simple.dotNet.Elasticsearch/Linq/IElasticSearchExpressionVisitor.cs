@@ -1,4 +1,5 @@
 ﻿using Nest;
+using Simple.dotNet.Core.Dapper.Expressions;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -8,7 +9,13 @@ namespace Simple.Elasticsearch.Linq
 {
     internal interface IElasticSearchExpressionVisitor<TDocument> : IDisposable where TDocument : class
     {
-        QueryContainer Visit(Expression node);
-        SortDescriptor<TDocument> Cell(Expression node);
+        QueryContainer Query(Expression node);
+        AggregationContainerDescriptor<TDocument> Group();
+        string? Cell { get; }
+
+    }
+    internal interface IElasticSearchExpressionVisitor : IDisposable
+    {
+
     }
 }

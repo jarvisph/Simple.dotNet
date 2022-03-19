@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Simple.Elasticsearch.Linq
 {
-    public interface IElasticSearchOrderedQueryable<TDocument> : IElasticSearchQueryable<TDocument> where TDocument : class, IDocument
+    public interface IElasticSearchOrderedQueryable<TDocument> : IElasticSearchQueryable<TDocument> where TDocument : class
     {
         SortDescriptor<TDocument> Sort { get; }
     }

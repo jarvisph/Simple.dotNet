@@ -29,7 +29,7 @@ namespace Simple.Elasticsearch.Linq
         {
             using (IElasticSearchExpressionVisitor<TDocument> visitor = new ElasticSearchExpressionVisitor<TDocument>())
             {
-                _query = visitor.Visit(expression);
+                _query = visitor.Query(expression);
             }
             return (int)_client.Count<TDocument>(c => c.Index(_indexname).Query(q => _query)).Count > 0;
         }

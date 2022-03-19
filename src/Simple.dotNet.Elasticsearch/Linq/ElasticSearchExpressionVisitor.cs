@@ -7,6 +7,7 @@ using Nest;
 using Simple.dotNet.Core.Extensions;
 using Simple.dotNet.Core.Expressions;
 using System.Reflection;
+using Simple.dotNet.Core.Dapper.Expressions;
 
 namespace Simple.Elasticsearch.Linq
 {
@@ -15,40 +16,64 @@ namespace Simple.Elasticsearch.Linq
     /// </summary>
     internal class ElasticSearchExpressionVisitor<TDocument> : ExpressionVisitorBase, IElasticSearchExpressionVisitor<TDocument> where TDocument : class
     {
-
         private readonly Stack<QueryContainer> _query = new Stack<QueryContainer>();
-        private readonly Stack<SortDescriptor<TDocument>> _sort = new Stack<SortDescriptor<TDocument>>();
         private readonly Stack<object> _value = new Stack<object>();
         private readonly Stack<Expression> _field = new Stack<Expression>();
+        private readonly AggregationContainerDescriptor<TDocument> _aggs = new AggregationContainerDescriptor<TDocument>();
+        private readonly List<string> _temas = new List<string>();
+
+        public string? Cell { get; private set; }
 
         public ElasticSearchExpressionVisitor()
         {
 
         }
+        public ElasticSearchExpressionVisitor(Expression expression) : this()
+        {
+            base.Visit(expression);
+        }
 
-
-        public new QueryContainer Visit(Expression node)
+        public QueryContainer Query(Expression node)
         {
             base.Visit(node);
+            if (_query.Count == 0) return new QueryContainer();
             var query = _query.Pop();
+            while (_query.Count > 0)
+            {
+                query &= _query.Pop();
+            }
             return query;
         }
-
-        public SortDescriptor<TDocument> Cell(Expression node)
+        public AggregationContainerDescriptor<TDocument> Group()
         {
-            base.Visit(node);
-            var sort = _sort.Pop();
-            return sort;
-        }
-
-        public ElasticSearchExpressionVisitor(Expression expression)
-        {
-            this.Visit(expression);
+            if (_temas.Count > 0)
+            {
+                string[] array = _temas.Select(c => $"doc['{c}'].value").ToArray();
+                return new AggregationContainerDescriptor<TDocument>().Terms(string.Join("_", _temas), t => t.Script(string.Join("+'-'+", array)).Size(1_000_000).Aggregations(aggs => _aggs));
+            }
+            else
+            {
+                return _aggs;
+            }
         }
 
         protected override Expression VisitConstant(ConstantExpression node)
         {
-            _value.Push(node.Value);
+            switch (node.Type.Name)
+            {
+                case "Int16":
+                case "Int32":
+                case "Int64":
+                case "Boolean":
+                case "String":
+                case "Decimal":
+                case "Single":
+                case "Double":
+                case "DateTime":
+                case "Byte":
+                    _value.Push(node.Value);
+                    break;
+            }
             return node;
         }
         protected override Expression VisitMethodCall(MethodCallExpression node)
@@ -56,7 +81,10 @@ namespace Simple.Elasticsearch.Linq
             switch (node.NodeType)
             {
                 case ExpressionType.Call:
-                    VisitMember((MemberExpression)node.Object);
+                    if (node.Object != null)
+                    {
+                        VisitMember((MemberExpression)node.Object);
+                    }
                     break;
             }
             foreach (Expression expression in node.Arguments)
@@ -66,21 +94,75 @@ namespace Simple.Elasticsearch.Linq
                     case ExpressionType.Constant:
                         this.VisitConstant((ConstantExpression)expression);
                         break;
+                    default:
+                        base.Visit(expression);
+                        break;
                 }
             }
-            object value = _value.Pop();
-            Expression field = _field.Pop();
-            if (value == null) return node;
+
             switch (node.Method.Name)
             {
                 case "Contains":
-                    _query.Push(new QueryContainerDescriptor<TDocument>().Wildcard(field, $"*{value}*"));
-                    break;
                 case "StartsWith":
-                    _query.Push(new QueryContainerDescriptor<TDocument>().Wildcard(field, $"{value}*"));
-                    break;
                 case "EndsWith":
-                    _query.Push(new QueryContainerDescriptor<TDocument>().Wildcard(field, $"*{value}"));
+                    {
+                        object value = _value.Pop();
+                        Expression field = _field.Pop();
+                        if (value == null) return node;
+                        switch (node.Method.Name)
+                        {
+                            case "Contains":
+                                _query.Push(new QueryContainerDescriptor<TDocument>().Wildcard(field, $"*{value}*"));
+                                break;
+                            case "StartsWith":
+                                _query.Push(new QueryContainerDescriptor<TDocument>().Wildcard(field, $"{value}*"));
+                                break;
+                            case "EndsWith":
+                                _query.Push(new QueryContainerDescriptor<TDocument>().Wildcard(field, $"*{value}"));
+                                break;
+                        }
+                    }
+                    break;
+                case "GroupBy":
+                    {
+                        this.Cell = node.Method.Name;
+                        if (_field.Count > 0)
+                        {
+                            while (_field.Count > 0)
+                            {
+                                var member = (MemberExpression)_field.Pop();
+                                _temas.Add(member.Member.Name);
+                            }
+                        }
+                    }
+                    break;
+                case "Sum":
+                case "Max":
+                case "Min":
+                case "Count":
+                case "Average":
+                    {
+                        Expression field = _field.Pop();
+                        var member = (MemberExpression)field;
+                        switch (node.Method.Name)
+                        {
+                            case "Sum":
+                                _aggs.Sum(member.Member.Name, t => t.Field(field));
+                                break;
+                            case "Max":
+                                _aggs.Max(member.Member.Name, t => t.Field(field));
+                                break;
+                            case "Min":
+                                _aggs.Min(member.Member.Name, t => t.Field(field));
+                                break;
+                            case "Count":
+                                _aggs.ValueCount(member.Member.Name, t => t.Field(field));
+                                break;
+                            case "Average":
+                                _aggs.Average(member.Member.Name, t => t.Field(field));
+                                break;
+                        }
+                    }
                     break;
                 default:
                     break;
@@ -134,6 +216,7 @@ namespace Simple.Elasticsearch.Linq
         }
         protected override Expression VisitMember(MemberExpression node)
         {
+            if (node == null) throw new ArgumentNullException("MemberExpression");
             switch (node.Expression.NodeType)
             {
                 case ExpressionType.MemberAccess:
@@ -147,7 +230,6 @@ namespace Simple.Elasticsearch.Linq
             }
             return node;
         }
-
         protected override Expression VisitConstant(ConstantExpression node, MemberInfo member)
         {
             switch (member.MemberType)
@@ -166,8 +248,16 @@ namespace Simple.Elasticsearch.Linq
             _query.Clear();
             _field.Clear();
             _value.Clear();
+            _temas.Clear();
         }
+    }
 
+    internal class ElasticSearchExpressionVisitor : ExpressionVisitorBase, IElasticSearchExpressionVisitor
+    {
 
+        public void Dispose()
+        {
+
+        }
     }
 }

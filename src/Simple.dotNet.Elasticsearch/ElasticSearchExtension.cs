@@ -3,6 +3,7 @@ using Simple.Elasticsearch.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Dynamic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
@@ -208,7 +209,7 @@ namespace Simple.Elasticsearch
             string indexname = typeof(TDocument).GetIndexName();
             using (IElasticSearchExpressionVisitor<TDocument> visitor = new ElasticSearchExpressionVisitor<TDocument>())
             {
-                var query = visitor.Visit(expression);
+                var query = visitor.Query(expression);
                 return (int)client.Count<TDocument>(c => c.Index(indexname).Query(q => query)).Count;
             }
         }
@@ -238,6 +239,12 @@ namespace Simple.Elasticsearch
             if (client == null) throw new NullReferenceException();
             string indexname = typeof(TDocument).GetIndexName();
             return (int)client.Count<TDocument>(c => c.Index(indexname).Query(q => q.Bool(b => b.Must(queries)))).Count;
+        }
+        public static int Count<TDocument>(this IElasticClient client, QueryContainer query) where TDocument : class, IDocument
+        {
+            if (client == null) throw new NullReferenceException();
+            string indexname = typeof(TDocument).GetIndexName();
+            return (int)client.Count<TDocument>(c => c.Index(indexname).Query(q => query)).Count;
         }
         /// <summary>
         /// 查询表记录数（指定查询条件）
@@ -284,6 +291,10 @@ namespace Simple.Elasticsearch
         public static bool Any<TDocument>(this IElasticClient client, Expression<Func<TDocument, bool>> expression) where TDocument : class, IDocument
         {
             return client.Count(expression) > 0;
+        }
+        public static bool Any<TDocument>(this IElasticClient client, QueryContainer query) where TDocument : class, IDocument
+        {
+            return client.Count<TDocument>(query) > 0;
         }
         /// <summary>
         /// 查询表是否存在（指定查询条件）
@@ -334,7 +345,7 @@ namespace Simple.Elasticsearch
             string indexname = typeof(TDocument).GetIndexName();
             using (IElasticSearchExpressionVisitor<TDocument> visitor = new ElasticSearchExpressionVisitor<TDocument>())
             {
-                var query = visitor.Visit(expression);
+                var query = visitor.Query(expression);
                 return client.FirstOrDefault<TDocument>(query);
             }
         }
@@ -374,7 +385,7 @@ namespace Simple.Elasticsearch
         {
             using (IElasticSearchExpressionVisitor<TDocument> visitor = new ElasticSearchExpressionVisitor<TDocument>())
             {
-                var query = visitor.Visit(expression);
+                var query = visitor.Query(expression);
                 return client.GetAll<TDocument>(query);
             }
         }
@@ -414,6 +425,70 @@ namespace Simple.Elasticsearch
             }
         }
 
+        public static TDocument GroupBy<TDocument>(this IElasticClient client, QueryContainer query, AggregationContainerDescriptor<TDocument> aggregation) where TDocument : class, IDocument
+        {
+            var type = typeof(TDocument);
+            object obj = Activator.CreateInstance(type);
+            string indexname = typeof(TDocument).GetIndexName();
+            var response = client.Search<TDocument>(s => s.Index(indexname).Size(0).Query(q => query)
+                                    .Aggregations(agga => aggregation));
+            if (!response.IsValid)
+            {
+                throw response.OriginalException;
+            }
+            IAggregationContainer _aggs = aggregation;
+            IDictionary<string, IAggregationContainer> _dictionary = _aggs.Aggregations;
+            string _script = _dictionary.Keys.FirstOrDefault();
+            TermsAggregate<string> _bucket = response.Aggregations.Terms(_script);
+            if (_bucket == null)
+            {
+                _dictionary.ConvertAggregationValue(response.Aggregations, obj, type);
+            }
+            else
+            {
+                IDictionary<string, IAggregationContainer> _child = _dictionary.Values.FirstOrDefault().Aggregations;
+                string[] fields = _script.Split("_");
+                foreach (var item in _bucket.Buckets)
+                {
+                    object[] values = item.Key.Split("-");
+                    for (int i = 0; i < fields.Length; i++)
+                    {
+                        PropertyInfo property = type.GetProperty(fields[i]);
+                        property.SetValue(obj, Convert.ChangeType(values[i], property.PropertyType, CultureInfo.InvariantCulture));
+                    }
+                    _child.ConvertAggregationValue(item, obj, type);
+                    break;
+                }
+            }
+            return (TDocument)obj;
+        }
+        private static void ConvertAggregationValue(this IDictionary<string, IAggregationContainer> aggregation, AggregateDictionary bucket, object obj, Type type)
+        {
+            if (obj == null) return;
+            foreach (var item in aggregation)
+            {
+                ValueAggregate? value = null;
+                if (item.Value.Sum != null)
+                {
+                    value = bucket.Sum(item.Key);
+                }
+                else if (item.Value.Max != null)
+                {
+                    value = bucket.Max(item.Key);
+                }
+                else if (item.Value.Min != null)
+                {
+                    value = bucket.Min(item.Key);
+                }
+                else if (item.Value.Average != null)
+                {
+                    value = bucket.Average(item.Key);
+                }
+                if (value == null || value.Value == null) continue;
+                PropertyInfo property = type.GetProperty(item.Key);
+                property.SetValue(obj, Convert.ChangeType(value.Value, property.PropertyType, CultureInfo.InvariantCulture));
+            }
+        }
         /// <summary>
         /// 查询条件（仅拼接查询条件，非真实查询）
         /// </summary>
@@ -1725,7 +1800,7 @@ namespace Simple.Elasticsearch
         /// </summary>
         /// <param name="property"></param>
         /// <returns></returns>
-        private static string? GetFieldName(this PropertyInfo property)
+        public static string? GetFieldName(this PropertyInfo property)
         {
             NumberAttribute number = property.GetAttribute<NumberAttribute>();
             if (number != null)

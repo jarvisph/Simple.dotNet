@@ -5,6 +5,7 @@ using System;
 using Simple.ElasticSearch.Test.Model;
 using System.Linq;
 using Elasticsearch.Net;
+using System.Collections.Generic;
 
 namespace Simple.ElasticSearch.Test
 {
@@ -19,6 +20,7 @@ namespace Simple.ElasticSearch.Test
             var settings = new ConnectionSettings(staticConnectionPool).DisableDirectStreaming().DefaultFieldNameInferrer(name => name);
             IElasticClient client = new ElasticClient(settings);
 
+
             UserESModel user = new UserESModel
             {
                 ID = 10001,
@@ -27,7 +29,27 @@ namespace Simple.ElasticSearch.Test
                 UserName = "ceshi01"
             };
 
+
+
             int userId = 10001;
+
+            //query仅拼接查询语句，没有进行真实查询
+            var query = client.Query<UserESModel>().Where(c => c.ID == userId)
+                                                   .Where(c => c.Money != 0);
+            //分组聚合
+            var group = query.GroupBy(c => true).Select(c => new UserESModel
+            {
+                Money = c.Sum(t => t.Money),
+            }).FirstOrDefault();
+
+            //分组聚合
+            group = query.GroupBy(c => new { c.SiteID, c.ID }).Select(c => new UserESModel
+            {
+                SiteID = c.Key.SiteID,
+                Money = c.Sum(t => t.Money),
+            }).FirstOrDefault();
+
+
 
             user = client.FirstOrDefault<UserESModel>(t => t.UserName.Contains("ceshi"));
 
@@ -36,8 +58,7 @@ namespace Simple.ElasticSearch.Test
             user = client.FirstOrDefault<UserESModel>(t => t.ID == 10001);
 
 
-            //query仅拼接查询语句，没有进行真实查询
-            var query = client.Query<UserESModel>().Where(c => c.ID == userId).Where(c => c.Money != 0);
+
 
             //获取一条数据
             var model = query.FirstOrDefault();

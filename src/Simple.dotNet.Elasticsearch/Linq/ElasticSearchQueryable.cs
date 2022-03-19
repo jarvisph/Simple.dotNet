@@ -1,8 +1,10 @@
 ﻿using Nest;
+using Simple.dotNet.Core.Dapper.Expressions;
 using Simple.dotNet.Core.Mapper;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -14,10 +16,9 @@ namespace Simple.Elasticsearch.Linq
     /// ES Queryable
     /// </summary>
     /// <typeparam name="TDocument"></typeparam>
-    public class ElasticSearchQueryable<TDocument> : IElasticSearchQueryable<TDocument>, IElasticSearchOrderedQueryable<TDocument>, IQueryProvider where TDocument : class, IDocument
+    public class ElasticSearchQueryable<TDocument> : IElasticSearchQueryable<TDocument>, IElasticSearchOrderedQueryable<TDocument>, IElasticSearchGroupingQueryable<TDocument>, IQueryProvider where TDocument : class, IDocument
     {
         private Expression _expression;
-
         public IElasticClient Client { get; }
         public QueryContainer Query { get; private set; }
         public SortDescriptor<TDocument> Sort { get; private set; }
@@ -52,10 +53,9 @@ namespace Simple.Elasticsearch.Linq
             }
         }
 
-        public IQueryable<TElement>? CreateQuery<TElement>(Expression expression)
+        public IQueryable<TElement> CreateQuery<TElement>(Expression expression)
         {
-            _expression = expression;
-            return default;
+            return new DefaultElasticSearchQueryable<TElement>(expression, this, Client);
         }
 
         public object Execute(Expression expression)
@@ -65,15 +65,38 @@ namespace Simple.Elasticsearch.Linq
 
         public TResult Execute<TResult>(Expression expression)
         {
-            object document = Client.FirstOrDefault<TDocument>(Query);
-            return (TResult)document;
+            object? value = null;
+            using (IElasticSearchExpressionVisitor<TDocument> vistor = new ElasticSearchExpressionVisitor<TDocument>(expression))
+            {
+                switch (vistor.Cell)
+                {
+                    case "GroupBy":
+                        value = Client.GroupBy(Query, vistor.Group());
+                        break;
+                    case "Any":
+                        value = Client.Any<TDocument>(Query);
+                        break;
+                    case "Count":
+                        value = Client.Count<TDocument>(Query);
+                        break;
+                    case "FirstOrDefault":
+                        break;
+                    case "Max":
+                        break;
+                    case "Min":
+                        break;
+                    default:
+                        break;
+                }
+            }
+            return (TResult)value;
         }
 
         public IElasticSearchQueryable<TDocument> Where(Expression<Func<TDocument, bool>> expression)
         {
             using (IElasticSearchExpressionVisitor<TDocument> visitor = new ElasticSearchExpressionVisitor<TDocument>())
             {
-                Query = Query && visitor.Visit(expression);
+                Query = Query && visitor.Query(expression);
             }
             return this;
         }
@@ -101,6 +124,19 @@ namespace Simple.Elasticsearch.Linq
             throw new NotImplementedException();
         }
 
+        public IElasticSearchGroupingQueryable<IElasticSearchGrouping<TKey, TDocument>> GroupBy<TKey>(Expression<Func<TDocument, TKey>> keySelector)
+        {
+            throw new NotImplementedException();
+        }
 
+        public IElasticSearchGroupingQueryable<TDocument> Select<TKey>(Expression<Func<TDocument, TKey>> keySelector)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TDocument FirstOrDefault()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

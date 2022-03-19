@@ -18,6 +18,7 @@ namespace Simple.ElasticSearch.Test.Model
         /// 用户ID
         /// </summary>
         public int ID { get; set; }
+        public int SiteID { get; set; }
         /// <summary>
         /// 余额
         /// </summary>
