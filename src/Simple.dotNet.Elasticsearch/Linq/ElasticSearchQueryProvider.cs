@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Simple.Elasticsearch.Linq
 {
-    public class ElasticSearchQueryProvider : IQueryProvider
+    internal class ElasticSearchQueryProvider : IQueryProvider
     {
         public IQueryable CreateQuery(Expression expression)
         {

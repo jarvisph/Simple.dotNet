@@ -12,7 +12,7 @@ namespace Simple.Elasticsearch.Linq
     /// ES Queryable
     /// </summary>
     /// <typeparam name="TDocument"></typeparam>
-    public class ElasticSearchQueryable<TDocument> : IElasticSearchQueryable<TDocument>, IElasticSearchOrderedQueryable<TDocument>, IElasticSearchGroupingQueryable<TDocument>, IQueryProvider where TDocument : class, IDocument
+    internal class ElasticSearchQueryable<TDocument> : IElasticSearchQueryable<TDocument>, IElasticSearchOrderedQueryable<TDocument>, IElasticSearchGroupingQueryable<TDocument>, IQueryProvider where TDocument : class, IDocument
     {
         private Expression _expression;
         public IElasticClient Client { get; }

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Simple.ElasticSearch.Test.Model
 {
     /// <summary>
-    /// 会员订单
+    /// 会员表
     /// </summary>
     [ElasticsearchType(IdProperty = "ID"), ElasticSearchIndex("user", AliasNames = new[] { "user" })]
     public class UserESModel : IDocument

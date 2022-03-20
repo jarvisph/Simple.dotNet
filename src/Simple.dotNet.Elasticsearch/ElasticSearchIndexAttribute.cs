@@ -3,7 +3,7 @@
 namespace Simple.Elasticsearch
 {
     /// <summary>
-    /// ES索引名称标记
+    /// ElasticSearchIndex特性类
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class ElasticSearchIndexAttribute : Attribute
@@ -29,22 +29,10 @@ namespace Simple.Elasticsearch
         /// </summary>
         public string Format { get; set; }
 
-        /// <summary>
-        /// 初始构造
-        /// </summary>
-        /// <param name="indexname"></param>
         public ElasticSearchIndexAttribute(string indexname) : this(indexname, new[] { indexname })
         {
 
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="indexname">索引名称</param>
-        /// <param name="aliasnams">别名</param>
-        /// <param name="replicascount">副本数量</param>
-        /// <param name="shardscount">分片数量</param>
-        /// <param name="fomat">格式</param>
         public ElasticSearchIndexAttribute(string indexname, string[] aliasnams, int replicascount = 0, int shardscount = 3, string fomat = "yyyy_MM")
         {
             this.IndexName = indexname;
@@ -54,7 +42,7 @@ namespace Simple.Elasticsearch
             this.Format = fomat;
         }
         /// <summary>
-        /// 设置索引，根据自定义时间组装
+        /// 自定义索引
         /// </summary>
         /// <param name="datetime"></param>
         public void SetIndexTime(DateTime datetime)
