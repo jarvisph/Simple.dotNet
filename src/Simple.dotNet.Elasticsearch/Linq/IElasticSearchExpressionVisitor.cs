@@ -10,8 +10,9 @@ namespace Simple.Elasticsearch.Linq
     internal interface IElasticSearchExpressionVisitor<TDocument> : IDisposable where TDocument : class
     {
         QueryContainer Query(Expression node);
-        AggregationContainerDescriptor<TDocument> Group();
+        AggregationContainerDescriptor<TDocument> Aggregation();
         string? Cell { get; }
+        List<string> Cells { get; }
 
     }
     internal interface IElasticSearchExpressionVisitor : IDisposable

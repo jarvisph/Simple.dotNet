@@ -23,10 +23,11 @@ namespace Simple.Elasticsearch.Linq
         private readonly List<string> _temas = new List<string>();
 
         public string? Cell { get; private set; }
+        public List<string> Cells { get; private set; }
 
         public ElasticSearchExpressionVisitor()
         {
-
+            Cells = new List<string>();
         }
         public ElasticSearchExpressionVisitor(Expression expression) : this()
         {
@@ -44,7 +45,7 @@ namespace Simple.Elasticsearch.Linq
             }
             return query;
         }
-        public AggregationContainerDescriptor<TDocument> Group()
+        public AggregationContainerDescriptor<TDocument> Aggregation()
         {
             if (_temas.Count > 0)
             {
@@ -99,7 +100,8 @@ namespace Simple.Elasticsearch.Linq
                         break;
                 }
             }
-
+            this.Cell = node.Method.Name;
+            this.Cells.Add(node.Method.Name);
             switch (node.Method.Name)
             {
                 case "Contains":
@@ -125,7 +127,6 @@ namespace Simple.Elasticsearch.Linq
                     break;
                 case "GroupBy":
                     {
-                        this.Cell = node.Method.Name;
                         if (_field.Count > 0)
                         {
                             while (_field.Count > 0)
@@ -139,7 +140,6 @@ namespace Simple.Elasticsearch.Linq
                 case "Sum":
                 case "Max":
                 case "Min":
-                case "Count":
                 case "Average":
                     {
                         Expression field = _field.Pop();
@@ -154,9 +154,6 @@ namespace Simple.Elasticsearch.Linq
                                 break;
                             case "Min":
                                 _aggs.Min(member.Member.Name, t => t.Field(field));
-                                break;
-                            case "Count":
-                                _aggs.ValueCount(member.Member.Name, t => t.Field(field));
                                 break;
                             case "Average":
                                 _aggs.Average(member.Member.Name, t => t.Field(field));
@@ -217,16 +214,35 @@ namespace Simple.Elasticsearch.Linq
         protected override Expression VisitMember(MemberExpression node)
         {
             if (node == null) throw new ArgumentNullException("MemberExpression");
-            switch (node.Expression.NodeType)
+            if (node.Expression == null)
             {
-                case ExpressionType.MemberAccess:
-                    break;
-                case ExpressionType.Constant:
-                    this.VisitConstant((ConstantExpression)node.Expression, node.Member);
-                    break;
-                case ExpressionType.Parameter:
-                    _field.Push(node);
-                    break;
+                switch (node.NodeType)
+                {
+                    case ExpressionType.MemberAccess:
+                        switch (node.Member.Name)
+                        {
+                            case "Now":
+                                _value.Push(DateTime.Now.GetTimestamp());
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                }
+            }
+            else
+            {
+                switch (node.Expression.NodeType)
+                {
+                    case ExpressionType.MemberAccess:
+                        break;
+                    case ExpressionType.Constant:
+                        this.VisitConstant((ConstantExpression)node.Expression, node.Member);
+                        break;
+                    case ExpressionType.Parameter:
+                        _field.Push(node);
+                        break;
+                }
             }
             return node;
         }
@@ -249,6 +265,7 @@ namespace Simple.Elasticsearch.Linq
             _field.Clear();
             _value.Clear();
             _temas.Clear();
+            Cells.Clear();
         }
     }
 

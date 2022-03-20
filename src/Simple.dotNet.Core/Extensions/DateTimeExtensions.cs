@@ -19,11 +19,11 @@ namespace Simple.dotNet.Core.Extensions
             return (int)Math.Round((date.ToUniversalTime() - new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero)).TotalSeconds);
         }
         /// <summary>
-        /// Unix时间戳格式
+        /// 获取时间戳
         /// </summary>
         /// <param name="date"></param>
         /// <returns></returns>
-        public static long ToUnixEpochDateLong(this DateTime date)
+        public static long GetTimestamp(this DateTime date)
         {
             return (date.ToUniversalTime().Ticks - 621355968000000000) / 10000;
         }

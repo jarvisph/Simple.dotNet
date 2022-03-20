@@ -9,23 +9,23 @@ namespace Simple.Elasticsearch
     public class ElasticSearchIndexAttribute : Attribute
     {
         /// <summary>
-        /// 索引名称
+        /// 索引名称（注意，ES索引不支持大写）
         /// </summary>
         public string IndexName { get; private set; }
         /// <summary>
-        /// 别名
+        /// 别名（同理索引规则）
         /// </summary>
         public string[] AliasNames { get; set; }
         /// <summary>
-        /// 副本数量
+        /// 副本数量（默认0）
         /// </summary>
         public int ReplicasCount { get; set; }
         /// <summary>
-        /// 分片数量
+        /// 分片数量（默认3）
         /// </summary>
         public int ShardsCount { get; set; }
         /// <summary>
-        /// 格式(空或null 索引不转换格式索引)
+        /// 格式(默认按月创建索引，指定none，不使用索引规则)
         /// </summary>
         public string Format { get; set; }
 
@@ -59,7 +59,10 @@ namespace Simple.Elasticsearch
         /// <param name="datetime"></param>
         public void SetIndexTime(DateTime datetime)
         {
-            this.IndexName = $"{this.IndexName}_{datetime.ToString(this.Format)}";
+            if (this.Format != "none")
+            {
+                this.IndexName = $"{this.IndexName}_{datetime.ToString(this.Format)}";
+            }
         }
     }
 }

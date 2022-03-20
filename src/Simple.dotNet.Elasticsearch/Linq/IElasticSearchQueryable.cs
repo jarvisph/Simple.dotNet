@@ -13,6 +13,8 @@ namespace Simple.Elasticsearch.Linq
         IElasticClient Client { get; }
 
         IElasticSearchQueryable<TDocument> Where(Expression<Func<TDocument, bool>> expression);
+        IElasticSearchQueryable<TDocument> Where<TValue>(TValue? value, Expression<Func<TDocument, bool>> expression) where TValue : struct;
+        IElasticSearchQueryable<TDocument> Where(object value, Expression<Func<TDocument, bool>> expression);
         IElasticSearchOrderedQueryable<TDocument> OrderByDescending<TKey>(Expression<Func<TDocument, TKey>> keySelector);
         IElasticSearchOrderedQueryable<TDocument> OrderBy<TKey>(Expression<Func<TDocument, TKey>> keySelector);
     }

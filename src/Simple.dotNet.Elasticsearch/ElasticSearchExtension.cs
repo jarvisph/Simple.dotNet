@@ -138,9 +138,7 @@ namespace Simple.Elasticsearch
             client.WhenNotExistsAddIndex<TDocument>(elasticsearch);
             BulkResponse response = client.IndexMany(documents, elasticsearch.IndexName);
             if (!response.IsValid)
-            {
-                throw new Exception(response.DebugInformation);
-            }
+                throw new ElasticSearchException(response.DebugInformation);
             return response.IsValid;
         }
 
@@ -172,9 +170,7 @@ namespace Simple.Elasticsearch
             }
             DeleteByQueryResponse response = client.DeleteByQuery(action);
             if (!response.IsValid)
-            {
-                throw new Exception(response.DebugInformation);
-            }
+                throw new ElasticSearchException(response.DebugInformation);
             return response.IsValid;
         }
 
@@ -222,8 +218,6 @@ namespace Simple.Elasticsearch
         public static int Count<TDocument, TValue>(this IElasticClient client, TValue value, Expression<Func<TDocument, TValue>> field) where TDocument : class, IDocument
         {
             if (client == null) throw new NullReferenceException();
-            if (value == null) throw new NullReferenceException();
-            if (field == null) throw new NullReferenceException();
             string indexname = typeof(TDocument).GetIndexName();
             return (int)client.Count<TDocument>(c => c.Index(indexname).Query(q => q.Term(field, value))).Count;
         }
@@ -245,6 +239,149 @@ namespace Simple.Elasticsearch
             if (client == null) throw new NullReferenceException();
             string indexname = typeof(TDocument).GetIndexName();
             return (int)client.Count<TDocument>(c => c.Index(indexname).Query(q => query)).Count;
+        }
+
+
+        /// <summary>
+        /// 获取最小值
+        /// </summary>
+        /// <typeparam name="TDocument"></typeparam>
+        /// <param name="client"></param>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public static TValue Min<TDocument, TValue>(this IElasticClient client, Expression<Func<TDocument, TValue>> expression) where TDocument : class, IDocument
+        {
+            string field = expression.GetFieldName();
+            return client.Min<TDocument, TValue>(new QueryContainer(), new AggregationContainerDescriptor<TDocument>().Min(field, t => t.Field(expression)));
+        }
+        public static TValue Min<TDocument, TValue>(this IElasticClient client, Expression<Func<TDocument, TValue>> keySelect, Expression<Func<TDocument, bool>> expression) where TDocument : class, IDocument
+        {
+            string field = keySelect.GetFieldName();
+            using (IElasticSearchExpressionVisitor<TDocument> visitor = new ElasticSearchExpressionVisitor<TDocument>())
+            {
+                var query = visitor.Query(expression);
+                return client.Min<TDocument, TValue>(query, new AggregationContainerDescriptor<TDocument>().Min(field, t => t.Field(expression)));
+            }
+        }
+        public static TValue Min<TDocument, TValue>(this IElasticClient client, QueryContainer query, AggregationContainerDescriptor<TDocument> aggregation) where TDocument : class, IDocument
+        {
+            if (client == null) throw new NullReferenceException();
+            string indexname = typeof(TDocument).GetIndexName();
+            ISearchResponse<TDocument> response = client.Search<TDocument>(s => s.Index(indexname).Query(q => query).Aggregations(aggs => aggregation));
+            if (!response.IsValid)
+                throw new ElasticSearchException(response.DebugInformation);
+            IDictionary<string, IAggregationContainer> aggs = ((IAggregationContainer)aggregation).Aggregations;
+            if (aggs.Keys.Count == 0) throw new ElasticSearchException("Not specify field");
+            ValueAggregate value = response.Aggregations.Min(aggs.Keys.First());
+            if (value == null || value.Value == null) return default;
+            return value.Value.Value.ToValue<TValue>();
+        }
+
+        /// <summary>
+        /// 获取最大值
+        /// </summary>
+        /// <typeparam name="TDocument"></typeparam>
+        /// <param name="client"></param>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        /// <exception cref="NullReferenceException"></exception>
+        public static TValue Max<TDocument, TValue>(this IElasticClient client, Expression<Func<TDocument, TValue>> expression) where TDocument : class, IDocument
+        {
+            if (client == null) throw new NullReferenceException();
+            string field = expression.GetFieldName();
+            return client.Max<TDocument, TValue>(new QueryContainer(), new AggregationContainerDescriptor<TDocument>().Max(field, t => t.Field(expression)));
+        }
+        public static TValue Max<TDocument, TValue>(this IElasticClient client, Expression<Func<TDocument, TValue>> keySelect, Expression<Func<TDocument, bool>> expression) where TDocument : class, IDocument
+        {
+            string field = keySelect.GetFieldName();
+            using (IElasticSearchExpressionVisitor<TDocument> visitor = new ElasticSearchExpressionVisitor<TDocument>())
+            {
+                var query = visitor.Query(expression);
+                return client.Max<TDocument, TValue>(query, new AggregationContainerDescriptor<TDocument>().Max(field, t => t.Field(expression)));
+            }
+        }
+        /// <summary>
+        /// 获取最大值
+        /// </summary>
+        /// <typeparam name="TDocument"></typeparam>
+        /// <param name="client"></param>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public static TValue Max<TDocument, TValue>(this IElasticClient client, QueryContainer query, AggregationContainerDescriptor<TDocument> aggregation) where TDocument : class, IDocument
+        {
+            if (client == null) throw new NullReferenceException();
+            string indexname = typeof(TDocument).GetIndexName();
+            ISearchResponse<TDocument> response = client.Search<TDocument>(s => s.Index(indexname).Query(q => query).Aggregations(aggs => aggregation));
+            if (!response.IsValid)
+                throw new ElasticSearchException(response.DebugInformation);
+            IDictionary<string, IAggregationContainer> aggs = ((IAggregationContainer)aggregation).Aggregations;
+            if (aggs.Keys.Count == 0) throw new ElasticSearchException("Not specify field");
+            ValueAggregate value = response.Aggregations.Max(aggs.Keys.First());
+            if (value == null || value.Value == null) return default;
+            return value.Value.Value.ToValue<TValue>();
+        }
+        /// <summary>
+        /// 平均值
+        /// </summary>
+        /// <typeparam name="TDocument"></typeparam>
+        /// <param name="client"></param>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        /// <exception cref="NullReferenceException"></exception>
+        public static TValue Average<TDocument, TValue>(this IElasticClient client, Expression<Func<TDocument, TValue>> expression) where TDocument : class, IDocument
+        {
+            if (client == null) throw new NullReferenceException();
+            string field = expression.GetFieldName();
+            return client.Average<TDocument, TValue>(new QueryContainer(), new AggregationContainerDescriptor<TDocument>().Average(field, t => t.Field(expression)));
+        }
+        public static TValue Average<TDocument, TValue>(this IElasticClient client, Expression<Func<TDocument, TValue>> keySelect, Expression<Func<TDocument, bool>> expression) where TDocument : class, IDocument
+        {
+            string field = keySelect.GetFieldName();
+            using (IElasticSearchExpressionVisitor<TDocument> visitor = new ElasticSearchExpressionVisitor<TDocument>())
+            {
+                var query = visitor.Query(expression);
+                return client.Average<TDocument, TValue>(query, new AggregationContainerDescriptor<TDocument>().Average(field, t => t.Field(expression)));
+            }
+        }
+        public static TValue Average<TDocument, TValue>(this IElasticClient client, QueryContainer query, AggregationContainerDescriptor<TDocument> aggregation) where TDocument : class, IDocument
+        {
+            if (client == null) throw new NullReferenceException();
+            string indexname = typeof(TDocument).GetIndexName();
+            ISearchResponse<TDocument> response = client.Search<TDocument>(s => s.Index(indexname).Query(q => query).Aggregations(aggs => aggregation));
+            if (!response.IsValid)
+                throw new ElasticSearchException(response.DebugInformation);
+            IDictionary<string, IAggregationContainer> aggs = ((IAggregationContainer)aggregation).Aggregations;
+            if (aggs.Keys.Count == 0) throw new ElasticSearchException("Not specify field");
+            ValueAggregate value = response.Aggregations.Average(aggs.Keys.First());
+            if (value == null || value.Value == null) return default;
+            return value.Value.Value.ToValue<TValue>();
+        }
+        private static TValue ValueAggregate<TValue>(this IDictionary<string, IAggregationContainer> aggregation, AggregateDictionary bucket)
+        {
+            TValue result = default;
+            foreach (var item in aggregation)
+            {
+                ValueAggregate? value = null;
+                if (item.Value.Sum != null)
+                {
+                    value = bucket.Sum(item.Key);
+                }
+                else if (item.Value.Max != null)
+                {
+                    value = bucket.Max(item.Key);
+                }
+                else if (item.Value.Min != null)
+                {
+                    value = bucket.Min(item.Key);
+                }
+                else if (item.Value.Average != null)
+                {
+                    value = bucket.Average(item.Key);
+                }
+                if (value == null || value.Value == null) continue;
+                result = value.ToValue<TValue>();
+            }
+            return result;
         }
         /// <summary>
         /// 查询表记录数（指定查询条件）
@@ -1003,13 +1140,6 @@ namespace Simple.Elasticsearch
 
             }
             return query;
-        }
-
-
-        public static IElasticSearchQueryable<TDocument> Where<TDocument>(this IElasticSearchQueryable<TDocument> query, object value, Expression<Func<TDocument, bool>> expression) where TDocument : class, IDocument
-        {
-            if (value == null) return query;
-            return query.Where(expression);
         }
 
         /// <summary>
@@ -1898,7 +2028,7 @@ namespace Simple.Elasticsearch
         }
 
         /// <summary>
-        /// 将给定对象转换为不同类型
+        /// 转换安全类型
         /// </summary>
         /// <param name="obj"></param>
         /// <typeparam name="T"></typeparam>

@@ -1,14 +1,10 @@
 ﻿using Nest;
-using Simple.dotNet.Core.Dapper.Expressions;
-using Simple.dotNet.Core.Mapper;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
 
 namespace Simple.Elasticsearch.Linq
 {
@@ -34,12 +30,7 @@ namespace Simple.Elasticsearch.Linq
         public Type ElementType => typeof(TDocument);
 
         public Expression Expression => _expression;
-
-        public string IndexName => typeof(TDocument).GetIndexName();
-
         public IQueryProvider Provider => this;
-
-
         public IQueryable CreateQuery(Expression expression)
         {
             Type elementType = expression.Type.GetElementType();
@@ -68,25 +59,42 @@ namespace Simple.Elasticsearch.Linq
             object? value = null;
             using (IElasticSearchExpressionVisitor<TDocument> vistor = new ElasticSearchExpressionVisitor<TDocument>(expression))
             {
-                switch (vistor.Cell)
+                if (vistor.Cells.Contains("GroupBy"))
                 {
-                    case "GroupBy":
-                        value = Client.GroupBy(Query, vistor.Group());
-                        break;
-                    case "Any":
-                        value = Client.Any<TDocument>(Query);
-                        break;
-                    case "Count":
-                        value = Client.Count<TDocument>(Query);
-                        break;
-                    case "FirstOrDefault":
-                        break;
-                    case "Max":
-                        break;
-                    case "Min":
-                        break;
-                    default:
-                        break;
+                    switch (vistor.Cell)
+                    {
+                        case "FirstOrDefault":
+                            value = Client.GroupBy(Query, vistor.Aggregation());
+                            break;
+                        default:
+                            throw new ElasticSearchException($"Not implemented {vistor.Cell}");
+                    }
+                }
+                else
+                {
+                    switch (vistor.Cell)
+                    {
+                        case "Any":
+                            value = Client.Any<TDocument>(Query);
+                            break;
+                        case "Count":
+                            value = Client.Count<TDocument>(Query);
+                            break;
+                        case "FirstOrDefault":
+                            value = Client.FirstOrDefault<TDocument>(Query);
+                            break;
+                        case "Max":
+                            value = Client.Max<TDocument, TResult>(Query, vistor.Aggregation());
+                            break;
+                        case "Min":
+                            value = Client.Min<TDocument, TResult>(Query, vistor.Aggregation());
+                            break;
+                        case "Average":
+                            value = Client.Average<TDocument, TResult>(Query, vistor.Aggregation());
+                            break;
+                        default:
+                            throw new ElasticSearchException($"Not implemented {vistor.Cell}");
+                    }
                 }
             }
             return (TResult)value;
@@ -94,6 +102,25 @@ namespace Simple.Elasticsearch.Linq
 
         public IElasticSearchQueryable<TDocument> Where(Expression<Func<TDocument, bool>> expression)
         {
+            using (IElasticSearchExpressionVisitor<TDocument> visitor = new ElasticSearchExpressionVisitor<TDocument>())
+            {
+                Query = Query && visitor.Query(expression);
+            }
+            return this;
+        }
+        public IElasticSearchQueryable<TDocument> Where<TValue>(TValue? value, Expression<Func<TDocument, bool>> expression) where TValue : struct
+        {
+            if (value == null) return this;
+            using (IElasticSearchExpressionVisitor<TDocument> visitor = new ElasticSearchExpressionVisitor<TDocument>())
+            {
+                Query = Query && visitor.Query(expression);
+            }
+            return this;
+        }
+
+        public IElasticSearchQueryable<TDocument> Where(object value, Expression<Func<TDocument, bool>> expression)
+        {
+            if (value == null) return this;
             using (IElasticSearchExpressionVisitor<TDocument> visitor = new ElasticSearchExpressionVisitor<TDocument>())
             {
                 Query = Query && visitor.Query(expression);
@@ -138,5 +165,7 @@ namespace Simple.Elasticsearch.Linq
         {
             throw new NotImplementedException();
         }
+
+
     }
 }
