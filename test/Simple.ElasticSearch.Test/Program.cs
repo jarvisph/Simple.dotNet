@@ -22,7 +22,7 @@ namespace Simple.ElasticSearch.Test
             var settings = new ConnectionSettings(staticConnectionPool).DisableDirectStreaming().DefaultFieldNameInferrer(name => name);
             IElasticClient client = new ElasticClient(settings);
 
-            string action = "Select";
+            string action = "Queryable";
             switch (action)
             {
                 case "Queryable":
@@ -51,14 +51,17 @@ namespace Simple.ElasticSearch.Test
         public void Queryable(IElasticClient client)
         {
             int userId = 10001;
-
+            int[] sites = new[] { 1000, 1001 };
             //query仅拼接查询语句，没有进行真实查询
-            var query = client.Query<UserESModel>().Where(c => c.ID == userId)
-                                                   .Where(c => c.Money != 0)
-                                                   .Where(c => c.SiteID > 0)
-                                                   .Where(DateTime.Now, c => c.CreateAt < DateTime.Now)
-                                                   .Where(c => c.UserName.Contains("ceshi"))
-                                                   .Where(null, t => t.UserName == null);
+            var query = client.Query<UserESModel>()
+                                                  .Where(c => c.ID == userId)
+                                                  .Where(c => c.Money != 0)
+                                                  .Where(c => c.SiteID > 0)
+                                                  .Where(DateTime.Now, c => c.CreateAt < DateTime.Now)
+                                                  .Where(c => c.UserName.Contains("ceshi"))
+                                                  .Where(c => !c.IsTest)
+                                                  .Where(sites, c => !sites.Contains(c.SiteID))
+                                                  .Where(null, t => t.UserName == null);
             //是否存在
             bool exists = query.Any();
             //总数

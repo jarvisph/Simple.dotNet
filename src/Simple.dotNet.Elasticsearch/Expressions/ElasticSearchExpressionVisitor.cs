@@ -19,7 +19,7 @@ namespace Simple.Elasticsearch.Expressions
         private readonly Stack<Expression> _field = new Stack<Expression>();
         private readonly AggregationContainerDescriptor<TDocument> _aggs = new AggregationContainerDescriptor<TDocument>();
         private readonly SortDescriptor<TDocument> _sort = new SortDescriptor<TDocument>();
-
+        private bool _not = false;
         private List<Tuple<string, string, DateInterval?>>? _temas;
         private List<Tuple<string, string, Type>>? _select;
 
@@ -136,6 +136,24 @@ namespace Simple.Elasticsearch.Expressions
             }
             return node;
         }
+        protected override Expression VisitNewArray(NewArrayExpression node)
+        {
+            return base.VisitNewArray(node);
+        }
+        protected override MemberAssignment VisitMemberAssignment(MemberAssignment node)
+        {
+            return base.VisitMemberAssignment(node);
+        }
+        protected override Expression VisitUnary(UnaryExpression node)
+        {
+            switch (node.NodeType)
+            {
+                case ExpressionType.Not:
+                    _not = true;
+                    break;
+            }
+            return base.VisitUnary(node);
+        }
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
             switch (node.NodeType)
@@ -181,17 +199,38 @@ namespace Simple.Elasticsearch.Expressions
                         object value = _value.Pop();
                         Expression field = _field.Pop();
                         if (value == null) return node;
-                        switch (node.Method.Name)
+                        Type type = value.GetType();
+                        if (type.BaseType.Name == "Array")
                         {
-                            case "Contains":
-                                _query.Push(new QueryContainerDescriptor<TDocument>().Wildcard(field, $"*{value}*"));
-                                break;
-                            case "StartsWith":
-                                _query.Push(new QueryContainerDescriptor<TDocument>().Wildcard(field, $"{value}*"));
-                                break;
-                            case "EndsWith":
-                                _query.Push(new QueryContainerDescriptor<TDocument>().Wildcard(field, $"*{value}"));
-                                break;
+                            List<object> values = new List<object>();
+                            foreach (object item in (Array)value)
+                            {
+                                values.Add(item);
+                            }
+                            if (_not)
+                            {
+                                _query.Push(new QueryContainerDescriptor<TDocument>().Bool(b => b.MustNot(m => m.Terms(t => t.Field(field).Terms(values)))));
+                                _not = default;
+                            }
+                            else
+                            {
+                                _query.Push(new QueryContainerDescriptor<TDocument>().Terms(t => t.Field(field).Terms(values)));
+                            }
+                        }
+                        else
+                        {
+                            switch (node.Method.Name)
+                            {
+                                case "Contains":
+                                    _query.Push(new QueryContainerDescriptor<TDocument>().Wildcard(field, $"*{value}*"));
+                                    break;
+                                case "StartsWith":
+                                    _query.Push(new QueryContainerDescriptor<TDocument>().Wildcard(field, $"{value}*"));
+                                    break;
+                                case "EndsWith":
+                                    _query.Push(new QueryContainerDescriptor<TDocument>().Wildcard(field, $"*{value}"));
+                                    break;
+                            }
                         }
                     }
                     break;
@@ -224,6 +263,14 @@ namespace Simple.Elasticsearch.Expressions
                     break;
                 case "OrderByDescending":
                     _sort.Descending(_field.Pop());
+                    break;
+                case "Where":
+                    if (_field.Count == 1 && _value.Count == 0)
+                    {
+                        Expression field = _field.Pop();
+                        _query.Push(new QueryContainerDescriptor<TDocument>().Term(t => t.Field(field).Value(!_not)));
+                        _not = default;
+                    }
                     break;
                 default:
                     break;
@@ -337,7 +384,5 @@ namespace Simple.Elasticsearch.Expressions
             _temas?.Clear();
             Cells.Clear();
         }
-
-
     }
 }

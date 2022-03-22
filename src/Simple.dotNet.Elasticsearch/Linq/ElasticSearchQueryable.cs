@@ -31,7 +31,10 @@ namespace Simple.Elasticsearch.Linq
             if (value == null) return query;
             return query.Where(expression);
         }
-
+        public static IElasticSearchQueryable<TDocument> ContainNot<TDocument, TValue>(this IElasticSearchQueryable<TDocument> query, TValue[] value, Expression<Func<TDocument, TValue>> expression) where TDocument : class
+        {
+            return null;
+        }
         public static bool Any<TDocument>(this IElasticSearchQueryable<TDocument> query) where TDocument : class
         {
             return query.Provider.Execute<bool>(

@@ -35,6 +35,7 @@ namespace Simple.ElasticSearch.Test.Model
         /// </summary>
         [Keyword]
         public string UserName { get; set; }
+        public bool IsTest { get; set; }
         /// <summary>
         /// 登录IP
         /// </summary>

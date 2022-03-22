@@ -634,7 +634,7 @@ namespace Simple.Elasticsearch
         }
 
         /// <summary>
-        /// 创建一个空的Queryable
+        /// 创建一个空的ElasticSearchQueryable
         /// </summary>
         /// <typeparam name="TDocument"></typeparam>
         /// <param name="client"></param>
