@@ -1,5 +1,6 @@
 ﻿using Nest;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -7,15 +8,14 @@ using System.Text;
 
 namespace Simple.Elasticsearch.Linq
 {
-    public interface IElasticSearchQueryable<TDocument> : IQueryable<TDocument> where TDocument : class
+    public interface IElasticSearchQueryable : IEnumerable
     {
-        QueryContainer Query { get; }
-        IElasticClient Client { get; }
+        Expression Expression { get; }
+        Type ElementType { get; }
+        IElasticSearchQueryProvider Provider { get; }
+    }
+    public interface IElasticSearchQueryable<TDocument> : IEnumerable<TDocument>, IEnumerable, IElasticSearchQueryable where TDocument : class
+    {
 
-        IElasticSearchQueryable<TDocument> Where(Expression<Func<TDocument, bool>> expression);
-        IElasticSearchQueryable<TDocument> Where<TValue>(TValue? value, Expression<Func<TDocument, bool>> expression) where TValue : struct;
-        IElasticSearchQueryable<TDocument> Where(object value, Expression<Func<TDocument, bool>> expression);
-        IElasticSearchOrderedQueryable<TDocument> OrderByDescending<TKey>(Expression<Func<TDocument, TKey>> keySelector);
-        IElasticSearchOrderedQueryable<TDocument> OrderBy<TKey>(Expression<Func<TDocument, TKey>> keySelector);
     }
 }

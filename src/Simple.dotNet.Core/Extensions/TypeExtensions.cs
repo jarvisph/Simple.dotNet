@@ -42,6 +42,12 @@ namespace Simple.dotNet.Core.Extensions
             }
             return value;
         }
+        /// <summary>
+        /// 获取安全类型
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static object GetValue(this Type type, object value)
         {
             object defaultValue = null;
@@ -64,6 +70,11 @@ namespace Simple.dotNet.Core.Extensions
                     break;
             }
             return defaultValue;
+        }
+        public static object GetValue(this object value, Type type)
+        {
+            if (value == null) return type.GetDefaultValue();
+            return value.ToValue(type);
         }
         internal static Type GetElementType(this Type seqType)
         {

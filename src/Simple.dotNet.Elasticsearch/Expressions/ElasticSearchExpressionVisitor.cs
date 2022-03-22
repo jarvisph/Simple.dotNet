@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Text;
 using System.Linq;
 using Nest;
 using Simple.dotNet.Core.Extensions;
 using Simple.dotNet.Core.Expressions;
 using System.Reflection;
-using Simple.dotNet.Core.Dapper.Expressions;
 
-namespace Simple.Elasticsearch.Linq
+namespace Simple.Elasticsearch.Expressions
 {
     /// <summary>
     /// ES 表达式树解析
@@ -20,23 +18,32 @@ namespace Simple.Elasticsearch.Linq
         private readonly Stack<object> _value = new Stack<object>();
         private readonly Stack<Expression> _field = new Stack<Expression>();
         private readonly AggregationContainerDescriptor<TDocument> _aggs = new AggregationContainerDescriptor<TDocument>();
-        private readonly List<string> _temas = new List<string>();
+        private readonly SortDescriptor<TDocument> _sort = new SortDescriptor<TDocument>();
+
+        private List<Tuple<string, string, DateInterval?>>? _temas;
+        private List<Tuple<string, string, Type>>? _select;
 
         public string? Cell { get; private set; }
         public List<string> Cells { get; private set; }
 
+        public NewExpression? NewExpression { get; private set; }
+        public Type Type { get; private set; }
         public ElasticSearchExpressionVisitor()
         {
-            Cells = new List<string>();
+            this.Cells = new List<string>();
+            this.Type = typeof(TDocument);
         }
         public ElasticSearchExpressionVisitor(Expression expression) : this()
         {
             base.Visit(expression);
         }
 
-        public QueryContainer Query(Expression node)
+        /// <summary>
+        /// 查询语句
+        /// </summary>
+        /// <returns></returns>
+        public QueryContainer Query()
         {
-            base.Visit(node);
             if (_query.Count == 0) return new QueryContainer();
             var query = _query.Pop();
             while (_query.Count > 0)
@@ -45,19 +52,65 @@ namespace Simple.Elasticsearch.Linq
             }
             return query;
         }
-        public AggregationContainerDescriptor<TDocument> Aggregation()
+
+        public SortDescriptor<TDocument> Sort()
         {
-            if (_temas.Count > 0)
+            return _sort;
+        }
+        public AggregationContainerDescriptor<TDocument> Aggregation(out List<Tuple<string, string, Type>>? select)
+        {
+            select = _select;
+            if (_select != null)
             {
-                string[] array = _temas.Select(c => $"doc['{c}'].value").ToArray();
-                return new AggregationContainerDescriptor<TDocument>().Terms(string.Join("_", _temas), t => t.Script(string.Join("+'-'+", array)).Size(1_000_000).Aggregations(aggs => _aggs));
+                foreach (var item in _select)
+                {
+                    switch (item.Item2)
+                    {
+                        case "Sum":
+                            _aggs.Sum(item.Item1, t => t.Field(item.Item1));
+                            break;
+                        case "Max":
+                            _aggs.Max(item.Item1, t => t.Field(item.Item1));
+                            break;
+                        case "Min":
+                            _aggs.Min(item.Item1, t => t.Field(item.Item1));
+                            break;
+                        case "Average":
+                            _aggs.Average(item.Item1, t => t.Field(item.Item1));
+                            break;
+                    }
+                }
             }
-            else
+            if (_temas == null || _temas.Count == 0)
             {
                 return _aggs;
             }
+            else
+            {
+                var date_histogram = _temas.Where(c => c.Item2 == "date").ToArray();
+                var terms = _temas.Where(c => c.Item2 == "terms").ToArray();
+                string[] array = terms.Select(c => $"doc['{c.Item1}'].value").ToArray();
+                string scriptname = string.Join("_", terms.Select(c => c.Item1));
+                string script = string.Join("+'-'+", array);
+                if (date_histogram.Length > 0)
+                {
+                    if (date_histogram[0].Item3 == null) throw new ElasticSearchException(nameof(DateInterval));
+                    DateInterval interval = date_histogram[0].Item3.Value;
+                    if (terms.Length > 0)
+                    {
+                        return new AggregationContainerDescriptor<TDocument>().DateHistogram(date_histogram[0].Item1, d => d.Interval(interval).Field(date_histogram[0].Item1).Aggregations(a => a.Terms(scriptname, t => t.Script(script).Aggregations(aggs => _aggs))));
+                    }
+                    else
+                    {
+                        return new AggregationContainerDescriptor<TDocument>().DateHistogram(date_histogram[0].Item1, d => d.Interval(interval).Aggregations(a => _aggs));
+                    }
+                }
+                else
+                {
+                    return new AggregationContainerDescriptor<TDocument>().Terms(string.Join("_", _temas.Select(c => c.Item1)), t => t.Script(string.Join("+'-'+", array)).Size(1_000_000).Aggregations(aggs => _aggs));
+                }
+            }
         }
-
         protected override Expression VisitConstant(ConstantExpression node)
         {
             switch (node.Type.Name)
@@ -73,6 +126,12 @@ namespace Simple.Elasticsearch.Linq
                 case "DateTime":
                 case "Byte":
                     _value.Push(node.Value);
+                    break;
+                default:
+                    if (node.Type.IsGenericType)
+                    {
+                        this.Type = node.Type.GenericTypeArguments[0];
+                    }
                     break;
             }
             return node;
@@ -94,6 +153,17 @@ namespace Simple.Elasticsearch.Linq
                 {
                     case ExpressionType.Constant:
                         this.VisitConstant((ConstantExpression)expression);
+                        break;
+                    case ExpressionType.Quote:
+                        switch (node.Method.Name)
+                        {
+                            case "GroupBy":
+                                _temas = new ElasticSearchGroupExpressionVisitor().Visit(expression).ToList();
+                                break;
+                            default:
+                                base.Visit(expression);
+                                break;
+                        }
                         break;
                     default:
                         base.Visit(expression);
@@ -125,18 +195,6 @@ namespace Simple.Elasticsearch.Linq
                         }
                     }
                     break;
-                case "GroupBy":
-                    {
-                        if (_field.Count > 0)
-                        {
-                            while (_field.Count > 0)
-                            {
-                                var member = (MemberExpression)_field.Pop();
-                                _temas.Add(member.Member.Name);
-                            }
-                        }
-                    }
-                    break;
                 case "Sum":
                 case "Max":
                 case "Min":
@@ -161,6 +219,12 @@ namespace Simple.Elasticsearch.Linq
                         }
                     }
                     break;
+                case "OrderBy":
+                    _sort.Ascending(_field.Pop());
+                    break;
+                case "OrderByDescending":
+                    _sort.Descending(_field.Pop());
+                    break;
                 default:
                     break;
             }
@@ -169,8 +233,8 @@ namespace Simple.Elasticsearch.Linq
         protected override Expression VisitBinary(BinaryExpression node)
         {
             base.VisitBinary(node);
-            object value = null;
-            Expression field = null;
+            object? value = null;
+            Expression? field = null;
             switch (node.NodeType)
             {
                 case ExpressionType.Equal:
@@ -209,7 +273,13 @@ namespace Simple.Elasticsearch.Linq
         }
         protected override Expression VisitNew(NewExpression node)
         {
-            return base.VisitNew(node);
+            switch (node.NodeType)
+            {
+                case ExpressionType.New:
+                    _select = new ElasticSearchSelectExpressionVisitor().Visit(node).ToList();
+                    break;
+            }
+            return node;
         }
         protected override Expression VisitMember(MemberExpression node)
         {
@@ -264,17 +334,10 @@ namespace Simple.Elasticsearch.Linq
             _query.Clear();
             _field.Clear();
             _value.Clear();
-            _temas.Clear();
+            _temas?.Clear();
             Cells.Clear();
         }
-    }
 
-    internal class ElasticSearchExpressionVisitor : ExpressionVisitorBase, IElasticSearchExpressionVisitor
-    {
 
-        public void Dispose()
-        {
-
-        }
     }
 }

@@ -8,6 +8,6 @@ namespace Simple.Elasticsearch.Linq
 {
     public interface IElasticSearchOrderedQueryable<TDocument> : IElasticSearchQueryable<TDocument> where TDocument : class
     {
-        SortDescriptor<TDocument> Sort { get; }
+       
     }
 }

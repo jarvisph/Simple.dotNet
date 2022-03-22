@@ -40,6 +40,11 @@ namespace Simple.dotNet.Core.Extensions
 
             return (T)Convert.ChangeType(obj, typeof(T), CultureInfo.InvariantCulture);
         }
+
+        public static object ToValue(this object obj, Type type)
+        {
+            return Convert.ChangeType(obj, type, CultureInfo.InvariantCulture);
+        }
         /// <summary>
         /// 判断是否标记特性
         /// </summary>

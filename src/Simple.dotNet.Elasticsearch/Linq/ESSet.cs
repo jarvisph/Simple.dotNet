@@ -10,33 +10,14 @@ namespace Simple.Elasticsearch.Linq
 {
     public abstract class ESSet<TDocument> : IESRepository<TDocument> where TDocument : class, IDocument
     {
-        private readonly IElasticClient _client;
-        private QueryContainer _query;
         public ESSet()
         {
-            _query = new QueryContainer();
+        
         }
-        private string _indexname
-        {
-            get
-            {
-                return typeof(TDocument).GetIndexName();
-            }
-        }
-        public bool Any() => _client.Any<TDocument>();
+        public abstract bool Any();
 
-        public bool Any(Expression<Func<TDocument, bool>> expression)
-        {
-            using (IElasticSearchExpressionVisitor<TDocument> visitor = new ElasticSearchExpressionVisitor<TDocument>())
-            {
-                _query = visitor.Query(expression);
-            }
-            return (int)_client.Count<TDocument>(c => c.Index(_indexname).Query(q => _query)).Count > 0;
-        }
-        public int Count()
-        {
-            return (int)_client.Count<TDocument>(c => c.Index(_indexname)).Count;
-        }
+        public abstract bool Any(Expression<Func<TDocument, bool>> expression);
+        public abstract int Count();
         public abstract int Count(Expression<Func<TDocument, bool>> expression);
         public abstract bool Delete(Expression<Func<TDocument, bool>> expression);
         public abstract TDocument FirstOrDefault();

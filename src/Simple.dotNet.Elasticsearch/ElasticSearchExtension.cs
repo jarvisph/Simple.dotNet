@@ -9,6 +9,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using Simple.dotNet.Core.Extensions;
+using Simple.Elasticsearch.Expressions;
 
 namespace Simple.Elasticsearch
 {
@@ -86,9 +88,9 @@ namespace Simple.Elasticsearch
         /// <returns></returns>
         public static bool Update<TDocument>(this IElasticClient client, TDocument document, Expression<Func<TDocument, bool>> expression, Expression<Func<TDocument, object>> field) where TDocument : class, IDocument
         {
-            using (IElasticSearchExpressionVisitor<TDocument> visitor = new ElasticSearchExpressionVisitor<TDocument>())
+            using (IElasticSearchExpressionVisitor<TDocument> visitor = new ElasticSearchExpressionVisitor<TDocument>(expression))
             {
-                var query = visitor.Query(expression);
+                var query = visitor.Query();
                 return client.Update(document, field, query);
             }
         }
@@ -107,9 +109,9 @@ namespace Simple.Elasticsearch
             if (value == null) return false;
             string indexname = typeof(TDocument).GetIndexName();
             string fieldname = field.GetFieldName();
-            using (IElasticSearchExpressionVisitor<TDocument> visitor = new ElasticSearchExpressionVisitor<TDocument>())
+            using (IElasticSearchExpressionVisitor<TDocument> visitor = new ElasticSearchExpressionVisitor<TDocument>(expression))
             {
-                var query = visitor.Query(expression);
+                var query = visitor.Query();
                 UpdateByQueryResponse response = client.UpdateByQuery<TDocument>(c => c.Index(indexname).Query(q => query)
                                                                             .Script(s => s.Source($"ctx._source.{fieldname}=params.{fieldname}")
                                                                             .Params(new Dictionary<string, object>() { { fieldname, value } })));
@@ -220,9 +222,9 @@ namespace Simple.Elasticsearch
         public static bool Delete<TDocument>(this IElasticClient client, Expression<Func<TDocument, bool>> expression) where TDocument : class, IDocument
         {
             string indexname = typeof(TDocument).GetIndexName();
-            using (IElasticSearchExpressionVisitor<TDocument> visitor = new ElasticSearchExpressionVisitor<TDocument>())
+            using (IElasticSearchExpressionVisitor<TDocument> visitor = new ElasticSearchExpressionVisitor<TDocument>(expression))
             {
-                var query = visitor.Query(expression);
+                var query = visitor.Query();
                 Func<DeleteByQueryDescriptor<TDocument>, IDeleteByQueryRequest> action = (d) =>
                 {
                     return d.Index(indexname).Query(q => query);
@@ -241,19 +243,19 @@ namespace Simple.Elasticsearch
         /// <typeparam name="TDocument"></typeparam>
         /// <param name="client"></param>
         /// <returns></returns>
-        public static int Count<TDocument>(this IElasticClient client) where TDocument : class, IDocument
+        public static int Count<TDocument>(this IElasticClient client) where TDocument : class
         {
             if (client == null) throw new NullReferenceException();
             string indexname = typeof(TDocument).GetIndexName();
             return (int)client.Count<TDocument>(c => c.Index(indexname)).Count;
         }
-        public static int Count<TDocument>(this IElasticClient client, Expression<Func<TDocument, bool>> expression) where TDocument : class, IDocument
+        public static int Count<TDocument>(this IElasticClient client, Expression<Func<TDocument, bool>> expression) where TDocument : class
         {
             if (client == null) throw new NullReferenceException();
             string indexname = typeof(TDocument).GetIndexName();
-            using (IElasticSearchExpressionVisitor<TDocument> visitor = new ElasticSearchExpressionVisitor<TDocument>())
+            using (IElasticSearchExpressionVisitor<TDocument> visitor = new ElasticSearchExpressionVisitor<TDocument>(expression))
             {
-                var query = visitor.Query(expression);
+                var query = visitor.Query();
                 return (int)client.Count<TDocument>(c => c.Index(indexname).Query(q => query)).Count;
             }
         }
@@ -263,7 +265,7 @@ namespace Simple.Elasticsearch
         /// <typeparam name="TDocument"></typeparam>
         /// <param name="client"></param>
         /// <returns></returns>
-        public static int Count<TDocument, TValue>(this IElasticClient client, TValue value, Expression<Func<TDocument, TValue>> field) where TDocument : class, IDocument
+        public static int Count<TDocument, TValue>(this IElasticClient client, TValue value, Expression<Func<TDocument, TValue>> field) where TDocument : class
         {
             if (client == null) throw new NullReferenceException();
             string indexname = typeof(TDocument).GetIndexName();
@@ -276,13 +278,13 @@ namespace Simple.Elasticsearch
         /// <param name="client"></param>
         /// <param name="queries"></param>
         /// <returns></returns>
-        public static int Count<TDocument>(this IElasticClient client, params Func<QueryContainerDescriptor<TDocument>, QueryContainer>[] queries) where TDocument : class, IDocument
+        public static int Count<TDocument>(this IElasticClient client, params Func<QueryContainerDescriptor<TDocument>, QueryContainer>[] queries) where TDocument : class
         {
             if (client == null) throw new NullReferenceException();
             string indexname = typeof(TDocument).GetIndexName();
             return (int)client.Count<TDocument>(c => c.Index(indexname).Query(q => q.Bool(b => b.Must(queries)))).Count;
         }
-        public static int Count<TDocument>(this IElasticClient client, QueryContainer query) where TDocument : class, IDocument
+        public static int Count<TDocument>(this IElasticClient client, QueryContainer query) where TDocument : class
         {
             if (client == null) throw new NullReferenceException();
             string indexname = typeof(TDocument).GetIndexName();
@@ -295,7 +297,7 @@ namespace Simple.Elasticsearch
         /// <param name="client"></param>
         /// <param name="search"></param>
         /// <returns></returns>
-        public static int Count<TDocument>(this IElasticClient client, Func<SearchDescriptor<TDocument>, ISearchRequest> search) where TDocument : class, IDocument
+        public static int Count<TDocument>(this IElasticClient client, Func<SearchDescriptor<TDocument>, ISearchRequest> search) where TDocument : class
         {
             if (client == null) throw new NullReferenceException();
             if (search == null) throw new NullReferenceException();
@@ -328,21 +330,26 @@ namespace Simple.Elasticsearch
         /// <param name="client"></param>
         /// <param name="expression"></param>
         /// <returns></returns>
-        public static TValue Min<TDocument, TValue>(this IElasticClient client, Expression<Func<TDocument, TValue>> expression) where TDocument : class, IDocument
+        public static TValue Min<TDocument, TValue>(this IElasticClient client, Expression<Func<TDocument, TValue>> expression) where TDocument : class
         {
             string field = expression.GetFieldName();
             return client.Min<TDocument, TValue>(new QueryContainer(), new AggregationContainerDescriptor<TDocument>().Min(field, t => t.Field(expression)));
         }
-        public static TValue Min<TDocument, TValue>(this IElasticClient client, Expression<Func<TDocument, TValue>> keySelect, Expression<Func<TDocument, bool>> expression) where TDocument : class, IDocument
+        public static TValue Min<TDocument, TValue>(this IElasticClient client, Expression<Func<TDocument, TValue>> keySelect, Expression<Func<TDocument, bool>> expression) where TDocument : class
         {
             string field = keySelect.GetFieldName();
-            using (IElasticSearchExpressionVisitor<TDocument> visitor = new ElasticSearchExpressionVisitor<TDocument>())
+            using (IElasticSearchExpressionVisitor<TDocument> visitor = new ElasticSearchExpressionVisitor<TDocument>(expression))
             {
-                var query = visitor.Query(expression);
+                var query = visitor.Query();
                 return client.Min<TDocument, TValue>(query, new AggregationContainerDescriptor<TDocument>().Min(field, t => t.Field(expression)));
             }
         }
-        public static TValue Min<TDocument, TValue>(this IElasticClient client, QueryContainer query, AggregationContainerDescriptor<TDocument> aggregation) where TDocument : class, IDocument
+        public static TValue Min<TDocument, TValue>(this IElasticClient client, QueryContainer query, Expression<Func<TDocument, TValue>> expression) where TDocument : class
+        {
+            string field = expression.GetFieldName();
+            return client.Min<TDocument, TValue>(query, new AggregationContainerDescriptor<TDocument>().Min(field, t => t.Field(expression)));
+        }
+        public static TValue Min<TDocument, TValue>(this IElasticClient client, QueryContainer query, AggregationContainerDescriptor<TDocument> aggregation) where TDocument : class
         {
             if (client == null) throw new NullReferenceException();
             string indexname = typeof(TDocument).GetIndexName();
@@ -364,29 +371,27 @@ namespace Simple.Elasticsearch
         /// <param name="expression"></param>
         /// <returns></returns>
         /// <exception cref="NullReferenceException"></exception>
-        public static TValue Max<TDocument, TValue>(this IElasticClient client, Expression<Func<TDocument, TValue>> expression) where TDocument : class, IDocument
+        public static TValue Max<TDocument, TValue>(this IElasticClient client, Expression<Func<TDocument, TValue>> expression) where TDocument : class
         {
             if (client == null) throw new NullReferenceException();
             string field = expression.GetFieldName();
             return client.Max<TDocument, TValue>(new QueryContainer(), new AggregationContainerDescriptor<TDocument>().Max(field, t => t.Field(expression)));
         }
-        public static TValue Max<TDocument, TValue>(this IElasticClient client, Expression<Func<TDocument, TValue>> keySelect, Expression<Func<TDocument, bool>> expression) where TDocument : class, IDocument
+        public static TValue Max<TDocument, TValue>(this IElasticClient client, Expression<Func<TDocument, TValue>> keySelect, Expression<Func<TDocument, bool>> expression) where TDocument : class
         {
             string field = keySelect.GetFieldName();
-            using (IElasticSearchExpressionVisitor<TDocument> visitor = new ElasticSearchExpressionVisitor<TDocument>())
+            using (IElasticSearchExpressionVisitor<TDocument> visitor = new ElasticSearchExpressionVisitor<TDocument>(expression))
             {
-                var query = visitor.Query(expression);
+                var query = visitor.Query();
                 return client.Max<TDocument, TValue>(query, new AggregationContainerDescriptor<TDocument>().Max(field, t => t.Field(expression)));
             }
         }
-        /// <summary>
-        /// 获取最大值
-        /// </summary>
-        /// <typeparam name="TDocument"></typeparam>
-        /// <param name="client"></param>
-        /// <param name="query"></param>
-        /// <returns></returns>
-        public static TValue Max<TDocument, TValue>(this IElasticClient client, QueryContainer query, AggregationContainerDescriptor<TDocument> aggregation) where TDocument : class, IDocument
+        public static TValue Max<TDocument, TValue>(this IElasticClient client, QueryContainer query, Expression<Func<TDocument, TValue>> expression) where TDocument : class
+        {
+            string field = expression.GetFieldName();
+            return client.Max<TDocument, TValue>(query, new AggregationContainerDescriptor<TDocument>().Max(field, t => t.Field(expression)));
+        }
+        public static TValue Max<TDocument, TValue>(this IElasticClient client, QueryContainer query, AggregationContainerDescriptor<TDocument> aggregation) where TDocument : class
         {
             if (client == null) throw new NullReferenceException();
             string indexname = typeof(TDocument).GetIndexName();
@@ -407,22 +412,27 @@ namespace Simple.Elasticsearch
         /// <param name="expression"></param>
         /// <returns></returns>
         /// <exception cref="NullReferenceException"></exception>
-        public static TValue Average<TDocument, TValue>(this IElasticClient client, Expression<Func<TDocument, TValue>> expression) where TDocument : class, IDocument
+        public static TValue Average<TDocument, TValue>(this IElasticClient client, Expression<Func<TDocument, TValue>> expression) where TDocument : class
         {
             if (client == null) throw new NullReferenceException();
             string field = expression.GetFieldName();
             return client.Average<TDocument, TValue>(new QueryContainer(), new AggregationContainerDescriptor<TDocument>().Average(field, t => t.Field(expression)));
         }
-        public static TValue Average<TDocument, TValue>(this IElasticClient client, Expression<Func<TDocument, TValue>> keySelect, Expression<Func<TDocument, bool>> expression) where TDocument : class, IDocument
+        public static TValue Average<TDocument, TValue>(this IElasticClient client, Expression<Func<TDocument, TValue>> keySelect, Expression<Func<TDocument, bool>> expression) where TDocument : class
         {
             string field = keySelect.GetFieldName();
-            using (IElasticSearchExpressionVisitor<TDocument> visitor = new ElasticSearchExpressionVisitor<TDocument>())
+            using (IElasticSearchExpressionVisitor<TDocument> visitor = new ElasticSearchExpressionVisitor<TDocument>(expression))
             {
-                var query = visitor.Query(expression);
+                var query = visitor.Query();
                 return client.Average<TDocument, TValue>(query, new AggregationContainerDescriptor<TDocument>().Average(field, t => t.Field(expression)));
             }
         }
-        public static TValue Average<TDocument, TValue>(this IElasticClient client, QueryContainer query, AggregationContainerDescriptor<TDocument> aggregation) where TDocument : class, IDocument
+        public static TValue Average<TDocument, TValue>(this IElasticClient client, QueryContainer query, Expression<Func<TDocument, TValue>> expression) where TDocument : class
+        {
+            string field = expression.GetFieldName();
+            return client.Average<TDocument, TValue>(query, new AggregationContainerDescriptor<TDocument>().Average(field, t => t.Field(expression)));
+        }
+        public static TValue Average<TDocument, TValue>(this IElasticClient client, QueryContainer query, AggregationContainerDescriptor<TDocument> aggregation) where TDocument : class
         {
             if (client == null) throw new NullReferenceException();
             string indexname = typeof(TDocument).GetIndexName();
@@ -436,22 +446,22 @@ namespace Simple.Elasticsearch
             return value.Value.Value.ToValue<TValue>();
         }
 
-      
+
         /// <summary>
         /// 查询表是否存在
         /// </summary>
         /// <typeparam name="TDocument"></typeparam>
         /// <param name="queries"></param>
         /// <returns></returns>
-        public static bool Any<TDocument>(this IElasticClient client, params Func<QueryContainerDescriptor<TDocument>, QueryContainer>[] queries) where TDocument : class, IDocument
+        public static bool Any<TDocument>(this IElasticClient client, params Func<QueryContainerDescriptor<TDocument>, QueryContainer>[] queries) where TDocument : class
         {
             return client.Count(queries) > 0;
         }
-        public static bool Any<TDocument>(this IElasticClient client, Expression<Func<TDocument, bool>> expression) where TDocument : class, IDocument
+        public static bool Any<TDocument>(this IElasticClient client, Expression<Func<TDocument, bool>> expression) where TDocument : class
         {
             return client.Count(expression) > 0;
         }
-        public static bool Any<TDocument>(this IElasticClient client, QueryContainer query) where TDocument : class, IDocument
+        public static bool Any<TDocument>(this IElasticClient client, QueryContainer query) where TDocument : class
         {
             return client.Count<TDocument>(query) > 0;
         }
@@ -462,7 +472,7 @@ namespace Simple.Elasticsearch
         /// <param name="client"></param>
         /// <param name="search"></param>
         /// <returns></returns>
-        public static bool Any<TDocument>(this IElasticClient client, Func<SearchDescriptor<TDocument>, ISearchRequest> search) where TDocument : class, IDocument
+        public static bool Any<TDocument>(this IElasticClient client, Func<SearchDescriptor<TDocument>, ISearchRequest> search) where TDocument : class
         {
             return client.Count(search) > 0;
         }
@@ -475,7 +485,7 @@ namespace Simple.Elasticsearch
         /// <param name="client"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static bool Any<TDocument, TValue>(this IElasticClient client, TValue value, Expression<Func<TDocument, TValue>> field) where TDocument : class, IDocument
+        public static bool Any<TDocument, TValue>(this IElasticClient client, TValue value, Expression<Func<TDocument, TValue>> field) where TDocument : class
         {
             return client.Count(value, field) > 0;
         }
@@ -486,24 +496,24 @@ namespace Simple.Elasticsearch
         /// <typeparam name="TDocument"></typeparam>
         /// <param name="client"></param>
         /// <returns>没有则为null</returns>
-        public static TDocument? FirstOrDefault<TDocument>(this IElasticClient client, params Func<QueryContainerDescriptor<TDocument>, QueryContainer>[] queries) where TDocument : class, IDocument
+        public static TDocument? FirstOrDefault<TDocument>(this IElasticClient client, params Func<QueryContainerDescriptor<TDocument>, QueryContainer>[] queries) where TDocument : class
         {
             if (client == null) throw new NullReferenceException();
             string indexname = typeof(TDocument).GetIndexName();
             return client.Search<TDocument>(s => s.Index(indexname).Query(q => q.Bool(b => b.Must(queries))).Size(1)).Documents?.FirstOrDefault();
         }
-        public static TDocument? FirstOrDefault<TDocument>(this IElasticClient client, QueryContainer query) where TDocument : class, IDocument
+        public static TDocument? FirstOrDefault<TDocument>(this IElasticClient client, QueryContainer query) where TDocument : class
         {
             if (client == null) throw new NullReferenceException();
             string indexname = typeof(TDocument).GetIndexName();
             return client.Search<TDocument>(s => s.Index(indexname).Query(q => query).Size(1)).Documents?.FirstOrDefault();
         }
-        public static TDocument? FirstOrDefault<TDocument>(this IElasticClient client, Expression<Func<TDocument, bool>> expression) where TDocument : class, IDocument
+        public static TDocument? FirstOrDefault<TDocument>(this IElasticClient client, Expression<Func<TDocument, bool>> expression) where TDocument : class
         {
             if (client == null) throw new NullReferenceException();
-            using (IElasticSearchExpressionVisitor<TDocument> visitor = new ElasticSearchExpressionVisitor<TDocument>())
+            using (IElasticSearchExpressionVisitor<TDocument> visitor = new ElasticSearchExpressionVisitor<TDocument>(expression))
             {
-                var query = visitor.Query(expression);
+                var query = visitor.Query();
                 return client.FirstOrDefault<TDocument>(query);
             }
         }
@@ -540,15 +550,15 @@ namespace Simple.Elasticsearch
             return client.Scroll(searchResponse, size, scrollTime);
         }
 
-        public static IEnumerable<TDocument> GetAll<TDocument>(this IElasticClient client, Expression<Func<TDocument>> expression) where TDocument : class, IDocument
+        public static IEnumerable<TDocument> GetAll<TDocument>(this IElasticClient client, Expression<Func<TDocument>> expression) where TDocument : class
         {
-            using (IElasticSearchExpressionVisitor<TDocument> visitor = new ElasticSearchExpressionVisitor<TDocument>())
+            using (IElasticSearchExpressionVisitor<TDocument> visitor = new ElasticSearchExpressionVisitor<TDocument>(expression))
             {
-                var query = visitor.Query(expression);
+                var query = visitor.Query();
                 return client.GetAll<TDocument>(query);
             }
         }
-        public static IEnumerable<TDocument> GetAll<TDocument>(this IElasticClient client, QueryContainer query) where TDocument : class, IDocument
+        public static IEnumerable<TDocument> GetAll<TDocument>(this IElasticClient client, QueryContainer query) where TDocument : class
         {
             var scrollTime = new Time(TimeSpan.FromSeconds(30));
             string indexname = typeof(TDocument).GetIndexName();
@@ -556,7 +566,7 @@ namespace Simple.Elasticsearch
             var searchResponse = client.Search<TDocument>(s => s.Index(indexname).Size(size).Scroll(scrollTime).Query(q => query));
             return client.Scroll(searchResponse, size, scrollTime);
         }
-      
+
         /// <summary>
         /// 查询条件（仅拼接查询条件，非真实查询）
         /// </summary>
@@ -631,7 +641,7 @@ namespace Simple.Elasticsearch
         /// <returns></returns>
         public static IElasticSearchQueryable<TDocument> Query<TDocument>(this IElasticClient client) where TDocument : class, IDocument
         {
-            return new ElasticSearchQueryable<TDocument>(client);
+            return new ElasticSearchQueryProvider<TDocument>(client);
         }
         /// <summary>
         /// 查询（真实查询）
@@ -1213,11 +1223,12 @@ namespace Simple.Elasticsearch
                 return search.Invoke(s.Paged(page, limit));
             };
         }
-        public static IEnumerable<TDocument> Paged<TDocument>(this IElasticSearchOrderedQueryable<TDocument> query, int page, int limit, out long total) where TDocument : class, IDocument
+        public static IEnumerable<TDocument> Paged<TDocument>(this IElasticClient client, Type type, QueryContainer query, SortDescriptor<TDocument> sort, int page, int size, out long total) where TDocument : class
         {
             total = 0;
-            string indexname = typeof(TDocument).GetIndexName();
-            var response = query.Client.Search<TDocument>(s => s.Index(indexname).Query(q => query.Query).Sort(s => query.Sort).Paged(page, limit));
+            string indexname = type.GetIndexName();
+            var response = client.Search<TDocument>(s => s.Index(indexname).Query(q => query).Size(size).From((page - 1) * size).Sort(s => sort));
+            if (!response.IsValid) throw new ElasticSearchException(response.DebugInformation);
             total = response.Total;
             return response.Documents;
         }
@@ -1328,68 +1339,118 @@ namespace Simple.Elasticsearch
             }
         }
 
-        public static TDocument GroupBy<TDocument>(this IElasticClient client, QueryContainer query, AggregationContainerDescriptor<TDocument> aggregation) where TDocument : class, IDocument
+        public static IEnumerable<TDocument> GroupBy<TDocument>(this IElasticClient client, Type type, QueryContainer query, AggregationContainerDescriptor<TDocument> aggregation, List<Tuple<string, string, Type>>? select) where TDocument : class
         {
-            var type = typeof(TDocument);
-            object obj = Activator.CreateInstance(type);
-            string indexname = typeof(TDocument).GetIndexName();
+            string indexname = type.GetIndexName();
             var response = client.Search<TDocument>(s => s.Index(indexname).Size(0).Query(q => query)
-                                    .Aggregations(agga => aggregation));
+                                  .Aggregations(agga => aggregation));
+            if (select == null) yield break;
             if (!response.IsValid)
+                throw new ElasticSearchException(response.DebugInformation);
+            IDictionary<string, IAggregationContainer> _dictionary = ((IAggregationContainer)aggregation).Aggregations;
+            KeyValuePair<string, IAggregationContainer> _aggs = _dictionary.FirstOrDefault();
+            string[] array = _aggs.Key.Split("_");
+            List<object> args;
+            if (select.Any(c => c.Item2 == "DateTime"))
             {
-                throw response.OriginalException;
-            }
-            IAggregationContainer _aggs = aggregation;
-            IDictionary<string, IAggregationContainer> _dictionary = _aggs.Aggregations;
-            string _script = _dictionary.Keys.FirstOrDefault();
-            TermsAggregate<string> _bucket = response.Aggregations.Terms(_script);
-            if (_bucket == null)
-            {
-                _dictionary.ConvertAggregationValue(response.Aggregations, obj, type);
+                MultiBucketAggregate<DateHistogramBucket> _bucket = response.Aggregations.DateHistogram(_aggs.Key);
+                foreach (DateHistogramBucket bucket in _bucket.Buckets)
+                {
+                    if (_aggs.Value.Aggregations.Any())
+                    {
+                        var _terms_aggs = _aggs.Value.Aggregations.FirstOrDefault();
+                        foreach (var item in bucket.Terms(_terms_aggs.Key).Buckets)
+                        {
+                            args = new List<object>();
+                            args.ConvertAggregationValue(item, select, array, bucket);
+                            yield return (TDocument)Activator.CreateInstance(typeof(TDocument), args.ToArray());
+                        }
+                    }
+                    else
+                    {
+                        args = new List<object>();
+                        args.ConvertAggregationValue(bucket, select, array);
+                        yield return (TDocument)Activator.CreateInstance(typeof(TDocument), args.ToArray());
+                    }
+                }
             }
             else
             {
-                IDictionary<string, IAggregationContainer> _child = _dictionary.Values.FirstOrDefault().Aggregations;
-                string[] fields = _script.Split("_");
-                foreach (var item in _bucket.Buckets)
+                TermsAggregate<string> _bucket = response.Aggregations.Terms(_aggs.Key);
+                if (_bucket == null)
                 {
-                    object[] values = item.Key.Split("-");
-                    for (int i = 0; i < fields.Length; i++)
+                    AggregateDictionary dictionary = response.Aggregations;
+                    args = new List<object>();
+                    args.ConvertAggregationValue(dictionary, select);
+                    yield return (TDocument)Activator.CreateInstance(typeof(TDocument), args.ToArray());
+                }
+                else
+                {
+                    foreach (KeyedBucket<string> item in _bucket.Buckets)
                     {
-                        PropertyInfo property = type.GetProperty(fields[i]);
-                        property.SetValue(obj, Convert.ChangeType(values[i], property.PropertyType, CultureInfo.InvariantCulture));
+                        args = new List<object>();
+                        args.ConvertAggregationValue(item, select, array);
+                        yield return (TDocument)Activator.CreateInstance(typeof(TDocument), args.ToArray());
                     }
-                    _child.ConvertAggregationValue(item, obj, type);
-                    break;
                 }
             }
-            return (TDocument)obj;
         }
-        private static void ConvertAggregationValue(this IDictionary<string, IAggregationContainer> aggregation, AggregateDictionary bucket, object obj, Type type)
+        /// <summary>
+        /// 聚合数据转Select匿名对象数据
+        /// </summary>
+        /// <param name="args"></param>
+        /// <param name="bucket"></param>
+        /// <param name="cell"></param>
+        /// <exception cref="ElasticSearchException"></exception>
+        private static void ConvertAggregationValue(this List<object> args, AggregateDictionary bucket, List<Tuple<string, string, Type>> select, string[]? script = null, DateHistogramBucket? date_bucket = null)
         {
-            if (obj == null) return;
-            foreach (var item in aggregation)
+            foreach (var item in select)
             {
-                ValueAggregate? value = null;
-                if (item.Value.Sum != null)
+                ValueAggregate value;
+                switch (item.Item2)
                 {
-                    value = bucket.Sum(item.Key);
+                    case "Count":
+                        value = new ValueAggregate
+                        {
+                            Value = bucket.Count
+                        };
+                        break;
+                    case "Sum":
+                        value = bucket.Sum(item.Item1);
+                        break;
+                    case "Max":
+                        value = bucket.Max(item.Item1);
+                        break;
+                    case "Min":
+                        value = bucket.Min(item.Item1);
+                        break;
+                    case "Average":
+                        value = bucket.Average(item.Item1);
+                        break;
+                    case "Key":
+                        KeyedBucket<string> keyBucket = (KeyedBucket<string>)bucket;
+                        string[] keys = keyBucket.Key.Split("-");
+                        int index = Array.IndexOf(script, item.Item1);
+                        value = new ValueAggregate
+                        {
+                            Value = index == -1 ? double.NaN : keys[index].ToValue<double>()
+                        };
+                        continue;
+                    case "DateTime":
+                        if (date_bucket == null)
+                        {
+                            DateHistogramBucket date_histogram = (DateHistogramBucket)bucket;
+                            args.Add(date_histogram.KeyAsString.ToValue<DateTime>());
+                        }
+                        else
+                        {
+                            args.Add(date_bucket.KeyAsString.ToValue<DateTime>());
+                        }
+                        continue;
+                    default:
+                        throw new ElasticSearchException($"Not implemented {item.Item2}");
                 }
-                else if (item.Value.Max != null)
-                {
-                    value = bucket.Max(item.Key);
-                }
-                else if (item.Value.Min != null)
-                {
-                    value = bucket.Min(item.Key);
-                }
-                else if (item.Value.Average != null)
-                {
-                    value = bucket.Average(item.Key);
-                }
-                if (value == null || value.Value == null) continue;
-                PropertyInfo property = type.GetProperty(item.Key);
-                property.SetValue(obj, Convert.ChangeType(value.Value, property.PropertyType, CultureInfo.InvariantCulture));
+                args.Add(value.Value.GetValue(item.Item3));
             }
         }
         /// <summary>
@@ -1831,8 +1892,8 @@ namespace Simple.Elasticsearch
         /// <returns></returns>
         public static string GetIndexName(this Type type)
         {
-            ElasticSearchIndexAttribute elasticsearch = type.GetAttribute<ElasticSearchIndexAttribute>();
-            if (elasticsearch == null) throw new Exception("not index name");
+            ElasticSearchIndexAttribute? elasticsearch = type.GetAttribute<ElasticSearchIndexAttribute>();
+            if (elasticsearch == null) throw new ElasticSearchException(nameof(ElasticSearchIndexAttribute));
             return elasticsearch.IndexName;
         }
 

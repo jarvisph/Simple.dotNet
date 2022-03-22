@@ -15,7 +15,7 @@ namespace Simple.dotNet.Core.Test.Context
         {
             using (TestDbContext db = new TestDbContext())
             {
-                var user = db.User.Select(c => new { c.ID }).FirstOrDefault();
+                var user = db.User.GroupBy(c => new { c.Money }).Select(c => new { Money = c.Sum(t => t.Money) });
             }
         }
     }

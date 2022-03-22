@@ -16,6 +16,16 @@ namespace Simple.dotNet.Core.Expressions
         {
             return node;
         }
+        protected virtual Expression VisitLambda(LambdaExpression node)
+        {
+            switch (node.Body.NodeType)
+            {
+                case ExpressionType.MemberAccess:
+                    this.VisitMemberAccess((MemberExpression)node.Body);
+                    break;
+            }
+            return node;
+        }
 
 
     }

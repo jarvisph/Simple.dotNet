@@ -5,7 +5,8 @@ using System;
 using Simple.ElasticSearch.Test.Model;
 using System.Linq;
 using Elasticsearch.Net;
-using System.Collections.Generic;
+using Simple.Elasticsearch.Linq;
+using Simple.dotNet.Core.Extensions;
 
 namespace Simple.ElasticSearch.Test
 {
@@ -21,7 +22,7 @@ namespace Simple.ElasticSearch.Test
             var settings = new ConnectionSettings(staticConnectionPool).DisableDirectStreaming().DefaultFieldNameInferrer(name => name);
             IElasticClient client = new ElasticClient(settings);
 
-            string action = "Selete";
+            string action = "Select";
             switch (action)
             {
                 case "Queryable":
@@ -36,7 +37,7 @@ namespace Simple.ElasticSearch.Test
                 case "Update":
                     this.Update(client);
                     break;
-                case "Selete":
+                case "Select":
                     this.Select(client);
                     break;
                 default:
@@ -70,21 +71,39 @@ namespace Simple.ElasticSearch.Test
             decimal min = query.Min(t => t.Money);
             //平均值
             decimal average = query.Average(t => t.Money);
-            //分组聚合
-            var group = query.GroupBy(c => true).Select(c => new UserESModel
-            {
-                Money = c.Sum(t => t.Money),
-            }).FirstOrDefault();
 
-            //条件聚合
-            group = query.GroupBy(c => new { c.SiteID, c.ID }).Select(c => new UserESModel
             {
-                SiteID = c.Key.SiteID,
-                Money = c.Sum(t => t.Money),
-            }).FirstOrDefault();
+                //无条件聚合
+                var group = query.GroupBy(c => true).Select(c => new { Count = c.Count(), Money = c.Sum(t => t.Money) });
 
-            //获取所有数据
-            var list = query.ToList();
+                var group_list = group.ToList();
+
+                var group_firt = group.FirstOrDefault();
+            }
+
+            {
+                //条件聚合
+                var group = query.GroupBy(c => new { c.SiteID, c.ID }).Select(c => new { c.Key.SiteID, Money = c.Sum(t => t.Money), });
+
+                var group_list = group.ToList();
+
+                var group_firt = group.FirstOrDefault();
+            }
+
+            {
+                //日期+条件聚合
+                var group = query.GroupBy(c => new { c.CreateAt.Month, c.SiteID }).Select(c => new
+                {
+                    CreateAt = c.Key.Month.ToDateTime(),
+                    c.Key.SiteID,
+                    Money = c.Sum(t => t.Money)
+                });
+
+                var group_list = group.ToList();
+
+                var group_firt = group.FirstOrDefault();
+
+            }
 
             //分页获取数据 倒序
             var desc = query.OrderByDescending(c => c.CreateAt).Paged(1, 20, out long total);
