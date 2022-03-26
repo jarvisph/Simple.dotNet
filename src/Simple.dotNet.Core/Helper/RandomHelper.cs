@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Drawing;
-
+using System.Text;
 
 namespace Simple.dotNet.Core.Helper
 {
@@ -37,6 +37,22 @@ namespace Simple.dotNet.Core.Helper
             Random random = new Random();
             string[] color = beautifulColors[random.Next(beautifulColors.Length)].Split(',');
             return Color.FromArgb(int.Parse(color[0]), int.Parse(color[1]), int.Parse(color[2]));
+        }
+        /// <summary>
+        /// 随机获取字母
+        /// </summary>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public static string RandomLetter(int count = 16)
+        {
+            string[] data = new string[] { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" };
+            Random random = new Random();
+            StringBuilder sb = new StringBuilder(count);
+            for (int i = 0; i < count; i++)
+            {
+                sb.Append(data[random.Next(25)]);
+            }
+            return sb.ToString();
         }
     }
 }
