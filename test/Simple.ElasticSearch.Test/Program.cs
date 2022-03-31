@@ -52,22 +52,32 @@ namespace Simple.ElasticSearch.Test
         {
             int userId = 10001;
             int[] sites = new[] { 1000, 1001 };
-            //query仅拼接查询语句，没有进行真实查询
-            var query = client.Query<UserESModel>()
-                                                  .Where(c => c.ID == userId)
-                                                  .Where(c => c.Money != 0)
-                                                  .Where(c => c.SiteID > 0)
-                                                  .Where(DateTime.Now, c => c.CreateAt < DateTime.Now)
-                                                  .Where(c => c.UserName.Contains("ceshi"))
-                                                  .Where(c => !c.IsTest)
-                                                  .Where(sites, c => !sites.Contains(c.SiteID))
-                                                  .Where(null, t => t.UserName == null);
+            //Nest 写法
+            var response = client.Search<UserESModel>(c => c.Index("user").Query(q => q.Bool(b => b.Must(m => m.Term(t => t.Field(fd => fd.ID).Value(userId)),
+                                                                                            m => m.Term(t => t.Field(fd => fd.IsTest).Value(false)),
+                                                                                            m => m.Term(t => t.Field(fd => fd.UserName).Value(null)),
+                                                                                            m => m.DateRange(d => d.Field(fd => fd.CreateAt).LessThan(DateTime.Now)),
+                                                                                            m => m.Range(d => d.Field(fd => fd.SiteID).GreaterThan(0)))
+                                                                                     .MustNot(n => n.Term(t => t.Field(fd => fd.Money).Value(0)),
+                                                                                              n => n.Terms(t => t.Field(fd => fd.SiteID).Terms(sites))))));
+            //linq to elasticsearch写法  query仅拼接查询语句，没有进行真实查询
+            var query = client.Query<UserESModel>().Where(c => c.ID == userId)
+                                                   .Where(c => c.Money != 0)
+                                                   .Where(c => c.SiteID > 0)
+                                                   .Where(DateTime.Now, c => c.CreateAt < DateTime.Now)
+                                                   .Where(c => c.UserName.Contains("ceshi"))
+                                                   .Where(c => !c.IsTest)
+                                                   .Where(sites, c => !sites.Contains(c.SiteID))
+                                                   .Where(null, t => t.UserName == null);
+
+            var user = client.FirstOrDefault<UserESModel>(t => t.UserName.Contains("ceshi") && t.ID == userId && t.Money != 0 && t.CreateAt < DateTime.Now);
+
             //是否存在
             bool exists = query.Any();
             //总数
             int count = query.Count();
             //单条数据
-            var user = query.FirstOrDefault();
+            user = query.FirstOrDefault();
             //最大值
             decimal max = query.Max(t => t.Money);
             //最小值

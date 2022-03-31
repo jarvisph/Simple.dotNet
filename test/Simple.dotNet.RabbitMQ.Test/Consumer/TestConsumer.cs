@@ -16,10 +16,9 @@ namespace Simple.dotNet.RabbitMQ.Test.Consumer
         public override string Exchange { get; set; } = ExchangeName.Test_Exchange;
         public override string Type { get; set; } = ExchangeType.Direct;
 
-        public override bool Invoke(TestQueue message, object sender, BasicDeliverEventArgs args)
+        public override void Invoke(TestQueue message, object sender, BasicDeliverEventArgs args)
         {
             Console.WriteLine(JsonConvert.SerializeObject(message));
-            return true;
         }
     }
 }

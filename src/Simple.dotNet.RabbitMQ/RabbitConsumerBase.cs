@@ -1,4 +1,5 @@
-﻿using RabbitMQ.Client.Events;
+﻿using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
 
 
 namespace Simple.dotNet.RabbitMQ
@@ -8,15 +9,31 @@ namespace Simple.dotNet.RabbitMQ
     /// </summary>
     public abstract class RabbitConsumerBase<TMessageQueue> where TMessageQueue : IMessageQueue
     {
+        /// <summary>
+        /// 队列名称
+        /// </summary>
         public abstract string Queue { get; set; }
+        /// <summary>
+        /// 交换机名称
+        /// </summary>
         public abstract string Exchange { get; set; }
-        public abstract string Type { get; set; }
-
+        /// <summary>
+        /// 默认启动
+        /// </summary>
+        public virtual bool Enable { get; set; } = true;
+        /// <summary>
+        /// exchange type ExchangeType
+        /// </summary>
+        public virtual string Type { get; set; } = ExchangeType.Direct;
+        /// <summary>
+        /// 消息数量
+        /// </summary>
+        public virtual int Unacked { get; set; } = 8;
         /// <summary>
         /// 执行方法
         /// </summary>
         /// <returns></returns>
-        public abstract bool Invoke(TMessageQueue message, object sender, BasicDeliverEventArgs args);
+        public abstract void Invoke(TMessageQueue message, object sender, BasicDeliverEventArgs args);
 
         /// <summary>
         /// 错误异常
@@ -37,7 +54,7 @@ namespace Simple.dotNet.RabbitMQ
     {
         public abstract string Queue { get; set; }
         public abstract string Exchange { get; set; }
-        public abstract string Type { get; set; }
+        public virtual string Type { get; set; } = ExchangeType.Direct;
 
         public abstract bool Invoke(string message, object sender, BasicDeliverEventArgs args);
         public virtual void Faild(string error, object sender, BasicDeliverEventArgs ea)

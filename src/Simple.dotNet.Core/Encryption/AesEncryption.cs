@@ -9,7 +9,7 @@ namespace Simple.dotNet.Core.Encryption
     /// <summary>
     /// AES 加密 解密
     /// </summary>
-    public class AesEncryption
+    public static class AesEncryption
     {
         /// <summary>
         /// 加密

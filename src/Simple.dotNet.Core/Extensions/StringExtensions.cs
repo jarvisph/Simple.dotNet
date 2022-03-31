@@ -180,9 +180,32 @@ namespace Simple.dotNet.Core.Extensions
             }
             return buff.ToArray();
         }
-        public static string Substring(this string str, char c, int index)
+        /// <summary>
+        /// 替换后面字符串
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="length"></param>
+        /// <param name="symbol"></param>
+        /// <returns></returns>
+        public static string ReplaceLast(this string str, int length, char symbol = '*')
         {
-            return null;
+            if (str.Length < length)
+                return str;
+            return str.Substring(0, length) + new string(symbol, str.Length - length);
+        }
+        /// <summary>
+        /// 替换中间字符串
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="before"></param>
+        /// <param name="after"></param>
+        /// <param name="symbol"></param>
+        /// <returns></returns>
+        public static string ReplaceCenter(this string str, int before, int after, char symbol = '*')
+        {
+            if (str.Length < before || before + after < str.Length)
+                return str;
+            return str.Substring(0, before) + new string(symbol, str.Length - before + after) + str.Substring(str.Length + after);
         }
         /// <summary>
         ///从给定字符串的结尾移除给定后缀的第一个匹配项

@@ -20,22 +20,11 @@ namespace Simple.dotNet.RabbitMQ
         /// 注册rabbit生产
         /// </summary>
         /// <param name="services"></param>
-        /// <returns></returns>
-        public static IServiceCollection AddRabbitProduce(this IServiceCollection services)
-        {
-            services.AddSingleton<IRabbitProducer, RabbitProducer>();
-            return services;
-        }
-        /// <summary>
-        /// 注册rabbit生产
-        /// </summary>
-        /// <param name="services"></param>
         /// <param name="connectionString"></param>
         /// <returns></returns>
         public static IServiceCollection AddRabbitProduce(this IServiceCollection services, string connectionString)
         {
             services.AddRabbitConnection(connectionString);
-            services.AddSingleton<IRabbitProducer, RabbitProducer>();
             return services;
         }
 
@@ -43,7 +32,6 @@ namespace Simple.dotNet.RabbitMQ
         /// 注册rabbit消费
         /// </summary>
         /// <param name="services"></param>
-        /// <param name="connection"></param>
         /// <returns></returns>
         public static IServiceCollection AddRabbitConsumer(this IServiceCollection services)
         {

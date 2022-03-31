@@ -5,13 +5,13 @@ using System.Text;
 namespace Simple.dotNet.RabbitMQ
 {
     /// <summary>
-    /// rabbit 异常处理
+    /// 异步任务ID
     /// </summary>
-    public class RabbitException : Exception
+    public interface IMessageTask
     {
-        public RabbitException(string message) : base()
-        {
-
-        }
+        /// <summary>
+        /// 任务ID
+        /// </summary>
+        Guid TaskID { get; set; }
     }
 }

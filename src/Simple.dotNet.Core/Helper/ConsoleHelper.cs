@@ -33,7 +33,8 @@ namespace Simple.dotNet.Core.Helper
         {
             lock (_lock)
             {
-                Console.WriteLine(context); Console.SetCursorPosition(0, Console.CursorTop - 1);
+                Console.WriteLine(context);
+                Console.SetCursorPosition(0, Console.CursorTop - 1);
             }
 
         }
