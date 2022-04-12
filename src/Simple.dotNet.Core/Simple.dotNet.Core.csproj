@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <PackageId>Simple.dotNet.Core</PackageId>
     <Authors>jarvis</Authors>
     <Product>Simple.dotNet.Core</Product>
@@ -14,7 +14,7 @@
     <PackageProjectUrl></PackageProjectUrl>
     <RepositoryUrl>https://github.com/jarvisph/Simple.dotNet.git</RepositoryUrl>
     <PackageTags>dotnet core;</PackageTags>
-    <Description>添加健康检查功能</Description>
+    <Description>添加扩展方法</Description>
   </PropertyGroup>
 
   <ItemGroup>
