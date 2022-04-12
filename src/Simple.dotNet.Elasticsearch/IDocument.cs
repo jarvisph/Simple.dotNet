@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Simple.Elasticsearch
+namespace Simple.dotNet.Elasticsearch
 {
     /// <summary>
     /// 实体文档约束

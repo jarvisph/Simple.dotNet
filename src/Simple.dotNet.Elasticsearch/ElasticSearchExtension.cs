@@ -1,18 +1,17 @@
 ﻿using Nest;
-using Simple.Elasticsearch.Linq;
+using Simple.dotNet.Elasticsearch.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Dynamic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Simple.dotNet.Core.Extensions;
-using Simple.Elasticsearch.Expressions;
+using Simple.dotNet.Elasticsearch.Expressions;
 
-namespace Simple.Elasticsearch
+namespace Simple.dotNet.Elasticsearch
 {
     public static partial class ElasticSearchExtension
     {
@@ -1359,6 +1358,7 @@ namespace Simple.Elasticsearch
                     if (_aggs.Value.Aggregations.Any())
                     {
                         var _terms_aggs = _aggs.Value.Aggregations.FirstOrDefault();
+                        array = _terms_aggs.Key.Split('_');
                         foreach (var item in bucket.Terms(_terms_aggs.Key).Buckets)
                         {
                             args = new List<object>();
@@ -1406,51 +1406,52 @@ namespace Simple.Elasticsearch
         {
             foreach (var item in select)
             {
-                ValueAggregate value;
+                object? value;
                 switch (item.Item2)
                 {
                     case "Count":
-                        value = new ValueAggregate
+                        if (bucket is KeyedBucket<string>)
                         {
-                            Value = bucket.Count
-                        };
+                            value = ((KeyedBucket<string>)bucket).DocCount;
+                        }
+                        else
+                        {
+                            value = bucket.Count;
+                        }
                         break;
                     case "Sum":
-                        value = bucket.Sum(item.Item1);
+                        value = bucket.Sum(item.Item1).Value ?? 0;
                         break;
                     case "Max":
-                        value = bucket.Max(item.Item1);
+                        value = bucket.Max(item.Item1).Value ?? 0;
                         break;
                     case "Min":
-                        value = bucket.Min(item.Item1);
+                        value = bucket.Min(item.Item1).Value ?? 0;
                         break;
                     case "Average":
-                        value = bucket.Average(item.Item1);
+                        value = bucket.Average(item.Item1).Value ?? 0;
                         break;
                     case "Key":
                         KeyedBucket<string> keyBucket = (KeyedBucket<string>)bucket;
                         string[] keys = keyBucket.Key.Split("-");
                         int index = Array.IndexOf(script, item.Item1);
-                        value = new ValueAggregate
-                        {
-                            Value = index == -1 ? double.NaN : keys[index].ToValue<double>()
-                        };
-                        continue;
+                        value = index == -1 ? null : keys[index];
+                        break;
                     case "DateTime":
                         if (date_bucket == null)
                         {
                             DateHistogramBucket date_histogram = (DateHistogramBucket)bucket;
-                            args.Add(date_histogram.KeyAsString.ToValue<DateTime>());
+                            value = date_histogram.KeyAsString;
                         }
                         else
                         {
-                            args.Add(date_bucket.KeyAsString.ToValue<DateTime>());
+                            value = date_bucket.KeyAsString;
                         }
-                        continue;
+                        break;
                     default:
                         throw new ElasticSearchException($"Not implemented {item.Item2}");
                 }
-                args.Add(value.Value.GetValue(item.Item3));
+                args.Add(value.GetValue(item.Item3));
             }
         }
         /// <summary>

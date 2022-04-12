@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
 
-namespace Simple.Elasticsearch.Expressions
+namespace Simple.dotNet.Elasticsearch.Expressions
 {
     internal interface IElasticSearchExpressionVisitor<TDocument> : IDisposable where TDocument : class
     {

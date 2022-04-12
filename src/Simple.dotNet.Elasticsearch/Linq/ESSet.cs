@@ -6,7 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 
-namespace Simple.Elasticsearch.Linq
+namespace Simple.dotNet.Elasticsearch.Linq
 {
     public abstract class ESSet<TDocument> : IESRepository<TDocument> where TDocument : class, IDocument
     {

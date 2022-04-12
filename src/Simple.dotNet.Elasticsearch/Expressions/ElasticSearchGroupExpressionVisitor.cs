@@ -1,12 +1,13 @@
 ﻿using Nest;
 using Simple.dotNet.Core.Expressions;
+using Simple.dotNet.Core.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 
-namespace Simple.Elasticsearch.Expressions
+namespace Simple.dotNet.Elasticsearch.Expressions
 {
     internal class ElasticSearchGroupExpressionVisitor : ExpressionVisitorBase
     {
@@ -37,7 +38,7 @@ namespace Simple.Elasticsearch.Expressions
             }
             else
             {
-                _field.Push(new Tuple<string, string, DateInterval?>(node.Member.Name, "terms", null));
+                _field.Push(new Tuple<string, string, DateInterval?>(node.Member.HasAttribute<KeywordAttribute>() ? $"{node.Member.Name}.keyword" : node.Member.Name, "terms", null));
             }
             return node;
         }

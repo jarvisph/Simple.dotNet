@@ -1,6 +1,6 @@
-﻿using Simple.Elasticsearch;
-using Simple.Elasticsearch.Linq;
-using Simple.ElasticSearch.Test.Model;
+﻿using Simple.dotNet.Elasticsearch;
+using Simple.dotNet.Elasticsearch.Linq;
+using Simple.dotNet.Elasticsearch.Test.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Simple.Elasticsearch
+namespace Simple.dotNet.Elasticsearch
 {
     /// <summary>
     /// ElasticSearchIndex特性类

@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 
-namespace Simple.Elasticsearch.Linq
+namespace Simple.dotNet.Elasticsearch.Linq
 {
     internal static class CachedReflectionInfo
     {

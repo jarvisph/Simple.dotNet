@@ -2,13 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 
-namespace Simple.Elasticsearch.Expressions
+namespace Simple.dotNet.Elasticsearch.Expressions
 {
     internal class ElasticSearchSelectExpressionVisitor : ExpressionVisitorBase
     {
-        private readonly Queue<MemberExpression> _field = new Queue<MemberExpression>();
+        private readonly Queue<MemberInfo> _field = new Queue<MemberInfo>();
         private readonly Queue<Tuple<string, string, Type>> _select = new Queue<Tuple<string, string, Type>>();
         /// <summary>
         /// 获取Select字段类型属性
@@ -17,6 +18,11 @@ namespace Simple.Elasticsearch.Expressions
         /// <returns>Item1=字段，Item2=Call类型，Item3=字段类型Type</returns>
         public new IEnumerable<Tuple<string, string, Type>> Visit(Expression node)
         {
+            NewExpression expression = (NewExpression)node;
+            foreach (MemberInfo member in expression.Members)
+            {
+                _field.Enqueue(member);
+            }
             base.Visit(node);
             while (_select.Count > 0)
             {
@@ -26,47 +32,27 @@ namespace Simple.Elasticsearch.Expressions
 
         protected override Expression VisitMember(MemberExpression node)
         {
-            _field.Enqueue(node);
+            MemberInfo member = _field.Dequeue();
+            _select.Enqueue(new Tuple<string, string, Type>(member.Name, "Key", node.Type));
             return node;
         }
+
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
-            foreach (Expression expression in node.Arguments)
+            MemberInfo member = _field.Dequeue();
+            switch (node.Method.Name)
             {
-                base.Visit(expression);
+                case "Sum":
+                case "Max":
+                case "Min":
+                case "Average":
+                case "Count":
+                    _select.Enqueue(new Tuple<string, string, Type>(member.Name, node.Method.Name, node.Type));
+                    break;
+                case "ToDateTime":
+                    _select.Enqueue(new Tuple<string, string, Type>(member.Name, "DateTime", typeof(DateTime)));
+                    break;
             }
-            if (_field.Count > 0)
-            {
-                while (_field.Count > 0)
-                {
-                    MemberExpression member = _field.Dequeue();
-                    switch (node.Method.Name)
-                    {
-                        case "Sum":
-                        case "Max":
-                        case "Min":
-                        case "Average":
-                            _select.Enqueue(new Tuple<string, string, Type>(member.Member.Name, node.Method.Name, member.Type));
-                            break;
-                        case "ToDateTime":
-                            _select.Enqueue(new Tuple<string, string, Type>(member.Member.Name, "DateTime", typeof(DateTime)));
-                            break;
-                        default:
-                            _select.Enqueue(new Tuple<string, string, Type>(member.Member.Name, "Key", member.Type));
-                            break;
-                    }
-                }
-            }
-            else
-            {
-                switch (node.Method.Name)
-                {
-                    case "Count":
-                        _select.Enqueue(new Tuple<string, string, Type>(node.Method.Name, node.Method.Name, node.Type));
-                        break;
-                }
-            }
-
             return node;
         }
     }

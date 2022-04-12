@@ -7,7 +7,7 @@ using Simple.dotNet.Core.Extensions;
 using Simple.dotNet.Core.Expressions;
 using System.Reflection;
 
-namespace Simple.Elasticsearch.Expressions
+namespace Simple.dotNet.Elasticsearch.Expressions
 {
     /// <summary>
     /// ES 表达式树解析

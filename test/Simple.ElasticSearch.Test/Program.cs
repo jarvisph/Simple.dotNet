@@ -1,14 +1,14 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Nest;
-using Simple.Elasticsearch;
+using Simple.dotNet.Elasticsearch;
 using System;
-using Simple.ElasticSearch.Test.Model;
+using Simple.dotNet.Elasticsearch.Test.Model;
 using System.Linq;
 using Elasticsearch.Net;
-using Simple.Elasticsearch.Linq;
+using Simple.dotNet.Elasticsearch.Linq;
 using Simple.dotNet.Core.Extensions;
 
-namespace Simple.ElasticSearch.Test
+namespace Simple.dotNet.Elasticsearch.Test
 {
     [TestClass]
     public class Program
@@ -62,12 +62,12 @@ namespace Simple.ElasticSearch.Test
                                                                                               n => n.Terms(t => t.Field(fd => fd.SiteID).Terms(sites))))));
             //linq to elasticsearch写法  query仅拼接查询语句，没有进行真实查询
             var query = client.Query<UserESModel>().Where(c => c.ID == userId)
-                                                   .Where(c => c.Money != 0)
-                                                   .Where(c => c.SiteID > 0)
-                                                   .Where(DateTime.Now, c => c.CreateAt < DateTime.Now)
-                                                   .Where(c => c.UserName.Contains("ceshi"))
-                                                   .Where(c => !c.IsTest)
-                                                   .Where(sites, c => !sites.Contains(c.SiteID))
+                                                   //.Where(c => c.Money != 0)
+                                                   //.Where(c => c.SiteID > 0)
+                                                   //.Where(DateTime.Now, c => c.CreateAt < DateTime.Now)
+                                                   //.Where(c => c.UserName.Contains("ceshi"))
+                                                   //.Where(c => !c.IsTest)
+                                                   //.Where(sites, c => !sites.Contains(c.SiteID))
                                                    .Where(null, t => t.UserName == null);
 
             var user = client.FirstOrDefault<UserESModel>(t => t.UserName.Contains("ceshi") && t.ID == userId && t.Money != 0 && t.CreateAt < DateTime.Now);

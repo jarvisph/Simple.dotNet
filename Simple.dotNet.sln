@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simple.dotNet.Core.Test", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simple.dotNet.Core", "src\Simple.dotNet.Core\Simple.dotNet.Core.csproj", "{8B7C4D75-5469-413E-B324-76854AF83089}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simple.Elasticsearch", "src\Simple.dotNet.Elasticsearch\Simple.Elasticsearch.csproj", "{39DA2D7F-AC26-4F24-A255-3A031F29C9D3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simple.dotNet.Elasticsearch", "src\Simple.dotNet.Elasticsearch\Simple.dotNet.Elasticsearch.csproj", "{39DA2D7F-AC26-4F24-A255-3A031F29C9D3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simple.dotNet.MySql", "src\Simple.dotNet.MySql\Simple.dotNet.MySql.csproj", "{D66B0FD2-9FCD-4DBA-B547-77F1AB0B1BD3}"
 EndProject

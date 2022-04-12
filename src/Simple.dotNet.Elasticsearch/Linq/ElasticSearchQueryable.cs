@@ -6,7 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Simple.Elasticsearch.Linq
+namespace Simple.dotNet.Elasticsearch.Linq
 {
     public static class ElasticSearchQueryable
     {
