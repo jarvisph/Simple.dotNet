@@ -17,8 +17,6 @@ namespace Simple.dotNet.Web.Extensions
             services.AddOptions();
             //单例注入
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            //作用域注入
-            services.AddScoped<ErrorMessageResult>();//错误消息返回
             return services.AddDepency();
         }
     }

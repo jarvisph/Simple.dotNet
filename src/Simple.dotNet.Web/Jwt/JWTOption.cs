@@ -3,7 +3,7 @@ using System;
 
 namespace Simple.dotNet.Web.Jwt
 {
-    public struct JWTOption
+    public class JWTOption
     {
         /// <summary>
         /// 
@@ -11,35 +11,33 @@ namespace Simple.dotNet.Web.Jwt
         /// <param name="audience">订阅者</param>
         /// <param name="issuer">发起人</param>
         /// <param name="expire">过期时间 单位 小时</param>
-        public JWTOption(string audience, string issuer, int expire)
+        public JWTOption(string audience, string issuer, string Secret, TimeSpan expire)
         {
             this.Audience = audience;
             this.Issuer = issuer;
+            this.Secret = Secret;
             this.Expire = expire;
-            this.Credentials = null;
-        }
-        public JWTOption(int time)
-        {
-            this.Audience = "net core";
-            this.Issuer = "net core";
-            this.Expire = time;
-            this.Credentials = null;
+            this.TokenName = "Token";
         }
         /// <summary>
         ///  订阅者
         /// </summary>
-        public string Audience;
+        public string Audience { get; set; }
         /// <summary>
-        /// 签名证书
+        /// token名称
         /// </summary>
-        public SigningCredentials Credentials;
+        public string TokenName { get; set; }
         /// <summary>
         /// 发起人
         /// </summary>
-        public string Issuer;
+        public string Issuer { get; set; }
         /// <summary>
-        /// 过期时间 单位（小时）
+        /// 签名密钥
         /// </summary>
-        public int Expire;
+        public string Secret { get; set; }
+        /// <summary>
+        /// 过期时间
+        /// </summary>
+        public TimeSpan Expire;
     }
 }

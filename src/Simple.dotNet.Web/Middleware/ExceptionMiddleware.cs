@@ -52,23 +52,20 @@ namespace Simple.dotNet.Web.Middleware
         /// </summary>
         /// <param name="context"></param>
         /// <param name="exception"></param>
-        /// <param name="code">错误码</param>
         /// <returns></returns>
         protected virtual Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             context.Response.ContentType = ContentType.JSON.GetDescription();
             context.Response.StatusCode = 200;
+            Console.WriteLine(exception);
             if (exception is MessageException)
             {
                 return context.Response.WriteAsync(new Result(false, exception.Message).ToString());
             }
             else if (exception is AuthorizationException)
             {
-                return context.Response.WriteAsync(new Result(false, "未授权", new
-                {
-                    Type = "Authorization",
-                    exception.Message
-                }).ToString());
+                context.Response.StatusCode = 403;
+                return Task.CompletedTask;
             }
             else//错误异常
             {
@@ -112,11 +109,7 @@ namespace Simple.dotNet.Web.Middleware
                 }
                 else
                 {
-                    return context.Response.WriteAsync(new Result(false, "错误异常", new
-                    {
-                        Type = "Exception",
-                        exception.Message
-                    }).ToString());
+                    return context.Response.WriteAsync(new Result(false, "Exception").ToString());
                 }
             }
         }

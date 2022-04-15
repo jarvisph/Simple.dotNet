@@ -1,13 +1,11 @@
 ﻿using Simple.dotNet.Core.Dapper;
 using Simple.dotNet.Core.Dependency;
 using System.Data;
-using Simple.dotNet.Core.Extensions;
-using Microsoft.AspNetCore.Http;
-using Simple.dotNet.Core.Domain.Dto;
 using Simple.dotNet.Core.Data.Repository;
 using Simple.dotNet.Core.Data.Schema;
 using System.Linq;
 using Simple.dotNet.Core.Data;
+using Simple.dotNet.Core.Logger;
 
 namespace Simple.dotNet.Core.Domain
 {
@@ -16,36 +14,10 @@ namespace Simple.dotNet.Core.Domain
     /// </summary>
     public abstract class AppServiceBase
     {
-        /// <summary>
-        /// 读写仓储
-        /// </summary>
-        protected IWriteRepository WriteRepository
-        {
-            get
-            {
-                return IocCollection.Resolve<IWriteRepository>();
-            }
-        }
-        /// <summary>
-        /// 只读仓储
-        /// </summary>
-        protected IReadRepository ReadRepository
-        {
-            get
-            {
-                return IocCollection.Resolve<IReadRepository>();
-            }
-        }
-        /// <summary>
-        /// http上下文（为web程序为null）
-        /// </summary>
-        protected HttpContext HttpContext
-        {
-            get
-            {
-                return Http.HttpContextAccessor.HttpContext;
-            }
-        }
+        protected IWriteRepository WriteRepository { get; }
+        protected IReadRepository ReadRepository { get; }
+        protected ILogger Logger { get; }
+
         /// <summary>
         /// 数据库连接对象
         /// </summary>
@@ -63,10 +35,16 @@ namespace Simple.dotNet.Core.Domain
         {
 
         }
-        public AppServiceBase(string connectionString, DatabaseType type)
+        public AppServiceBase(string connectionString, DatabaseType type) : this()
         {
             this._connectionString = connectionString;
             this._type = type;
+        }
+        public AppServiceBase()
+        {
+            this.Logger = IocCollection.Resolve<ILogger>() ?? new DefaultLogger();
+            this.WriteRepository = IocCollection.Resolve<IWriteRepository>();
+            this.ReadRepository = IocCollection.Resolve<IReadRepository>();
         }
         /// <summary>
         /// 创建对象
@@ -77,29 +55,6 @@ namespace Simple.dotNet.Core.Domain
         protected IDapperDatabase CreateDatabase(string connectionString, IsolationLevel level, DatabaseType type)
         {
             return DbConnectionFactory.CreateDatabase(connectionString, level, type);
-        }
-
-        /// <summary>
-        /// 添加错误消息（http上下文传递，非web可不用）
-        /// </summary>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        private ErrorMessageResult ErrorMessageResult(string message)
-        {
-            if (HttpContext == null) return default;
-            ErrorMessageResult result = IocCollection.Resolve<ErrorMessageResult>();
-            if (!message.IsNullOrWhiteSpace()) result.Add(message);
-            return result;
-        }
-        /// <summary>
-        /// 错误消息
-        /// </summary>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        protected bool ErrorMessage(string message)
-        {
-            this.ErrorMessageResult(message);
-            return false;
         }
         /// <summary>
         /// 公共排序功能

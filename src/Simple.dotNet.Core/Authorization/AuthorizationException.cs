@@ -11,6 +11,7 @@ namespace Simple.dotNet.Core.Authorization
         /// 文本描述
         /// </summary>
         public override string Message { get; }
+        public AuthorizationException() { }
         public AuthorizationException(string message)
         {
             this.Message = message;

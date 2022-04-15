@@ -18,7 +18,7 @@ namespace Simple.dotNet.Core.Authorization
         /// <param name="displayName">描述</param>
         /// <param name="meta">属性</param>
         /// <returns></returns>
-        PermissionChildren CreatePermission(string name, string displayName, IDictionary<string, object> meta);
+        PermissionChildren CreatePermission(string name, string displayName, PermissionMeta meta);
         /// <summary>
         /// 创建层级关系
         /// </summary>
@@ -27,6 +27,6 @@ namespace Simple.dotNet.Core.Authorization
         /// <param name="type"></param>
         /// <param name="meta"></param>
         /// <returns></returns>
-        PermissionChildren CreatePermission(string name, string displayName, PermissionType type, IDictionary<string, object> meta);
+        PermissionChildren CreatePermission(string name, string displayName, PermissionType type, PermissionMeta meta);
     }
 }

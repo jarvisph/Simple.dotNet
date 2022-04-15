@@ -19,7 +19,7 @@ namespace Simple.dotNet.Web.Mvc
         /// <returns></returns>
         public static Type GetControllerType(this ActionExecutingContext context)
         {
-            return (context.ActionDescriptor as ControllerActionDescriptor).ControllerTypeInfo.AsType();
+            return ((ControllerActionDescriptor)context.ActionDescriptor).ControllerTypeInfo.AsType();
         }
         /// <summary>
         /// 获取action方法类型
@@ -28,7 +28,7 @@ namespace Simple.dotNet.Web.Mvc
         /// <returns></returns>
         public static MethodInfo GetActionMethodInfo(this ActionExecutingContext context)
         {
-            return (context.ActionDescriptor as ControllerActionDescriptor).MethodInfo;
+            return ((ControllerActionDescriptor)context.ActionDescriptor).MethodInfo;
         }
     }
 }

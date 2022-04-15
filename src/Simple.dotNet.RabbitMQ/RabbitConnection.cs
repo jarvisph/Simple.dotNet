@@ -14,36 +14,25 @@ namespace Simple.dotNet.RabbitMQ
     /// </summary>
     public abstract class RabbitConnection
     {
-        private readonly RabbitOption _option;
+        private readonly RabbitOption _options;
         private readonly ConnectionFactory _factory;
         private readonly IConnection _connection;
         private readonly IModel _channel;
 
-        /// <summary>
-        /// 默认读取appsetting rabbit连接
-        /// </summary>
         public RabbitConnection()
         {
-            string connectionString = AppsettingConfig.GetConnectionString("RabbitConnection");
-            if (string.IsNullOrEmpty(connectionString))
+            _options = IocCollection.Resolve<RabbitOption>();
+            _factory = new ConnectionFactory
             {
-                throw new ArgumentNullException(nameof(connectionString));
-            }
-            _option = new RabbitOption(connectionString);
-            if (_connection == null)
-            {
-                _factory = new ConnectionFactory
-                {
-                    HostName = _option.HostName,
-                    UserName = _option.UserName,
-                    Password = _option.Password,
-                    VirtualHost = _option.VirtualHost,
-                    Port = _option.Port,
-                    AutomaticRecoveryEnabled = true
-                };
-                _connection = _factory.CreateConnection();
-                _channel = _connection.CreateModel();
-            }
+                HostName = _options.HostName,
+                UserName = _options.UserName,
+                Password = _options.Password,
+                VirtualHost = _options.VirtualHost,
+                Port = _options.Port,
+                AutomaticRecoveryEnabled = true
+            };
+            _connection = _factory.CreateConnection();
+            _channel = _connection.CreateModel();
         }
 
         protected IModel Channel

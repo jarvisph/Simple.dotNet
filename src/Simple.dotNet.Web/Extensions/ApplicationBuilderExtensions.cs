@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Simple.dotNet.Core.Http;
+using Simple.dotNet.Web.Jwt;
 using Simple.dotNet.Web.Middleware;
 
 namespace Simple.dotNet.Web.Extensions
@@ -10,13 +11,7 @@ namespace Simple.dotNet.Web.Extensions
         {
             app.UseMiddleware<ExceptionMiddleware>();
             app.UseHttpContext();
-            //app.UseRouting();
-            app.UseMiddleware<AuthorizationMiddleware>();
-            //app.UseEndpoints(opt =>
-            //{
-            //    opt.MapControllers();
-            //});
-
+            app.UseMiddleware<JWTMiddleware>();
             return app;
         }
     }

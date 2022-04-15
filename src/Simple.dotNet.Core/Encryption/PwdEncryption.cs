@@ -4,9 +4,6 @@ using System.Text;
 
 namespace Simple.dotNet.Core.Encryption
 {
-    /// <summary>
-    /// 密码加密
-    /// </summary>
     public class PwdEncryption
     {
         public static string Encryption(string password)
@@ -16,6 +13,10 @@ namespace Simple.dotNet.Core.Encryption
         public static string Encryption(string password, int id)
         {
             return Encryption(password, id.ToString());
+        }
+        public static string Encryption(string password, long key)
+        {
+            return Encryption(password, key.ToString());
         }
         /// <summary>
         /// 密码加密

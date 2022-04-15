@@ -77,7 +77,7 @@ namespace Simple.dotNet.Core.Domain.Dto
                         }
                         else
                         {
-                            this.Message = IocCollection.Resolve<ErrorMessageResult>();
+                         
                         }
                     }
                     result = "{\"success\":" + success + ",\"msg\":\"" + this.Message + "\",\"info\":" + this.Data.ToJson(JsonSettings.JsonSerializerSettings()) + "}";

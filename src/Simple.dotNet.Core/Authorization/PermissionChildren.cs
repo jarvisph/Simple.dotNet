@@ -24,7 +24,7 @@ namespace Simple.dotNet.Core.Authorization
         /// <summary>
         /// 自定义属性
         /// </summary>
-        public IDictionary<string, object> Meta { get; set; }
+        public PermissionMeta Meta { get; set; }
         /// <summary>
         /// 子级
         /// </summary>
@@ -34,12 +34,12 @@ namespace Simple.dotNet.Core.Authorization
         {
 
         }
-        public PermissionChildren(string name, string displayName, IDictionary<string, object> meta) : this(name, displayName, PermissionType.Memu, meta)
+        public PermissionChildren(string name, string displayName, PermissionMeta meta) : this(name, displayName, PermissionType.Memu, meta)
         {
 
         }
-        public PermissionChildren(string name, string displayName, PermissionType type, IDictionary<string, object> meta)
-        { 
+        public PermissionChildren(string name, string displayName, PermissionType type, PermissionMeta meta)
+        {
             this.Name = name;
             this.DisplayName = displayName;
             this.Type = type;
@@ -63,7 +63,7 @@ namespace Simple.dotNet.Core.Authorization
         /// <param name="displayName"></param>
         /// <param name="meta"></param>
         /// <returns></returns>
-        public PermissionChildren CreateChildPermission(string name, string displayName, IDictionary<string, object> meta)
+        public PermissionChildren CreateChildPermission(string name, string displayName, PermissionMeta meta)
         {
             return this.CreateChildPermission(name, displayName, PermissionType.Memu, meta);
         }
@@ -75,7 +75,7 @@ namespace Simple.dotNet.Core.Authorization
         /// <param name="type"></param>
         /// <param name="meta"></param>
         /// <returns></returns>
-        public PermissionChildren CreateChildPermission(string name, string displayName, PermissionType type, IDictionary<string, object> meta)
+        public PermissionChildren CreateChildPermission(string name, string displayName, PermissionType type, PermissionMeta meta)
         {
             var permission = new PermissionChildren(name, displayName, type, meta);
             _children.Add(permission);

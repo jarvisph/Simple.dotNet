@@ -27,10 +27,7 @@ namespace Simple.dotNet.Web.Swagger
 
             var fileParameters = context.ApiDescription.ActionDescriptor.Parameters.Where(n => n.ParameterType == typeof(IFormFile)).ToList();
 
-            if (fileParameters.Count < 0)
-            {
-                return;
-            }
+            if (fileParameters.Count < 0) return;
 
             foreach (var fileParameter in fileParameters)
             {
@@ -59,17 +56,6 @@ namespace Simple.dotNet.Web.Swagger
                     });
                 }
             }
-
-            //in query header 
-            operation.Parameters.Add(new OpenApiParameter()
-            {
-                Name = "Token",
-                In = ParameterLocation.Header,
-                Description = "身份验证",
-                Required = false,
-                Style = ParameterStyle.Label
-            });
-
         }
     }
 }

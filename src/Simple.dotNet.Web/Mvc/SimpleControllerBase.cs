@@ -64,7 +64,7 @@ namespace Simple.dotNet.Web.Mvc
             => this.PageResult(query, selector, null);
         protected ActionResult PageResult<T, TResult>(IOrderedQueryable<T> query, Func<T, TResult> selector, object extend)
          => this.PageResult(query, selector, null, extend);
-        protected ActionResult PageResult<T, TResult>(IOrderedQueryable<T> query, Func<T, TResult> selector, Action<IEnumerable<T>> action)
+        protected ActionResult PageResult<T, TResult>(IOrderedQueryable<T> query, Func<T, TResult> selector, Action<IEnumerable<T>>? action)
          => this.PageResult(query, selector, action, null);
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace Simple.dotNet.Web.Mvc
         /// <param name="action"></param>
         /// <param name="extend"></param>
         /// <returns></returns>
-        protected ActionResult PageResult<T, TResult>(IOrderedQueryable<T> query, Func<T, TResult> selector, Action<IEnumerable<T>> action, object extend)
+        protected ActionResult PageResult<T, TResult>(IOrderedQueryable<T> query, Func<T, TResult> selector, Action<IEnumerable<T>>? action, object? extend)
         {
             long total = query.LongCount();
             var items = query.PageBy(this.PageSize, this.LimitCount);
@@ -92,7 +92,7 @@ namespace Simple.dotNet.Web.Mvc
         /// <returns></returns>
         protected ActionResult JsonResult(object data)
         {
-            return this.JsonResult(true, null, data);
+            return this.JsonResult(true, string.Empty, data);
         }
         /// <summary>
         /// json返回，是否成功
@@ -101,7 +101,7 @@ namespace Simple.dotNet.Web.Mvc
         /// <returns></returns>
         protected ActionResult JsonResult(bool success)
         {
-            return this.JsonResult(success, null, null);
+            return this.JsonResult(success, string.Empty, null);
         }
         /// <summary>
         /// json返回
@@ -110,7 +110,7 @@ namespace Simple.dotNet.Web.Mvc
         /// <param name="message"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        protected ActionResult JsonResult(bool success, string message, object data)
+        protected ActionResult JsonResult(bool success, string message, object? data)
         {
             return Ok(new Result(success, message, data).ToString());
         }
