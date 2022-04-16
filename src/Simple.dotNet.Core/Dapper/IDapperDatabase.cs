@@ -1,8 +1,8 @@
 ﻿using System;
-using Simple.dotNet.Core.Data;
-using Simple.dotNet.Core.Data.Repository;
+using Simple.Core.Data;
+using Simple.Core.Data.Repository;
 
-namespace Simple.dotNet.Core.Dapper
+namespace Simple.Core.Dapper
 {
     /// <summary>
     /// 原生及仓储方法

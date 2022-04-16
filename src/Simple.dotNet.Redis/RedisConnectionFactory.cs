@@ -1,6 +1,6 @@
 ﻿using StackExchange.Redis;
 
-namespace Simple.dotNet.Redis
+namespace Simple.Redis
 {
     public class RedisConnectionFactory
     {

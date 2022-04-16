@@ -5,15 +5,15 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Simple.dotNet.Core.Authorization;
-using Simple.dotNet.Core.Dapper;
-using Simple.dotNet.Core.Domain.Dto;
-using Simple.dotNet.Core.Domain.Enums;
-using Simple.dotNet.Core.Extensions;
-using Simple.dotNet.Core.Helper;
-using Simple.dotNet.Core.Logger;
+using Simple.Core.Authorization;
+using Simple.Core.Dapper;
+using Simple.Core.Domain.Dto;
+using Simple.Core.Domain.Enums;
+using Simple.Core.Extensions;
+using Simple.Core.Helper;
+using Simple.Core.Logger;
 
-namespace Simple.dotNet.Web.Middleware
+namespace Simple.Web.Middleware
 {
     /// <summary>
     /// 错误异常中间件

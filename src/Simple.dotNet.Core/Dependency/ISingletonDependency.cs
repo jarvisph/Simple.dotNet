@@ -1,4 +1,4 @@
-﻿namespace Simple.dotNet.Core.Dependency
+﻿namespace Simple.Core.Dependency
 {
     /// <summary>
     /// 单例模式接口，实现自动注入

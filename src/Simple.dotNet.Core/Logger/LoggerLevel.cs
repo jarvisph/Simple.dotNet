@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Simple.dotNet.Core.Logger
+namespace Simple.Core.Logger
 {
     public enum LoggerLevel : byte
     {

@@ -7,12 +7,12 @@ using System.Data.Common;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Simple.dotNet.Core.Dapper;
-using Simple.dotNet.Core.Dapper.Expressions;
-using Simple.dotNet.Core.Data.Schema;
-using Simple.dotNet.Core.Extensions;
+using Simple.Core.Dapper;
+using Simple.Core.Dapper.Expressions;
+using Simple.Core.Data.Schema;
+using Simple.Core.Extensions;
 
-namespace Simple.dotNet.Core.Data
+namespace Simple.Core.Data
 {
     public class SqlServerRepository : DapperRepositoryBase, IDapperDatabase
     {

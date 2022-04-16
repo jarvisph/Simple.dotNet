@@ -1,7 +1,7 @@
 ﻿using StackExchange.Redis;
 using System;
 
-namespace Simple.dotNet.Redis
+namespace Simple.Redis
 {
     public abstract class RedisDatabase
     {

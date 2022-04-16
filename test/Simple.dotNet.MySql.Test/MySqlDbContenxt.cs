@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Simple.dotNet.Core.Localization;
+using Simple.Core.Localization;
 
-namespace Simple.dotNet.MySql.Test
+namespace Simple.MySql.Test
 {
     public class MySqlDbContenxt : DbContext
     {

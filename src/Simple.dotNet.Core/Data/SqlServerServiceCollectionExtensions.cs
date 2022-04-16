@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Simple.dotNet.Core.Dapper;
-using Simple.dotNet.Core.Data.Provider;
-using Simple.dotNet.Core.Data.Repository;
-using Simple.dotNet.Core.Localization;
+using Simple.Core.Dapper;
+using Simple.Core.Data.Provider;
+using Simple.Core.Data.Repository;
+using Simple.Core.Localization;
 
-namespace Simple.dotNet.Core.Data
+namespace Simple.Core.Data
 {
     public static class SqlServerServiceCollectionExtensions
     {

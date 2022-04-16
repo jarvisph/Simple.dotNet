@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Simple.dotNet.Core.Extensions;
+using Simple.Core.Extensions;
 
-namespace Simple.dotNet.Core.Helper
+namespace Simple.Core.Helper
 {
     public class EncodingHelper
     {

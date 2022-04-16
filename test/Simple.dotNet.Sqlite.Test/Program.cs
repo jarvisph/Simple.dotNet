@@ -1,13 +1,13 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Simple.dotNet.Core.Dapper;
-using Simple.dotNet.Core.Data;
-using Simple.dotNet.Core.Data.Repository;
-using Simple.dotNet.Core.Dependency;
-using Simple.dotNet.Core.Localization;
-using Simple.dotNet.Sqlite.Test.Model;
+using Simple.Core.Dapper;
+using Simple.Core.Data;
+using Simple.Core.Data.Repository;
+using Simple.Core.Dependency;
+using Simple.Core.Localization;
+using Simple.Sqlite.Test.Model;
 
-namespace Simple.dotNet.Sqlite.Test
+namespace Simple.Sqlite.Test
 {
     [TestClass]
     public class Program

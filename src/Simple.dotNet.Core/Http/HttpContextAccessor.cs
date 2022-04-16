@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace Simple.dotNet.Core.Http
+namespace Simple.Core.Http
 {
     public static class HttpContextAccessor
     {

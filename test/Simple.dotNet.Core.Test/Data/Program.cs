@@ -5,14 +5,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Simple.dotNet.Core.Data.Repository;
-using Simple.dotNet.Core.Dependency;
-using Simple.dotNet.Core.Localization;
-using Simple.dotNet.Core.Data;
+using Simple.Core.Data.Repository;
+using Simple.Core.Dependency;
+using Simple.Core.Localization;
+using Simple.Core.Data;
 using Simple.Test.Model;
-using Simple.dotNet.Core.Test.Model;
+using Simple.Core.Test.Model;
 
-namespace Simple.dotNet.Core.Test.Data
+namespace Simple.Core.Test.Data
 {
     [TestClass]
     public class Program

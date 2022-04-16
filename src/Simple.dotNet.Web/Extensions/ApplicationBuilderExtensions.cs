@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using Simple.dotNet.Core.Http;
-using Simple.dotNet.Web.Jwt;
-using Simple.dotNet.Web.Middleware;
+using Simple.Core.Http;
+using Simple.Web.Jwt;
+using Simple.Web.Middleware;
 
-namespace Simple.dotNet.Web.Extensions
+namespace Simple.Web.Extensions
 {
     public static class ApplicationBuilderExtensions
     {

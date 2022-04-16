@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Simple.dotNet.Core.Extensions
+namespace Simple.Core.Extensions
 {
     public static class ExpressionExtensions
     {

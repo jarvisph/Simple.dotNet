@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
-using Simple.dotNet.Core.Data.Schema;
+using Simple.Core.Data.Schema;
 
-namespace Simple.dotNet.Sqlite
+namespace Simple.Sqlite
 {
     /// <summary>
     /// sqlite扩展类

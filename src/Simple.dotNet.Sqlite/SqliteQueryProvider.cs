@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Simple.dotNet.Sqlite
+namespace Simple.Sqlite
 {
     internal class SqliteQueryProvider
     {

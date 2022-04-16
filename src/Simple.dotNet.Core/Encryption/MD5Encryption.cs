@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using System.Security.Cryptography;
 
-namespace Simple.dotNet.Core.Encryption
+namespace Simple.Core.Encryption
 {
     public class MD5Encryption
     {

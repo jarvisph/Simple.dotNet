@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Simple.dotNet.Core.Helper
+namespace Simple.Core.Helper
 {
     /// <summary>
     /// 验证帮助类

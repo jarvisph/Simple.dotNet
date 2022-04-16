@@ -1,12 +1,12 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Simple.dotNet.Core.Extensions;
+using Simple.Core.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 using System.Text;
 
-namespace Simple.dotNet.Core.Localization
+namespace Simple.Core.Localization
 {
     /// <summary>
     /// 本地appsettings.json配置

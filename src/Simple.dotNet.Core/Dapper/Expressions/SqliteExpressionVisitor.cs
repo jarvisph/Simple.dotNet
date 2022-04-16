@@ -4,9 +4,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using Simple.dotNet.Core.Extensions;
+using Simple.Core.Extensions;
 
-namespace Simple.dotNet.Core.Dapper.Expressions
+namespace Simple.Core.Dapper.Expressions
 {
     public class SqliteExpressionVisitor : DapperExpressionVisitor, IExpressionVisitor
     {

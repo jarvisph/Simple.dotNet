@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Simple.dotNet.Core.Data.Schema;
+using Simple.Core.Data.Schema;
 
-namespace Simple.dotNet.Core.Data.Repository
+namespace Simple.Core.Data.Repository
 {
     /// <summary>
     /// 可读仓储

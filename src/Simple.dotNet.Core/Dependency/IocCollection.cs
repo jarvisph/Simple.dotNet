@@ -1,8 +1,8 @@
 ﻿using System;
-using Simple.dotNet.Core.Http;
+using Simple.Core.Http;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Simple.dotNet.Core.Dependency
+namespace Simple.Core.Dependency
 {
     /// <summary>
     /// IOC容器，统一管理

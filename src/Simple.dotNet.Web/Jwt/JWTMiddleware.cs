@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
-using Simple.dotNet.Core.Authorization;
-using Simple.dotNet.Core.Dependency;
+using Simple.Core.Authorization;
+using Simple.Core.Dependency;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -10,7 +10,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Simple.dotNet.Web.Jwt
+namespace Simple.Web.Jwt
 {
     /// <summary>
     /// JWT中间件

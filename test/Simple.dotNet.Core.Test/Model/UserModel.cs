@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Simple.dotNet.Core.Domain.Enums;
+using Simple.Core.Domain.Enums;
 
 namespace Simple.Test.Model
 {

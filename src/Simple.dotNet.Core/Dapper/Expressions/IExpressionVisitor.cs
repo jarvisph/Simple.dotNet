@@ -1,7 +1,7 @@
 ﻿using Dapper;
 using System;
 
-namespace Simple.dotNet.Core.Dapper.Expressions
+namespace Simple.Core.Dapper.Expressions
 {
     public interface IExpressionVisitor : IDisposable
     {

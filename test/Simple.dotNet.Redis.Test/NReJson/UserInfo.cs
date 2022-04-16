@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Simple.dotNet.Redis.Test.NReJson
+namespace Simple.Redis.Test.NReJson
 {
     public class UserInfo
     {

@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 
-namespace Simple.dotNet.Core.Extensions
+namespace Simple.Core.Extensions
 {
     public static class ObjectExtensions
     {

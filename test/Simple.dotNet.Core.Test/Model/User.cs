@@ -6,10 +6,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Simple.dotNet.Core.Data.Schema;
-using Simple.dotNet.Core.Domain.Enums;
+using Simple.Core.Data.Schema;
+using Simple.Core.Domain.Enums;
 
-namespace Simple.dotNet.Core.Test.Model
+namespace Simple.Core.Test.Model
 {
     [Table("Users")]
     public class User : IEntity

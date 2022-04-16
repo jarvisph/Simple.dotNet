@@ -5,7 +5,7 @@ using System.Text;
 using System.Xml;
 using System.Linq;
 
-namespace Simple.dotNet.Core.Extensions
+namespace Simple.Core.Extensions
 {
     public static class XmlExtensions
     {

@@ -1,5 +1,5 @@
 ﻿using Nest;
-using Simple.dotNet.Elasticsearch.Expressions;
+using Simple.Elasticsearch.Expressions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 
-namespace Simple.dotNet.Elasticsearch.Linq
+namespace Simple.Elasticsearch.Linq
 {
     internal class ElasticSearchQueryProvider<TDocument> : IElasticSearchQueryProvider, IElasticSearchOrderedQueryable<TDocument> where TDocument : class
     {

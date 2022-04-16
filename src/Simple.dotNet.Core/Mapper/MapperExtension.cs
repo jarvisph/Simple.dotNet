@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Simple.dotNet.Core.Mapper
+namespace Simple.Core.Mapper
 {
     public static class MapperExtension
     {

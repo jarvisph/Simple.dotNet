@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
-using Simple.dotNet.Core.Extensions;
-using Simple.dotNet.Core.Http;
+using Simple.Core.Extensions;
+using Simple.Core.Http;
 using System.Net;
 using System.Net.Sockets;
 
-namespace Simple.dotNet.Core.Helper
+namespace Simple.Core.Helper
 {
     public class IPHelper
     {

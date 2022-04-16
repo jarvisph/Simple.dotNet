@@ -4,9 +4,9 @@ using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-using Simple.dotNet.Core.Extensions;
+using Simple.Core.Extensions;
 
-namespace Simple.dotNet.Core.Authorization
+namespace Simple.Core.Authorization
 {
     public class PermissionFinder
     {

@@ -1,10 +1,10 @@
 ﻿using Microsoft.Data.Sqlite;
 using System;
 using System.Data;
-using Simple.dotNet.Core.Dapper;
-using Simple.dotNet.Core.Data.Provider;
+using Simple.Core.Dapper;
+using Simple.Core.Data.Provider;
 
-namespace Simple.dotNet.Sqlite
+namespace Simple.Sqlite
 {
     /// <summary>
     /// Sqlite

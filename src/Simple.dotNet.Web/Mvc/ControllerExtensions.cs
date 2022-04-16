@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace Simple.dotNet.Web.Mvc
+namespace Simple.Web.Mvc
 {
     /// <summary>
     /// controller扩展类

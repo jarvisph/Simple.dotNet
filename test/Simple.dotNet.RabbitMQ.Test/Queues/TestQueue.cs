@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Simple.dotNet.RabbitMQ.Test.Queues
+namespace Simple.RabbitMQ.Test.Queues
 {
     /// <summary>
     /// 消息体
     /// </summary>
+    [Producer(ExchangeName.Test_Exchange)]
     public class TestQueue : IMessageQueue
     {
         public int UserID { get; set; }

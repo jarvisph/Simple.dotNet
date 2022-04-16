@@ -2,9 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Simple.dotNet.Core.Extensions;
+using Simple.Core.Extensions;
 
-namespace Simple.dotNet.Core.Languages
+namespace Simple.Core.Languages
 {
     /// <summary>
     /// 多语种模型

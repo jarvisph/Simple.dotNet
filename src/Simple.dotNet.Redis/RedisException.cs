@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Simple.dotNet.Redis
+namespace Simple.Redis
 {
     /// <summary>
     /// Redis异常处理中间件

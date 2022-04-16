@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Simple.dotNet.Core.Helper;
+using Simple.Core.Helper;
 
-namespace Simple.dotNet.Core.Dependency
+namespace Simple.Core.Dependency
 {
     public static class DependencyServiceCollectionExtensions
     {

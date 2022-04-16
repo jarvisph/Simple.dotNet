@@ -1,9 +1,9 @@
 ﻿using System.Text;
 using System.Web;
-using Simple.dotNet.Core.Domain.Enums;
-using Simple.dotNet.Core.Helper;
+using Simple.Core.Domain.Enums;
+using Simple.Core.Helper;
 
-namespace Simple.dotNet.Core.Hub
+namespace Simple.Core.Hub
 {
     /// <summary>
     /// GoEasy扩展类

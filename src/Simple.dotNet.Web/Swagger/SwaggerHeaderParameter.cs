@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Simple.dotNet.Web.Swagger
+namespace Simple.Web.Swagger
 {
     /// <summary>
     /// 设置请求头文件

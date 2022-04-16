@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
-using Simple.dotNet.Core.Authorization;
+using Simple.Core.Authorization;
 using System.Text;
 
-namespace Simple.dotNet.Web.Jwt
+namespace Simple.Web.Jwt
 {
     /// <summary>
     /// 授权Token

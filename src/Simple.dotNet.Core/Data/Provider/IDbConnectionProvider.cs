@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
-using Simple.dotNet.Core.Dapper;
+using Simple.Core.Dapper;
 
-namespace Simple.dotNet.Core.Data.Provider
+namespace Simple.Core.Data.Provider
 {
     /// <summary>
     /// db 连接对象基类

@@ -1,4 +1,4 @@
-﻿namespace Simple.dotNet.Core.Dependency
+﻿namespace Simple.Core.Dependency
 {
     /// <summary>
     /// 暂时接口，每次创建新实例，实现自动注入

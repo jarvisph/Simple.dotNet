@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Simple.dotNet.Core.Extensions;
-using Simple.dotNet.Core.Helper;
+using Simple.Core.Extensions;
+using Simple.Core.Helper;
 
-namespace Simple.dotNet.Core.Domain.Dto
+namespace Simple.Core.Domain.Dto
 {
     [Serializable]
     public struct PagedResult<T>

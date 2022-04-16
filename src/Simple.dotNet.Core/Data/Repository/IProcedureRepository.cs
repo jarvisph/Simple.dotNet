@@ -1,7 +1,7 @@
 ﻿using System.Data;
-using Simple.dotNet.Core.Data.Schema;
+using Simple.Core.Data.Schema;
 
-namespace Simple.dotNet.Core.Data.Repository
+namespace Simple.Core.Data.Repository
 {
     /// <summary>
     /// 存储过程仓储

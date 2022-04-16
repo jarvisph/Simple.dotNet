@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
 using System.Text;
 
-namespace Simple.dotNet.Core.Data.Schema
+namespace Simple.Core.Data.Schema
 {
     /// <summary>
     /// 数据库字段信息

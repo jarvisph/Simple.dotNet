@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 
-namespace Simple.dotNet.Core.Jobs
+namespace Simple.Core.Jobs
 {
     public abstract class JobServiceBase
     {

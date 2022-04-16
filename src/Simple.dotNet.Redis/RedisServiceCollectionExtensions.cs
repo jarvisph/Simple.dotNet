@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace Simple.dotNet.Redis
+namespace Simple.Redis
 {
     /// <summary>
     /// 注册Redis

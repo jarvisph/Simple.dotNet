@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Simple.dotNet.Core.Authorization
+namespace Simple.Core.Authorization
 {
     /// <summary>
     /// 权限类型

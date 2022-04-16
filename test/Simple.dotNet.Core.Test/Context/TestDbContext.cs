@@ -1,12 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Simple.dotNet.Core.Test.Model;
+using Simple.Core.Test.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Simple.dotNet.Core.Test.Context
+namespace Simple.Core.Test.Context
 {
     internal class TestDbContext : DbContext
     {

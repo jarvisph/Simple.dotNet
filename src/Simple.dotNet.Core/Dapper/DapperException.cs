@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Simple.dotNet.Core.Extensions;
+using Simple.Core.Extensions;
 
-namespace Simple.dotNet.Core.Dapper
+namespace Simple.Core.Dapper
 {
     public class DapperException : Exception
     {

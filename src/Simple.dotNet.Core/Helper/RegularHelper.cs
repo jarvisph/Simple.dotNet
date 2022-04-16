@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Simple.dotNet.Core.Helper
+namespace Simple.Core.Helper
 {
     /// <summary>
     /// 正则表达式帮助类

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Simple.dotNet.Core.Hub
+namespace Simple.Core.Hub
 {
     public static class IMApplicationBuilderExtensions
     {

@@ -7,7 +7,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Simple.dotNet.Core.Test.Encryption
+namespace Simple.Core.Test.Encryption
 {
     [TestClass]
     public class RijndaelExample

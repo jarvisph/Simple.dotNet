@@ -4,7 +4,7 @@ using System.Text;
 using System.Security.Cryptography;
 using System.IO;
 
-namespace Simple.dotNet.Core.Encryption
+namespace Simple.Core.Encryption
 {
     /// <summary>
     /// AES 加密 解密

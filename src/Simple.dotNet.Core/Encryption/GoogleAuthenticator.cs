@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Simple.dotNet.Core.Encryption
+namespace Simple.Core.Encryption
 {
     /// <summary>
     /// 谷歌验证码

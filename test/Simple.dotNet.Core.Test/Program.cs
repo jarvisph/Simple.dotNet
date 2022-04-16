@@ -2,13 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Simple.dotNet.Core.Mapper;
-using Simple.dotNet.Core.Extensions;
+using Simple.Core.Mapper;
+using Simple.Core.Extensions;
 using Simple.Test.Model;
-using Simple.dotNet.Core.Domain.Enums;
-using Simple.dotNet.Core.Test.Model;
+using Simple.Core.Domain.Enums;
+using Simple.Core.Test.Model;
 
-namespace Simple.dotNet.Core.Test
+namespace Simple.Core.Test
 {
     [TestClass]
     public class Program

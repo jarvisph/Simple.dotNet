@@ -6,9 +6,9 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using Simple.dotNet.Core.Extensions;
+using Simple.Core.Extensions;
 
-namespace Simple.dotNet.Core.Data.Schema
+namespace Simple.Core.Data.Schema
 {
     /// <summary>
     /// 数据库结构缓存

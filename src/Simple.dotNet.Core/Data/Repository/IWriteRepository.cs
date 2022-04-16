@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using Simple.dotNet.Core.Data.Schema;
+using Simple.Core.Data.Schema;
 
-namespace Simple.dotNet.Core.Data.Repository
+namespace Simple.Core.Data.Repository
 {
     /// <summary>
     /// 可写 仓储

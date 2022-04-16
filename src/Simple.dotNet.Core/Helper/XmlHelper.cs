@@ -4,7 +4,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace Simple.dotNet.Core.Helper
+namespace Simple.Core.Helper
 {
     public static class XmlHelper
     {

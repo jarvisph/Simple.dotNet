@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Simple.dotNet.Core.Logger
+namespace Simple.Core.Logger
 {
     /// <summary>
     /// 自定义错误信息

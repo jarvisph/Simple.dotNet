@@ -7,11 +7,11 @@ using System.Text.RegularExpressions;
 using System.Linq;
 using System.Collections.Generic;
 using Microsoft.Extensions.Primitives;
-using Simple.dotNet.Core.Helper;
-using Simple.dotNet.Core.Domain.Enums;
+using Simple.Core.Helper;
+using Simple.Core.Domain.Enums;
 using System.Net.Http;
 
-namespace Simple.dotNet.Core.Extensions
+namespace Simple.Core.Extensions
 {
     public static class HttpContextExtensions
     {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Simple.dotNet.Core.Authorization
+namespace Simple.Core.Authorization
 {
     internal class PermissionDictionary : Dictionary<string, PermissionChildren>
     {

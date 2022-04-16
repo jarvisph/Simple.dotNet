@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Simple.dotNet.Core.Helper
+namespace Simple.Core.Helper
 {
     /// <summary>
     /// 本地缓存

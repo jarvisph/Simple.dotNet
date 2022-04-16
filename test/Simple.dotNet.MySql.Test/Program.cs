@@ -1,12 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Simple.dotNet.Core.Dapper;
-using Simple.dotNet.Core.Data.Repository;
-using Simple.dotNet.Core.Dependency;
-using Simple.dotNet.Core.Localization;
-using Simple.dotNet.MySql.Test.Model;
+using Simple.Core.Dapper;
+using Simple.Core.Data.Repository;
+using Simple.Core.Dependency;
+using Simple.Core.Localization;
+using Simple.MySql.Test.Model;
 
-namespace Simple.dotNet.MySql.Test
+namespace Simple.MySql.Test
 {
     [TestClass]
     public class Program

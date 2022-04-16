@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Simple.dotNet.Core.Test.Model
+namespace Simple.Core.Test.Model
 {
     public class UserDetail
     {

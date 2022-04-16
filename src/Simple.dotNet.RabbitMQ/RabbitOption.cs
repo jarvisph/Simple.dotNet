@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using Simple.dotNet.Core.Domain;
+using Simple.Core.Domain;
 
-namespace Simple.dotNet.RabbitMQ
+namespace Simple.RabbitMQ
 {
     /// <summary>
     /// rabbit 连接参数

@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Simple.dotNet.Core.Domain.Enums;
+using Simple.Core.Domain.Enums;
 
-namespace Simple.dotNet.Redis.Test
+namespace Simple.Redis.Test
 {
     public struct UserModel
     {

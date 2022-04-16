@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Simple.dotNet.Core.Authorization
+namespace Simple.Core.Authorization
 {
     public interface IPermissionDefinitionContext
     {

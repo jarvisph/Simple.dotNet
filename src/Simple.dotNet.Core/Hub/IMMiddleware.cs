@@ -6,12 +6,12 @@ using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Simple.dotNet.Core.Domain.Dto;
-using Simple.dotNet.Core.Domain.Enums;
-using Simple.dotNet.Core.Extensions;
-using Simple.dotNet.Core.Helper;
+using Simple.Core.Domain.Dto;
+using Simple.Core.Domain.Enums;
+using Simple.Core.Extensions;
+using Simple.Core.Helper;
 
-namespace Simple.dotNet.Core.Hub
+namespace Simple.Core.Hub
 {
     /// <summary>
     /// IM中间管道

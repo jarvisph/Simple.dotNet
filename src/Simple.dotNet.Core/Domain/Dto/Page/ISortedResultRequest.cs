@@ -1,4 +1,4 @@
-﻿namespace Simple.dotNet.Core.Domain.Dto.Page
+﻿namespace Simple.Core.Domain.Dto.Page
 {
     /// <summary>
     /// 排序字段

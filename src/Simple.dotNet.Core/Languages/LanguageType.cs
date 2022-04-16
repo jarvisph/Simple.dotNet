@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 
-namespace Simple.dotNet.Core.Languages
+namespace Simple.Core.Languages
 {
     /// <summary>
     /// 语言类型

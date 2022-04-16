@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Simple.dotNet.Core.Helper;
+using Simple.Core.Helper;
 
-namespace Simple.dotNet.Core.Jobs
+namespace Simple.Core.Jobs
 {
     /// <summary>
     /// job定时服务

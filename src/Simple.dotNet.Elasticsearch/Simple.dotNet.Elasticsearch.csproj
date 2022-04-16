@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
@@ -7,11 +7,13 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Version>1.0.6</Version>
     <Product>Simple.Elasticsearch</Product>
-    <PackageId>Simple.dotNet.Elasticsearch</PackageId>
+    <PackageId>Simple.Elasticsearch</PackageId>
     <Authors>Jarvis</Authors>
     <Description></Description>
     <Copyright>linq to elasticsearch</Copyright>
     <PackageTags>linq to elasticsearch</PackageTags>
+    <AssemblyName>Simple.Elasticsearch</AssemblyName>
+    <RootNamespace>Simple.Elasticsearch</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

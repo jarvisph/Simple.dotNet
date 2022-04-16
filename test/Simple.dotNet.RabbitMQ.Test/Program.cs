@@ -1,12 +1,14 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Simple.dotNet.Core.Dependency;
-using Simple.dotNet.Core.Localization;
-using Simple.dotNet.RabbitMQ.Test.Queues;
+using Simple.Core.Dependency;
+using Simple.Core.Localization;
+using Simple.RabbitMQ.Test.Queues;
 using System.Linq;
 using System;
+using System.Threading.Tasks;
+using System.Threading;
 
-namespace Simple.dotNet.RabbitMQ.Test
+namespace Simple.RabbitMQ.Test
 {
     [TestClass]
     public class Program
@@ -15,12 +17,10 @@ namespace Simple.dotNet.RabbitMQ.Test
         public void Main()
         {
             IServiceCollection services = new ServiceCollection();
-            services.AddRabbitProduce("");
             services.AddDepency();
-            services.AddRabbitConsumer();
-            new TestQueue() { UserID = 1, UserName = "’≈»˝" }.Send();
-            Console.Read();
-
+            services.AddRabbitMQ(new RabbitOption(AppsettingConfig.GetConnectionString("RabbitConnection")));
+            new TestQueue() { UserID = 10000, UserName = "≤‚ ‘01" }.Send();
+            Thread.Sleep(-1);
         }
     }
 }

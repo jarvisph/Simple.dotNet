@@ -1,13 +1,13 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
-using Simple.dotNet.Core.Encryption;
+using Simple.Core.Encryption;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Simple.dotNet.Core.Test.Encryption
+namespace Simple.Core.Test.Encryption
 {
     [TestClass]
     public class Program

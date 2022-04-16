@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Simple.dotNet.RabbitMQ.Test.Queues;
+using Simple.RabbitMQ.Test.Queues;
 
-namespace Simple.dotNet.RabbitMQ.Test.Consumer
+namespace Simple.RabbitMQ.Test.Consumer
 {
     [Consumer("Test_Exchange")]
     public class TestConsumer : RabbitConsumerBase

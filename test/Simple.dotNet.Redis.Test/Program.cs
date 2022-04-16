@@ -1,10 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Simple.dotNet.Core.Dependency;
-using Simple.dotNet.Core.Domain.Enums;
-using Simple.dotNet.Core.Localization;
+using Simple.Core.Dependency;
+using Simple.Core.Domain.Enums;
+using Simple.Core.Localization;
 
-namespace Simple.dotNet.Redis.Test
+namespace Simple.Redis.Test
 {
     [TestClass]
     public class Program

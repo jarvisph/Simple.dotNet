@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Simple.dotNet.Core.Data.Schema
+namespace Simple.Core.Data.Schema
 {
     /// <summary>
     /// 标记为数据库表

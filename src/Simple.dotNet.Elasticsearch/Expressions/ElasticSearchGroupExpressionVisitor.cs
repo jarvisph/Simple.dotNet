@@ -1,13 +1,13 @@
 ﻿using Nest;
-using Simple.dotNet.Core.Expressions;
-using Simple.dotNet.Core.Extensions;
+using Simple.Core.Expressions;
+using Simple.Core.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 
-namespace Simple.dotNet.Elasticsearch.Expressions
+namespace Simple.Elasticsearch.Expressions
 {
     internal class ElasticSearchGroupExpressionVisitor : ExpressionVisitorBase
     {

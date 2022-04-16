@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Simple.dotNet.Core.Extensions
+namespace Simple.Core.Extensions
 {
     public static class DateTimeExtensions
     {

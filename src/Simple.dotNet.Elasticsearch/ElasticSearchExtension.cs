@@ -1,5 +1,5 @@
 ﻿using Nest;
-using Simple.dotNet.Elasticsearch.Linq;
+using Simple.Elasticsearch.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,10 +8,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using Simple.dotNet.Core.Extensions;
-using Simple.dotNet.Elasticsearch.Expressions;
+using Simple.Core.Extensions;
+using Simple.Elasticsearch.Expressions;
 
-namespace Simple.dotNet.Elasticsearch
+namespace Simple.Elasticsearch
 {
     public static partial class ElasticSearchExtension
     {

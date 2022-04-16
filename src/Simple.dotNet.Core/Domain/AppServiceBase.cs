@@ -1,13 +1,13 @@
-﻿using Simple.dotNet.Core.Dapper;
-using Simple.dotNet.Core.Dependency;
+﻿using Simple.Core.Dapper;
+using Simple.Core.Dependency;
 using System.Data;
-using Simple.dotNet.Core.Data.Repository;
-using Simple.dotNet.Core.Data.Schema;
+using Simple.Core.Data.Repository;
+using Simple.Core.Data.Schema;
 using System.Linq;
-using Simple.dotNet.Core.Data;
-using Simple.dotNet.Core.Logger;
+using Simple.Core.Data;
+using Simple.Core.Logger;
 
-namespace Simple.dotNet.Core.Domain
+namespace Simple.Core.Domain
 {
     /// <summary>
     /// 服务基类

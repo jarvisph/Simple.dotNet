@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 
-namespace Simple.dotNet.Core.Domain.Enums
+namespace Simple.Core.Domain.Enums
 {
     /// <summary>
     /// 格式类型

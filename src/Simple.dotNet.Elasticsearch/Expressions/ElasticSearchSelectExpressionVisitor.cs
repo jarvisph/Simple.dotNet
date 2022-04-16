@@ -1,11 +1,11 @@
-﻿using Simple.dotNet.Core.Expressions;
+﻿using Simple.Core.Expressions;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 
-namespace Simple.dotNet.Elasticsearch.Expressions
+namespace Simple.Elasticsearch.Expressions
 {
     internal class ElasticSearchSelectExpressionVisitor : ExpressionVisitorBase
     {

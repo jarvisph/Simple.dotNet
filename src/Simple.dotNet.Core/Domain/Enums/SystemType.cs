@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace Simple.dotNet.Core.Domain.Enums
+namespace Simple.Core.Domain.Enums
 {
     /// <summary>
     /// 系统类型

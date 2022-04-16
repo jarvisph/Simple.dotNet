@@ -5,10 +5,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Simple.dotNet.Core.Data.Schema;
-using Simple.dotNet.Core.Extensions;
+using Simple.Core.Data.Schema;
+using Simple.Core.Extensions;
 
-namespace Simple.dotNet.Core.Dapper.Expressions
+namespace Simple.Core.Dapper.Expressions
 {
     public abstract class DapperExpressionVisitor : ExpressionVisitor, IExpressionVisitor
     {

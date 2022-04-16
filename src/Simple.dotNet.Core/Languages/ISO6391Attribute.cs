@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Simple.dotNet.Core.Languages
+namespace Simple.Core.Languages
 {
     /// <summary>
     /// ISO-639-1 语言代码

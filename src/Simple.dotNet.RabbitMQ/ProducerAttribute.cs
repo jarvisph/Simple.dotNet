@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Simple.dotNet.RabbitMQ
+namespace Simple.RabbitMQ
 {
     /// <summary>
     /// 生产实体标记

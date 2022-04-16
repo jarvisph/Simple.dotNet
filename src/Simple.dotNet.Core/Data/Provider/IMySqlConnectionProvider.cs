@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Simple.dotNet.Core.Data.Provider
+namespace Simple.Core.Data.Provider
 {
     /// <summary>
     /// mysql 连接对象

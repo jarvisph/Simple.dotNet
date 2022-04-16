@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 
-namespace Simple.dotNet.Core.Authorization
+namespace Simple.Core.Authorization
 {
     /// <summary>
     /// 权限层级关系

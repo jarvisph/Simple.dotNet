@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Simple.dotNet.Web.Swagger
+namespace Simple.Web.Swagger
 {
     public class BasicAuthOperationsFilter : IOperationFilter
     {

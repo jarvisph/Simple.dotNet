@@ -1,4 +1,4 @@
-﻿namespace Simple.dotNet.Core.Data
+﻿namespace Simple.Core.Data
 {
     public enum DatabaseType : byte
     {

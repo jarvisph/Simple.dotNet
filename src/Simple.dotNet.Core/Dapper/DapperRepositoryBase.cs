@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
-using Simple.dotNet.Core.Data;
-using Simple.dotNet.Core.Data.Repository;
-using Simple.dotNet.Core.Data.Schema;
+using Simple.Core.Data;
+using Simple.Core.Data.Repository;
+using Simple.Core.Data.Schema;
 
-namespace Simple.dotNet.Core.Dapper
+namespace Simple.Core.Dapper
 {
     /// <summary>
     /// 仓储基类

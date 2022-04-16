@@ -3,16 +3,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Simple.dotNet.Core.Data.Repository;
-using Simple.dotNet.Core.Dependency;
-using Simple.dotNet.Core.Domain.Dto;
-using Simple.dotNet.Core.Domain.Enums;
-using Simple.dotNet.Core.Extensions;
-using Simple.dotNet.Core.Languages;
-using Simple.dotNet.Core.Mapper;
-using Result = Simple.dotNet.Core.Domain.Dto.Result;
+using Simple.Core.Data.Repository;
+using Simple.Core.Dependency;
+using Simple.Core.Domain.Dto;
+using Simple.Core.Domain.Enums;
+using Simple.Core.Extensions;
+using Simple.Core.Languages;
+using Simple.Core.Mapper;
+using Result = Simple.Core.Domain.Dto.Result;
 
-namespace Simple.dotNet.Web.Mvc
+namespace Simple.Web.Mvc
 {
     /// <summary>
     /// Controller基类,所有外部Controller继承此基类

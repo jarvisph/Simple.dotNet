@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Simple.dotNet.Core.Test.Context
+namespace Simple.Core.Test.Context
 {
     [TestClass]
     public class Program

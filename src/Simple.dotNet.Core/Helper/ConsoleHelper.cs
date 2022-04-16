@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Simple.dotNet.Core.Helper
+namespace Simple.Core.Helper
 {
     public static class ConsoleHelper
     {

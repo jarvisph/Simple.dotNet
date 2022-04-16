@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Simple.dotNet.Core.Dependency;
+using Simple.Core.Dependency;
 using Microsoft.AspNetCore.Http;
-using Simple.dotNet.Core.Domain.Dto;
+using Simple.Core.Domain.Dto;
 
-namespace Simple.dotNet.Web.Extensions
+namespace Simple.Web.Extensions
 {
     public static class ServiceCollectionProviderExtensions
     {

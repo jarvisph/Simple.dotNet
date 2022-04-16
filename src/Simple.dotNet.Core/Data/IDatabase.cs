@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 
-namespace Simple.dotNet.Core.Data
+namespace Simple.Core.Data
 {
     /// <summary>
     /// 数据库执行公共接口

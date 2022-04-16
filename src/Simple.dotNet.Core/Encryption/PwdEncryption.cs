@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Simple.dotNet.Core.Encryption
+namespace Simple.Core.Encryption
 {
     public class PwdEncryption
     {

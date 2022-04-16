@@ -1,12 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Simple.dotNet.Core.Test.Model;
+using Simple.Core.Test.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Simple.dotNet.Core.Test.Linq
+namespace Simple.Core.Test.Linq
 {
     [TestClass]
     public class Program

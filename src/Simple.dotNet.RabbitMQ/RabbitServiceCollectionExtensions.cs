@@ -6,54 +6,43 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using Simple.dotNet.Core.Dependency;
-using Simple.dotNet.Core.Helper;
+using Simple.Core.Dependency;
+using Simple.Core.Helper;
 using System.Diagnostics;
 
-namespace Simple.dotNet.RabbitMQ
+namespace Simple.RabbitMQ
 {
     /// <summary>
-    /// rabbit 注册类
+    /// rabbitmq 注册类
     /// </summary>
     public static class RabbitServiceCollectionExtensions
     {
-        /// <summary>
-        /// 注册rabbit生产
-        /// </summary>
-        /// <param name="services"></param>
-        /// <param name="connectionString"></param>
-        /// <returns></returns>
-        public static IServiceCollection AddRabbitProduce(this IServiceCollection services, string connectionString)
-        {
-            services.AddRabbitConnection(connectionString);
-            return services;
-        }
-
         /// <summary>
         /// 注册rabbit消费
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddRabbitConsumer(this IServiceCollection services)
+        public static IServiceCollection AddRabbitMQ(this IServiceCollection services, RabbitOption options)
         {
+            services.AddSingleton(c => options);
             foreach (var assemblie in AssemblyHelper.GetAssemblies())
             {
-                Parallel.ForEach(assemblie.GetTypes().Where(t => t.IsPublic && !t.IsAbstract && t.BaseType == typeof(RabbitConsumerBase)), type =>
+                Parallel.ForEach(assemblie.GetTypes().Where(t => t.IsPublic && !t.IsAbstract && typeof(RabbitConsumerBase).IsAssignableFrom(t)), type =>
                 {
                     Stopwatch sw = Stopwatch.StartNew();
                     ConsumerAttribute consumer = type.GetCustomAttribute<ConsumerAttribute>();
                     if (consumer == null)
                     {
-                        ConsoleHelper.WriteLine($"未标记：{nameof(ConsumerAttribute)}", ConsoleColor.Red);
+                        ConsoleHelper.WriteLine($"消费：{type.Name}，未标记：{nameof(ConsumerAttribute)}", ConsoleColor.Red);
                     }
                     else if (string.IsNullOrEmpty(consumer.ExchangeName))
                     {
-                        ConsoleHelper.WriteLine($"交换器为空", ConsoleColor.Red);
+                        ConsoleHelper.WriteLine($"消费：{type.Name}，交换器为空", ConsoleColor.Red);
                     }
                     else
                     {
                         RabbitConsumerBase service = (RabbitConsumerBase)Activator.CreateInstance(type);
-                        RabbitConsumer.Consumer(consumer, (message, sender, args) =>
+                        RabbitManage.Consumer(consumer, (message, sender, args) =>
                         {
                             service.Invoke(message, sender, args);
                             return true;
@@ -61,17 +50,8 @@ namespace Simple.dotNet.RabbitMQ
                         Console.WriteLine($"消费：{type.Name}，已启动，耗时：{sw.ElapsedMilliseconds}ms");
                     }
                 });
+
             }
-            return services;
-        }
-        /// <summary>
-        /// 注册rabbit连接
-        /// </summary>
-        /// <param name="services"></param>
-        /// <param name="connection"></param>
-        /// <returns></returns>
-        public static IServiceCollection AddRabbitConnection(this IServiceCollection services, string connection)
-        {
             return services;
         }
     }

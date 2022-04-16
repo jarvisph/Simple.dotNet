@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
-using Simple.dotNet.Core.Dapper;
-using Simple.dotNet.Core.Dapper.Expressions;
-using Simple.dotNet.Core.Data;
-using Simple.dotNet.Core.Data.Schema;
-using Simple.dotNet.Core.Extensions;
+using Simple.Core.Dapper;
+using Simple.Core.Dapper.Expressions;
+using Simple.Core.Data;
+using Simple.Core.Data.Schema;
+using Simple.Core.Extensions;
 
-namespace Simple.dotNet.Sqlite
+namespace Simple.Sqlite
 {
     public class SqliteRepository : DapperRepositoryBase, IDapperDatabase
     {

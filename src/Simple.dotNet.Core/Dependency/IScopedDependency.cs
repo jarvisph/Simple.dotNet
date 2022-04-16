@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Simple.dotNet.Core.Dependency
+namespace Simple.Core.Dependency
 {
     /// <summary>
     /// 作用域

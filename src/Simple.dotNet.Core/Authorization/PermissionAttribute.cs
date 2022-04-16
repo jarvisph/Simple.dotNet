@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Simple.dotNet.Core.Authorization
+namespace Simple.Core.Authorization
 {
     /// <summary>
     /// 功能权限特性

@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace Simple.dotNet.Core.Helper
+namespace Simple.Core.Helper
 {
     public class StopwatchHelper
     {

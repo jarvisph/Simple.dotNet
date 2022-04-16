@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Simple.dotNet.Core.Domain.Dto.Page
+namespace Simple.Core.Domain.Dto.Page
 {
     /// <summary>
     /// 分页参数

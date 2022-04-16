@@ -5,10 +5,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Simple.dotNet.Core.Data;
-using Simple.dotNet.Core.Data.Schema;
+using Simple.Core.Data;
+using Simple.Core.Data.Schema;
 
-namespace Simple.dotNet.Sqlite.Test.Model
+namespace Simple.Sqlite.Test.Model
 {
     public class Connection : IEntity
     {

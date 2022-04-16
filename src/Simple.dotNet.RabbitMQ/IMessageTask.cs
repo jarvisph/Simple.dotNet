@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Simple.dotNet.RabbitMQ
+namespace Simple.RabbitMQ
 {
     /// <summary>
     /// 异步任务ID

@@ -295,3 +295,5 @@
 /test/Simple.dotNet.Redis.Test/obj
 /test/Simple.dotNet.Sqlite.Test/obj
 /test/Simple.dotNet.Sqlite.Test/bin
+/console/Simple.RabbitMQ/obj
+/console/Simple.RabbitMQ/bin

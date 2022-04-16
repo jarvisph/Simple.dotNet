@@ -3,9 +3,9 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
-using Simple.dotNet.Core.Extensions;
+using Simple.Core.Extensions;
 
-namespace Simple.dotNet.Redis
+namespace Simple.Redis
 {
     public static class RedisExtentsions
     {

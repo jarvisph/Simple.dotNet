@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 
-namespace Simple.dotNet.Core.Expressions
+namespace Simple.Core.Expressions
 {
     public abstract class ExpressionVisitorBase : ExpressionVisitor
     {

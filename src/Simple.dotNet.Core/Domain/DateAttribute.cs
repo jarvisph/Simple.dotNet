@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Simple.dotNet.Core.Domain
+namespace Simple.Core.Domain
 {
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
     public class DateAttribute : Attribute

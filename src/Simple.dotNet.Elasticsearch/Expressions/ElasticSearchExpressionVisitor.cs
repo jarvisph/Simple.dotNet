@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Linq;
 using Nest;
-using Simple.dotNet.Core.Extensions;
-using Simple.dotNet.Core.Expressions;
+using Simple.Core.Extensions;
+using Simple.Core.Expressions;
 using System.Reflection;
 
-namespace Simple.dotNet.Elasticsearch.Expressions
+namespace Simple.Elasticsearch.Expressions
 {
     /// <summary>
     /// ES 表达式树解析

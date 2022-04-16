@@ -3,11 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
-using Simple.dotNet.Core.Dependency;
-using Simple.dotNet.Core.Extensions;
-using Simple.dotNet.Core.Localization;
+using Simple.Core.Dependency;
+using Simple.Core.Extensions;
+using Simple.Core.Localization;
 
-namespace Simple.dotNet.RabbitMQ
+namespace Simple.RabbitMQ
 {
     /// <summary>
     /// Rabbitmq连接基类

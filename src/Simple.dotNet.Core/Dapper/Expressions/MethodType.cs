@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Simple.dotNet.Core.Dapper.Expressions
+namespace Simple.Core.Dapper.Expressions
 {
     public enum MethodType
     {

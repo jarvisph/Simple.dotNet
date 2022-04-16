@@ -1,13 +1,13 @@
-﻿using Simple.dotNet.Elasticsearch;
-using Simple.dotNet.Elasticsearch.Linq;
-using Simple.dotNet.Elasticsearch.Test.Model;
+﻿using Simple.Elasticsearch;
+using Simple.Elasticsearch.Linq;
+using Simple.Elasticsearch.Test.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Simple.dotNet.ElasticSearch.Test.DbContext
+namespace Simple.ElasticSearch.Test.DbContext
 {
     public class ElasticSearchDbContext : ElasticSearchContext
     {

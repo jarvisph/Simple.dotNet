@@ -1,4 +1,4 @@
-﻿namespace Simple.dotNet.Core.Authorization
+﻿namespace Simple.Core.Authorization
 {
     public abstract class AuthorizationProvider
     {

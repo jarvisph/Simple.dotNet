@@ -1,14 +1,14 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Nest;
-using Simple.dotNet.Elasticsearch;
+using Simple.Elasticsearch;
 using System;
-using Simple.dotNet.Elasticsearch.Test.Model;
+using Simple.Elasticsearch.Test.Model;
 using System.Linq;
 using Elasticsearch.Net;
-using Simple.dotNet.Elasticsearch.Linq;
-using Simple.dotNet.Core.Extensions;
+using Simple.Elasticsearch.Linq;
+using Simple.Core.Extensions;
 
-namespace Simple.dotNet.Elasticsearch.Test
+namespace Simple.Elasticsearch.Test
 {
     [TestClass]
     public class Program

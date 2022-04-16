@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Simple.dotNet.Core.Hub
+namespace Simple.Core.Hub
 {
     /// <summary>
     /// 通信基类

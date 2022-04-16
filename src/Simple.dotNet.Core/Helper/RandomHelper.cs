@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.Text;
 
-namespace Simple.dotNet.Core.Helper
+namespace Simple.Core.Helper
 {
     /// <summary>
     /// 颜色扩展类

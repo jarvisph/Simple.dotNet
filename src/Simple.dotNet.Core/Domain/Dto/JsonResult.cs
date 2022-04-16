@@ -4,13 +4,13 @@ using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Simple.dotNet.Core.Dependency;
-using Simple.dotNet.Core.Domain.Enums;
-using Simple.dotNet.Core.Extensions;
-using Simple.dotNet.Core.Helper;
-using Simple.dotNet.Core.Http;
+using Simple.Core.Dependency;
+using Simple.Core.Domain.Enums;
+using Simple.Core.Extensions;
+using Simple.Core.Helper;
+using Simple.Core.Http;
 
-namespace Simple.dotNet.Core.Domain.Dto
+namespace Simple.Core.Domain.Dto
 {
     public struct Result
     {

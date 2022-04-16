@@ -6,13 +6,13 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
-using Simple.dotNet.Core.Domain.Enums;
-using Simple.dotNet.Core.Extensions;
-using Simple.dotNet.Core.Logger;
+using Simple.Core.Domain.Enums;
+using Simple.Core.Extensions;
+using Simple.Core.Logger;
 using System.IO.Compression;
 using System.Threading;
 
-namespace Simple.dotNet.Core.Helper
+namespace Simple.Core.Helper
 {
     public class NetHelper
     {

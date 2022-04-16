@@ -1,10 +1,10 @@
 ﻿using Microsoft.Data.SqlClient;
 using System.Data;
-using Simple.dotNet.Core.Dapper;
-using Simple.dotNet.Core.Data.Provider;
-using Simple.dotNet.Core.Dependency;
+using Simple.Core.Dapper;
+using Simple.Core.Data.Provider;
+using Simple.Core.Dependency;
 
-namespace Simple.dotNet.Core.Data
+namespace Simple.Core.Data
 {
     /// <summary>
     /// 数据库连接工厂

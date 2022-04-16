@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Security.Cryptography;
 
-namespace Simple.dotNet.Core.Encryption
+namespace Simple.Core.Encryption
 {
     public class RSAEncryption
     {

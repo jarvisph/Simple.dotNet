@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Simple.dotNet.Elasticsearch
+namespace Simple.Elasticsearch
 {
     /// <summary>
     /// 查询

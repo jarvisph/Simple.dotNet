@@ -2,9 +2,9 @@
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Simple.dotNet.Core.Domain.Dto.Page;
+using Simple.Core.Domain.Dto.Page;
 
-namespace Simple.dotNet.Core.Extensions
+namespace Simple.Core.Extensions
 {
     public static class QueryableExtensions
     {

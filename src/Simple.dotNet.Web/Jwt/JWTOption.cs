@@ -1,7 +1,7 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using System;
 
-namespace Simple.dotNet.Web.Jwt
+namespace Simple.Web.Jwt
 {
     public class JWTOption
     {

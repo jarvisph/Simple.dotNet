@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
-using Simple.dotNet.Core.Logger;
+using Simple.Core.Logger;
 
-namespace Simple.dotNet.Core.Localization
+namespace Simple.Core.Localization
 {
     /// <summary>
     /// 本地帮助类

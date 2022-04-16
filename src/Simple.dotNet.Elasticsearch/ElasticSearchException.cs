@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Simple.dotNet.Elasticsearch
+namespace Simple.Elasticsearch
 {
     public class ElasticSearchException : Exception
     {

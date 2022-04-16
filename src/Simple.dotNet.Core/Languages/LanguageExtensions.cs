@@ -3,10 +3,10 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Simple.dotNet.Core.Encryption;
-using Simple.dotNet.Core.Helper;
+using Simple.Core.Encryption;
+using Simple.Core.Helper;
 
-namespace Simple.dotNet.Core.Languages
+namespace Simple.Core.Languages
 {
     /// <summary>
     /// 多语种工具

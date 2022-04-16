@@ -6,10 +6,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
-using Simple.dotNet.Core.Dapper.Expressions;
-using Simple.dotNet.Core.Data;
+using Simple.Core.Dapper.Expressions;
+using Simple.Core.Data;
 
-namespace Simple.dotNet.Core.Dapper
+namespace Simple.Core.Dapper
 {
     internal class DapperQueryable<T> : IQueryable<T>, IQueryable, IEnumerable<T>, IEnumerable, IOrderedQueryable<T>, IOrderedQueryable
     {

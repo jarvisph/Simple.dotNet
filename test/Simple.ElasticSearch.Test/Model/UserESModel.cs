@@ -1,12 +1,12 @@
 ﻿using Nest;
-using Simple.dotNet.Elasticsearch;
+using Simple.Elasticsearch;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Simple.dotNet.Elasticsearch.Test.Model
+namespace Simple.Elasticsearch.Test.Model
 {
     /// <summary>
     /// 会员表

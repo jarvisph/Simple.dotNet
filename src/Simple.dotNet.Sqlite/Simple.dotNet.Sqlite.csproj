@@ -6,10 +6,12 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Version>1.0.1</Version>
-    <PackageId>Simple.dotNet.Sqlite</PackageId>
-    <Authors>Simple.dotNet.Sqlite</Authors>
-    <Product>Simple.dotNet.Sqlite</Product>
+    <PackageId>Simple.Sqlite</PackageId>
+    <Authors>Simple.Sqlite</Authors>
+    <Product>Simple.Sqlite</Product>
     <RepositoryType>git</RepositoryType>
+    <AssemblyName>Simple.Sqlite</AssemblyName>
+    <RootNamespace>Simple.Sqlite</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

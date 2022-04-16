@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Simple.dotNet.Web.Extensions
+namespace Simple.Web.Extensions
 {
     /// <summary>
     /// Host主机扩展方法

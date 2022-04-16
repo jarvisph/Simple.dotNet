@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 
-namespace Simple.dotNet.Elasticsearch.Linq
+namespace Simple.Elasticsearch.Linq
 {
     /// <summary>
     /// ES仓储
