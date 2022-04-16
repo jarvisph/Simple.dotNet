@@ -19,7 +19,10 @@ namespace Simple.RabbitMQ.Test
             IServiceCollection services = new ServiceCollection();
             services.AddDepency();
             services.AddRabbitMQ(new RabbitOption(AppsettingConfig.GetConnectionString("RabbitConnection")));
-            new TestQueue() { UserID = 10000, UserName = "≤‚ ‘01" }.Send();
+            for (int i = 0; i < 1000; i++)
+            {
+                new TestQueue() { UserID = 10000, UserName = "≤‚ ‘" + i }.Send();
+            }
             Thread.Sleep(-1);
         }
     }

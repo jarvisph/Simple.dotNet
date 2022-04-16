@@ -5,14 +5,16 @@
 		<DisableImplicitNamespaceImports>true</DisableImplicitNamespaceImports>
 		<Nullable>enable</Nullable>
 		<Version>1.0.0</Version>
-		<Authors>Simple.Redis</Authors>
-		<Product>Simple.Redis</Product>
+		<Authors>jarvis</Authors>
+		<Product>Simple.dotNet</Product>
 		<PackageProjectUrl>https://github.com/jarvisph/Simple.git</PackageProjectUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryType>git</RepositoryType>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<AssemblyName>Simple.Redis</AssemblyName>
+		<AssemblyName>Simple.dotNet.Redis</AssemblyName>
 		<RootNamespace>Simple.Redis</RootNamespace>
+		<PackageId>Simple.dotNet.Redis</PackageId>
+		<Company>jarvis</Company>
 	</PropertyGroup>
 
 	<ItemGroup>

@@ -6,14 +6,15 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Version>1.0.6</Version>
-    <Product>Simple.Elasticsearch</Product>
-    <PackageId>Simple.Elasticsearch</PackageId>
+    <Product>Simple.dotNet</Product>
+    <PackageId>Simple.dotNet.Elasticsearch</PackageId>
     <Authors>Jarvis</Authors>
     <Description></Description>
-    <Copyright>linq to elasticsearch</Copyright>
+    <Copyright></Copyright>
     <PackageTags>linq to elasticsearch</PackageTags>
-    <AssemblyName>Simple.Elasticsearch</AssemblyName>
+    <AssemblyName>Simple.dotNet.Elasticsearch</AssemblyName>
     <RootNamespace>Simple.Elasticsearch</RootNamespace>
+    <Company>Jarvis</Company>
   </PropertyGroup>
 
   <ItemGroup>

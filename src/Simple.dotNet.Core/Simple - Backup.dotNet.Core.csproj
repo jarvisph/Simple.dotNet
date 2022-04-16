@@ -4,9 +4,9 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Version>1.0.2</Version>
-    <PackageId>Simple.dotNet.Core</PackageId>
+    <PackageId>Simple.Core</PackageId>
     <Authors>jarvis</Authors>
-    <Product>Simple.dotNet</Product>
+    <Product>Simple.Core</Product>
     <RepositoryType>git</RepositoryType>
     <AssemblyName>Simple.dotNet.Core</AssemblyName>
     <RootNamespace>Simple.Core</RootNamespace>

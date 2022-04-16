@@ -91,7 +91,7 @@ namespace Simple.Redis
         /// <param name="type"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        private static object ToEnumValue(this Type type, long value)
+        private static object? ToEnumValue(this Type type, long value)
         {
             if (!type.IsEnum) return null;
             object obj = null;

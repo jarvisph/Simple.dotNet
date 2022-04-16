@@ -9,9 +9,9 @@ services.AddDepency();
 services.AddRabbitMQ(new RabbitOption(AppsettingConfig.GetConnectionString("RabbitConnection")));
 Task.Run(() =>
 {
-    //while (true)
-    //{
-    //    new TestQueue() { UserID = 10000, UserName = "测试01" }.Send();
-    //}
+    while (true)
+    {
+        new TestQueue() { UserID = 10000, UserName = "测试01" }.Send();
+    }
 });
 Thread.Sleep(-1);

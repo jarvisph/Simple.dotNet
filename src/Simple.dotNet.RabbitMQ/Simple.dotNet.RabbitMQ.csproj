@@ -5,15 +5,16 @@
     <DisableImplicitNamespaceImports>true</DisableImplicitNamespaceImports>
     <Nullable>enable</Nullable>
     <RootNamespace>Simple.RabbitMQ</RootNamespace>
-    <AssemblyName>Simple.RabbitMQ</AssemblyName>
-    <PackageId>Simple.RabbitMQ</PackageId>
+    <AssemblyName>Simple.dotNet.RabbitMQ</AssemblyName>
+    <PackageId>Simple.dotNet.RabbitMQ</PackageId>
     <Version>1.0.0</Version>
-    <Authors>Simple.RabbitMQ</Authors>
-    <Product>Simple.RabbitMQ</Product>
+    <Authors>jarvis</Authors>
+    <Product>Simple.dotNet</Product>
     <PackageProjectUrl>https://github.com/jarvisph/Simple.git</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Company>jarvis</Company>
   </PropertyGroup>
 
   <ItemGroup>
