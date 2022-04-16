@@ -15,11 +15,10 @@ namespace Simple.dotNet.RabbitMQ.Test
         public void Main()
         {
             IServiceCollection services = new ServiceCollection();
-            services.AddRabbitProduce();
+            services.AddRabbitProduce("");
             services.AddDepency();
             services.AddRabbitConsumer();
-            IRabbitProducer producer = IocCollection.Resolve<IRabbitProducer>();
-            producer.Send(new TestQueue() { UserID = 1, UserName = "张三" }, ExchangeName.Test_Exchange);
+            new TestQueue() { UserID = 1, UserName = "张三" }.Send();
             Console.Read();
 
         }

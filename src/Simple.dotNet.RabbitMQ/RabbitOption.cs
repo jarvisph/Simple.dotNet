@@ -16,7 +16,7 @@ namespace Simple.dotNet.RabbitMQ
         /// 服务地址
         /// </summary>
         [Column("server")]
-        public string HostName { get; set; }
+        public string HostName { get; set; } = string.Empty;
         /// <summary>
         /// 端口
         /// </summary>
@@ -26,18 +26,18 @@ namespace Simple.dotNet.RabbitMQ
         /// 登录名
         /// </summary>
         [Column("username")]
-        public string UserName { get; set; }
+        public string UserName { get; set; } = string.Empty;
         /// <summary>
         /// 登录密码
         /// </summary>
         [Column("password")]
-        public string Password { get; set; }
+        public string Password { get; set; } = string.Empty;
 
         /// <summary>
         /// 虚拟主机
         /// </summary>
         [Column("virtualhost")]
-        public string VirtualHost { get; set; }
+        public string VirtualHost { get; set; } = string.Empty;
 
     }
 }

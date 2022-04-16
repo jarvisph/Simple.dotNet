@@ -9,31 +9,35 @@ namespace Simple.dotNet.RabbitMQ
     /// <summary>
     /// 监听rabbit消费基类
     /// </summary>
-    public class RabbitConsumer : RabbitConnection, IRabbitConsumer
+    public static class RabbitConsumer
     {
-        public void Consumer(string exchange, string queue, string type, Func<string, object, BasicDeliverEventArgs, bool> action)
+        private static RabbitConnection _connection;
+        static RabbitConsumer()
         {
-            Channel.ExchangeDeclare(exchange, type, true, false, null);
-            Channel.QueueDeclare(queue: queue, durable: true, exclusive: false, autoDelete: false);
-            Channel.QueueBind(queue, exchange, "", null);
-            //Channel.BasicQos(1);
-            var consumer = new EventingBasicConsumer(this.Channel);
-            consumer.Received += (s, t) =>
+            _connection = new RabbitConnection();
+        }
+        public static void Consumer(ConsumerAttribute consumer, Func<string, object, BasicDeliverEventArgs, bool> action)
+        {
+            _connection.Channel.ExchangeDeclare(consumer.ExchangeName, consumer.Type, true, false, null);
+            _connection.Channel.QueueDeclare(queue: consumer.QueueName, durable: true, exclusive: false, autoDelete: false);
+            _connection.Channel.QueueBind(consumer.QueueName, consumer.ExchangeName, string.Empty, null);
+            //_connection.Channel.BasicQos(1);
+            var eventing = new EventingBasicConsumer(_connection.Channel);
+            eventing.Received += (s, t) =>
             {
                 string message = Encoding.Default.GetString(t.Body);
                 bool ask = action(message, s, t);
                 if (ask)
                 {
                     //手动发送确认消息
-                    Channel.BasicAck(t.DeliveryTag, false);
+                    _connection.Channel.BasicAck(t.DeliveryTag, false);
                 }
                 else
                 {
-                    Channel.BasicReject(t.DeliveryTag, true);
+                    _connection.Channel.BasicReject(t.DeliveryTag, true);
                 }
-
             };
-            Channel.BasicConsume(queue, false, consumer);
+            _connection.Channel.BasicConsume(consumer.QueueName, false, eventing);
         }
     }
 }

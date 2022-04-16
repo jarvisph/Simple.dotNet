@@ -12,7 +12,7 @@ namespace Simple.dotNet.RabbitMQ
     /// <summary>
     /// Rabbitmq连接基类
     /// </summary>
-    public abstract class RabbitConnection
+    public class RabbitConnection
     {
         private readonly RabbitOption _options;
         private readonly ConnectionFactory _factory;
@@ -35,7 +35,7 @@ namespace Simple.dotNet.RabbitMQ
             _channel = _connection.CreateModel();
         }
 
-        protected IModel Channel
+        public IModel Channel
         {
             get
             {
@@ -49,7 +49,7 @@ namespace Simple.dotNet.RabbitMQ
         /// <summary>
         /// 关闭
         /// </summary>
-        protected void Close()
+        public void Close()
         {
             if (_channel != null)
             {

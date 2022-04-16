@@ -10,15 +10,21 @@ using Simple.dotNet.RabbitMQ.Test.Queues;
 
 namespace Simple.dotNet.RabbitMQ.Test.Consumer
 {
-    public class TestConsumer : RabbitConsumerBase<TestQueue>
+    [Consumer("Test_Exchange")]
+    public class TestConsumer : RabbitConsumerBase
     {
-        public override string Queue { get; set; } = ExchangeName.Test_Exchange + ".Test";
-        public override string Exchange { get; set; } = ExchangeName.Test_Exchange;
-        public override string Type { get; set; } = ExchangeType.Direct;
-
-        public override void Invoke(TestQueue message, object sender, BasicDeliverEventArgs args)
+        public override void Invoke(string message, object sender, BasicDeliverEventArgs args)
         {
             Console.WriteLine(JsonConvert.SerializeObject(message));
         }
     }
+    public class TestModelConsumer : RabbitConsumerBase<TestQueue>
+    {
+        public override void Invoke(TestQueue message, object sender, BasicDeliverEventArgs args)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+
 }

@@ -12,25 +12,10 @@ namespace Simple.dotNet.RabbitMQ
     /// </summary>
     public static class RabbitProducer
     {
-        /// <summary>
-        /// 发送消息
-        /// </summary>
-        /// <param name="message">消息体</param>
-        /// <param name="exchange">交换机</param>
-        public static void Send(string message, string exchange)
+        private static RabbitConnection _connection;
+        static RabbitProducer()
         {
-            //string routingKey = string.Empty;
-
-            //Channel.ExchangeDeclare(exchange, ExchangeType.Direct, true, false, null);
-            //// 消息持久化
-            //var properties = Channel.CreateBasicProperties();
-            //properties.Persistent = true;
-            //properties.DeliveryMode = 2;
-
-            //var body = Encoding.UTF8.GetBytes(message);
-
-            ////绑定交换机
-            //Channel.BasicPublish(exchange, routingKey, properties, body);
+            _connection = new RabbitConnection();
         }
         /// <summary>
         /// 发送消息
@@ -40,9 +25,18 @@ namespace Simple.dotNet.RabbitMQ
         /// <exception cref="RabbitException"></exception>
         public static void Send<TMessageQueue>(this TMessageQueue message) where TMessageQueue : IMessageQueue
         {
-            ExchangeAttribute exchange = typeof(TMessageQueue).GetAttribute<ExchangeAttribute>();
-            if (exchange == null) throw new RabbitException(nameof(ExchangeAttribute));
+            ProducerAttribute exchange = typeof(TMessageQueue).GetAttribute<ProducerAttribute>();
+            if (exchange == null) throw new RabbitException(nameof(ProducerAttribute));
             string msg = JsonConvert.SerializeObject(message);
+            string routingKey = string.Empty;
+            _connection.Channel.ExchangeDeclare(exchange.Name, exchange.Type, true, false, null);
+            // 消息持久化
+            var properties = _connection.Channel.CreateBasicProperties();
+            properties.Persistent = true;
+            properties.DeliveryMode = 2;
+            var body = Encoding.UTF8.GetBytes(msg);
+            //绑定交换机
+            _connection.Channel.BasicPublish(exchange.Name, routingKey, properties, body);
         }
     }
 }

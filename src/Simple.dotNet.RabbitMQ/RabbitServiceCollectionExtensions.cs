@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Simple.dotNet.Core.Dependency;
 using Simple.dotNet.Core.Helper;
+using System.Diagnostics;
 
 namespace Simple.dotNet.RabbitMQ
 {
@@ -35,33 +36,30 @@ namespace Simple.dotNet.RabbitMQ
         /// <returns></returns>
         public static IServiceCollection AddRabbitConsumer(this IServiceCollection services)
         {
-            services.AddSingleton<IRabbitConsumer, RabbitConsumer>();
-            IRabbitConsumer consumer = IocCollection.Resolve<IRabbitConsumer>();
             foreach (var assemblie in AssemblyHelper.GetAssemblies())
             {
-                IEnumerable<Type> types = assemblie.GetTypes().Where(t => t.IsPublic && !t.IsAbstract && t.BaseType.IsGenericType && t.BaseType.GetGenericTypeDefinition() == typeof(RabbitConsumerBase<>));
-                Parallel.ForEach(types, type =>
-                {
-                    object obj = Activator.CreateInstance(type);
-                    var exchange = (string)type.GetProperty("Exchange").GetValue(obj);
-                    var queue = (string)type.GetProperty("Queue").GetValue(obj);
-                    var serverType = (string)type.GetProperty("Type").GetValue(obj);
-                    var generics = type.BaseType.GetGenericArguments();
-                    consumer.Consumer(exchange, queue, serverType, (message, sender, args) =>
-                    {
-                        var param = new object[] { JsonConvert.DeserializeObject(message, generics[0]), sender, args };
-                        MethodInfo method = type.GetMethod("Invoke");
-                        return (bool)method.Invoke(obj, param);
-                    });
-                });
-
                 Parallel.ForEach(assemblie.GetTypes().Where(t => t.IsPublic && !t.IsAbstract && t.BaseType == typeof(RabbitConsumerBase)), type =>
                 {
-                    RabbitConsumerBase service = (RabbitConsumerBase)Activator.CreateInstance(type);
-                    consumer.Consumer(service.Exchange, service.Queue, service.Type, (message, sender, args) =>
+                    Stopwatch sw = Stopwatch.StartNew();
+                    ConsumerAttribute consumer = type.GetCustomAttribute<ConsumerAttribute>();
+                    if (consumer == null)
                     {
-                        return service.Invoke(message, sender, args);
-                    });
+                        ConsoleHelper.WriteLine($"未标记：{nameof(ConsumerAttribute)}", ConsoleColor.Red);
+                    }
+                    else if (string.IsNullOrEmpty(consumer.ExchangeName))
+                    {
+                        ConsoleHelper.WriteLine($"交换器为空", ConsoleColor.Red);
+                    }
+                    else
+                    {
+                        RabbitConsumerBase service = (RabbitConsumerBase)Activator.CreateInstance(type);
+                        RabbitConsumer.Consumer(consumer, (message, sender, args) =>
+                        {
+                            service.Invoke(message, sender, args);
+                            return true;
+                        });
+                        Console.WriteLine($"消费：{type.Name}，已启动，耗时：{sw.ElapsedMilliseconds}ms");
+                    }
                 });
             }
             return services;
