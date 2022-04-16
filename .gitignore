@@ -297,3 +297,7 @@
 /test/Simple.dotNet.Sqlite.Test/bin
 /console/Simple.RabbitMQ/obj
 /console/Simple.RabbitMQ/bin
+/console/Simple.MongoDB.Test/bin
+/console/Simple.MongoDB.Test/obj
+/src/Simple.dotNet.MongoDB/bin
+/src/Simple.dotNet.MongoDB/obj

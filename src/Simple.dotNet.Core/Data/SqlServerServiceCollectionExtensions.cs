@@ -24,8 +24,7 @@ namespace Simple.Core.Data
             services.AddScoped<IReadRepository>(opt => new SqlServerRepository(connectionString));
             services.AddScoped<IDapperDatabase>(opt => new SqlServerRepository(connectionString));
             services.AddScoped<IProcedureRepository>(opt => new SqlServerRepository(connectionString));
-            services.AddSingleton<ISqlServerConnectionProvider, SqlServerConnectionProvider>();
-            return services;
+            return services.AddSqlServerProvider();
         }
         public static IServiceCollection AddSqlServerProvider(this IServiceCollection services)
         {

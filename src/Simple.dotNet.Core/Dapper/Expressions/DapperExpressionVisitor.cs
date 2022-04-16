@@ -357,7 +357,6 @@ namespace Simple.Core.Dapper.Expressions
             switch (type)
             {
                 case MethodType.None:
-                    break;
                 case MethodType.StartsWith:
                 case MethodType.Contains:
                 case MethodType.EndsWith:

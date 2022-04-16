@@ -55,6 +55,7 @@ namespace Simple.Core.Data
 
                     break;
             }
+            if (_provider == null) throw new DataException(nameof(IDbConnectionProvider));
             return _provider.GetDatabase(connectionString, level);
         }
     }
