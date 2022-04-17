@@ -62,7 +62,7 @@ namespace Simple.Core.Data.Schema
         {
             List<ColumnProperty> list = GetColumns(type);
             if (fields.Length == 0) return list;
-            return list.Where(c => fields.Any(t => t.ToPropertyInfo().Name == c.Property.Name));
+            return list.Where(c => fields.Any(t => t.GetPropertyInfo().Name == c.Property.Name));
         }
         /// <summary>
         /// 获取实体中的某个字段值
@@ -74,7 +74,7 @@ namespace Simple.Core.Data.Schema
         internal static ColumnProperty GetColumn<TEntity, TValue>(this Expression<Func<TEntity, TValue>> field) where TEntity : IEntity
         {
             IEnumerable<ColumnProperty> columns = typeof(TEntity).GetColumns();
-            PropertyInfo property = field.ToPropertyInfo();
+            PropertyInfo property = field.GetPropertyInfo();
             return columns.FirstOrDefault(c => c.Property.Name == property.Name);
         }
         /// <summary>

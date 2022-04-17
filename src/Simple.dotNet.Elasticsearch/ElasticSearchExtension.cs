@@ -761,16 +761,16 @@ namespace Simple.Elasticsearch
                 switch (typeof(TValue).Name)
                 {
                     case "Int16":
-                        value = short.MinValue.ToString().GetArray<TValue>();
+                        value = short.MinValue.ToString().ToArray<TValue>();
                         break;
                     case "Int32":
-                        value = int.MinValue.ToString().GetArray<TValue>();
+                        value = int.MinValue.ToString().ToArray<TValue>();
                         break;
                     case "Int64":
-                        value = long.MinValue.ToString().GetArray<TValue>();
+                        value = long.MinValue.ToString().ToArray<TValue>();
                         break;
                     case "Byte":
-                        value = byte.MinValue.ToString().GetArray<TValue>();
+                        value = byte.MinValue.ToString().ToArray<TValue>();
                         break;
                     default:
                         break;
@@ -789,16 +789,16 @@ namespace Simple.Elasticsearch
                 switch (typeof(TValue).Name)
                 {
                     case "Int16":
-                        value = short.MinValue.ToString().GetArray<TValue>();
+                        value = short.MinValue.ToString().ToArray<TValue>();
                         break;
                     case "Int32":
-                        value = int.MinValue.ToString().GetArray<TValue>();
+                        value = int.MinValue.ToString().ToArray<TValue>();
                         break;
                     case "Int64":
-                        value = long.MinValue.ToString().GetArray<TValue>();
+                        value = long.MinValue.ToString().ToArray<TValue>();
                         break;
                     case "Byte":
-                        value = byte.MinValue.ToString().GetArray<TValue>();
+                        value = byte.MinValue.ToString().ToArray<TValue>();
                         break;
                     default:
                         break;
@@ -1299,7 +1299,7 @@ namespace Simple.Elasticsearch
         {
             IAggregationContainer group(AggregationContainerDescriptor<TDocument> aggs)
             {
-                string[] array = script.GetArray<string>().Select(c => $"doc['{c}'].value").ToArray();
+                string[] array = script.ToArray<string>().Select(c => $"doc['{c}'].value").ToArray();
                 return aggs.Terms("group_by_script", t => t.Script(string.Join("+'-'+", array)).Size(1_000_000).Aggregations(Aggregation(selector)));
             };
             return (s) =>
@@ -1698,7 +1698,7 @@ namespace Simple.Elasticsearch
             foreach (var item in response.Aggregations.Terms("group_by_script").Buckets)
             {
                 TDocument document = Activator.CreateInstance<TDocument>();
-                string[] key_value = item.Key.GetArray<string>('-');
+                string[] key_value = item.Key.ToArray<string>('-');
                 foreach (PropertyInfo property in properties)
                 {
                     if (!property.CanWrite) continue;
@@ -1803,7 +1803,7 @@ namespace Simple.Elasticsearch
                 TDocument document = Activator.CreateInstance<TDocument>();
                 foreach (var item in bucket.Terms("group_by_script").Buckets)
                 {
-                    string[] key_value = item.Key.GetArray<string>('-');
+                    string[] key_value = item.Key.ToArray<string>('-');
                     foreach (PropertyInfo property in properties)
                     {
                         if (!property.CanWrite) continue;
@@ -1905,9 +1905,10 @@ namespace Simple.Elasticsearch
         /// <typeparam name="TValue"></typeparam>
         /// <param name="field"></param>
         /// <returns></returns>
-        private static string GetFieldName<TDocument, TValue>(this Expression<Func<TDocument, TValue>> field) where TDocument : class
+        private static string GetFieldName<TDocument, TValue>(this Expression<Func<TDocument, TValue>> field)
         {
-            return field.GetPropertyInfo().GetFieldName();
+            PropertyInfo property = field.GetPropertyInfo();
+            return property.GetFieldName();
         }
         /// <summary>
         /// 索引不存在时，创建索引
@@ -2051,288 +2052,6 @@ namespace Simple.Elasticsearch
             }
             return property.Name;
         }
-
-        /// <summary>
-        /// 获取类的特性
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        private static T? GetAttribute<T>(this object obj) where T : class
-        {
-            if (obj == null) return default;
-            ICustomAttributeProvider custom = obj is ICustomAttributeProvider ? (ICustomAttributeProvider)obj : (ICustomAttributeProvider)obj.GetType();
-            foreach (object t in custom.GetCustomAttributes(true))
-            {
-                if (t.GetType().Equals(typeof(T))) return (T)t;
-            }
-            return default;
-        }
-        /// <summary>
-        /// 获取expression的属性
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TKey"></typeparam>
-        /// <param name="expression"></param>
-        /// <returns></returns>
-        private static PropertyInfo GetPropertyInfo<T, TKey>(this Expression<Func<T, TKey>> expression) where T : class
-        {
-            PropertyInfo property = null;
-            switch (expression.Body.NodeType)
-            {
-                case ExpressionType.Convert:
-                    property = (PropertyInfo)((MemberExpression)((UnaryExpression)expression.Body).Operand).Member;
-                    break;
-                case ExpressionType.MemberAccess:
-                    property = (PropertyInfo)((MemberExpression)expression.Body).Member;
-                    break;
-            }
-            return property;
-        }
-        /// <summary>
-        /// 获取Propertys
-        /// </summary>
-        /// <typeparam name="TSource"></typeparam>
-        /// <typeparam name="Key"></typeparam>
-        /// <param name="exp"></param>
-        /// <returns></returns>
-        public static IEnumerable<PropertyInfo> GetPropertys<TSource, Key>(this Expression<Func<TSource, Key>> expression) where TSource : class
-        {
-            NewExpression? node = expression.Body as NewExpression;
-            if (node != null)
-            {
-                foreach (MemberInfo member in node.Members)
-                {
-                    yield return (PropertyInfo)member;
-                }
-            }
-            else
-            {
-                yield return expression.GetPropertyInfo();
-            }
-        }
-
-        /// <summary>
-        /// 转换安全类型
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns>Converted object</returns>
-        private static T ToValue<T>(this object obj)
-        {
-            if (typeof(T) == typeof(Guid))
-            {
-                if (obj == null)
-                {
-                    obj = Guid.Empty;
-                }
-                return (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(obj.ToString());
-            }
-
-            return (T)Convert.ChangeType(obj, typeof(T), CultureInfo.InvariantCulture);
-        }
-        /// <summary>
-        /// 判断是否标记特性
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        private static bool HasAttribute<T>(this Object obj) where T : Attribute
-        {
-            ICustomAttributeProvider custom = obj is ICustomAttributeProvider ? (ICustomAttributeProvider)obj : (ICustomAttributeProvider)obj.GetType();
-            foreach (var t in custom.GetCustomAttributes(false))
-            {
-                if (t.GetType().Equals(typeof(T))) return true;
-            }
-            return false;
-        }
-        /// <summary>
-        /// String转换枚举
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static T ToEnum<T>(this string value) where T : IComparable, IFormattable, IConvertible
-        {
-            if (string.IsNullOrWhiteSpace(value) || !typeof(T).IsEnum) return default;
-
-            Type type = typeof(T);
-
-            if (type.HasAttribute<FlagsAttribute>())
-            {
-                return ToFlagEnum<T>(value.Split(",").Where(c => !string.IsNullOrWhiteSpace(c) && Enum.IsDefined(type, c.Trim())).Select(c => Enum.Parse(type, value)).ToArray());
-            }
-            return Enum.IsDefined(type, value) ? (T)Enum.Parse(type, value) : default(T);
-        }
-        /// <summary>
-        /// 转成flag枚举
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="enums"></param>
-        /// <returns></returns>
-        private static T ToFlagEnum<T>(object[] enums) where T : IComparable, IFormattable, IConvertible
-        {
-            T result;
-            switch (Enum.GetUnderlyingType(typeof(T)).Name)
-            {
-                case "Int16":
-                    short int16 = 0;
-                    foreach (object value in enums) int16 |= (short)value;
-                    result = (T)Enum.ToObject(typeof(T), int16);
-                    break;
-                case "Int32":
-                    int int32 = 0;
-                    foreach (object value in enums) int32 |= (int)value;
-                    result = (T)Enum.ToObject(typeof(T), int32);
-                    break;
-                case "Int64":
-                    long int64 = 0;
-                    foreach (object value in enums) int64 |= (long)value;
-                    result = (T)Enum.ToObject(typeof(T), int64);
-                    break;
-                case "Byte":
-                    byte bt = 0;
-                    foreach (object value in enums) bt |= (byte)value;
-                    result = (T)Enum.ToObject(typeof(T), bt);
-                    break;
-                default:
-                    result = default;
-                    break;
-            }
-            return result;
-        }
-        public static object ToEnum(this string value, Type type)
-        {
-            if (string.IsNullOrWhiteSpace(value) || !type.IsEnum) return default;
-            if (int.TryParse(value, out int int_value))
-            {
-                return Enum.ToObject(type, int_value);
-            }
-            else if (byte.TryParse(value, out byte byte_value))
-            {
-                return Enum.ToObject(type, byte_value);
-            }
-            return Enum.IsDefined(type, value) ? Enum.Parse(type, value) : default;
-        }
-
-        /// <summary>
-        /// 把字符串转化成为数字数组
-        /// </summary>
-        /// <param name="str">用逗号隔开的数字</param>
-        /// <param name="split"></param>
-        /// <returns></returns>
-        public static T[] GetArray<T>(this string str, char split = ',')
-        {
-            if (str == null) return Array.Empty<T>();
-            str = str.Replace(" ", string.Empty);
-            string regex = null;
-            T[] result = Array.Empty<T>();
-            switch (typeof(T).Name)
-            {
-                case "Int32":
-                case "Byte":
-                    regex = string.Format(@"(\d+{0})?\d$", split);
-                    if (Regex.IsMatch(str, regex, RegexOptions.IgnoreCase))
-                    {
-                        result = str.Split(split).Where(t => t.IsType<T>()).ToList().ConvertAll(t => (T)Convert.ChangeType(t, typeof(T))).ToArray();
-                    }
-                    break;
-                case "Guid":
-                    regex = @"([0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}" + split + @")?([0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12})$";
-                    if (Regex.IsMatch(str, regex, RegexOptions.IgnoreCase))
-                    {
-                        result = str.Split(split).ToList().ConvertAll(t => (T)((object)Guid.Parse(t))).ToArray();
-                    }
-                    break;
-                case "Decimal":
-                    regex = string.Format(@"([0-9\.]+{0})?\d+$", split);
-                    if (Regex.IsMatch(str, regex, RegexOptions.IgnoreCase))
-                    {
-                        result = str.Split(split).ToList().ConvertAll(t => (T)Convert.ChangeType(t, typeof(T))).ToArray();
-                    }
-                    break;
-                case "Double":
-                    result = str.Split(split).Where(t => t.IsType<T>()).Select(t => (T)Convert.ChangeType(t, typeof(T))).ToArray();
-                    break;
-                case "String":
-                    result = str.Split(split).ToList().FindAll(t => !string.IsNullOrEmpty(t.Trim())).ConvertAll(t => (T)((object)t.Trim())).ToArray();
-                    break;
-                case "DateTime":
-                    result = str.Split(split).ToList().FindAll(t => t.IsType<T>()).ConvertAll(t => (T)((object)DateTime.Parse(t))).ToArray();
-                    break;
-                default:
-                    if (typeof(T).IsEnum)
-                    {
-                        result = str.Split(split).Where(t => Enum.IsDefined(typeof(T), t)).Select(t => (T)Enum.Parse(typeof(T), t)).ToArray();
-                    }
-                    break;
-            }
-
-            return result;
-        }
-
-        public static bool IsType<T>(this string value)
-        {
-            return IsType(value, typeof(T));
-        }
-
-        public static bool IsType(this string value, Type type)
-        {
-            bool isType;
-            switch (type.Name)
-            {
-                case "Int32":
-                    int int32;
-                    isType = int.TryParse(value, out int32);
-                    break;
-                case "Int16":
-                    short int16;
-                    isType = short.TryParse(value, out int16);
-                    break;
-                case "Int64":
-                    long int64;
-                    isType = long.TryParse(value, out int64);
-                    break;
-                case "Guid":
-                    Guid guid;
-                    isType = Guid.TryParse(value, out guid);
-                    break;
-                case "DateTime":
-                    DateTime dateTime;
-                    isType = DateTime.TryParse(value, out dateTime);
-                    break;
-                case "Decimal":
-                    decimal money;
-                    isType = Decimal.TryParse(value, out money);
-                    break;
-                case "Double":
-                    double doubleValue;
-                    isType = Double.TryParse(value, out doubleValue);
-                    break;
-                case "String":
-                    isType = true;
-                    break;
-                case "Boolean":
-                    isType = Regex.IsMatch(value, "1|0|true|false", RegexOptions.IgnoreCase);
-                    break;
-                case "Byte":
-                    byte byteValue;
-                    isType = byte.TryParse(value, out byteValue);
-                    break;
-                default:
-                    if (type.IsEnum)
-                    {
-                        isType = Enum.IsDefined(type, value);
-                    }
-                    else
-                    {
-                        throw new Exception("方法暂时未能检测该种类型" + type.FullName);
-                    }
-                    break;
-            }
-            return isType;
-        }
-
         #endregion
     }
 }

@@ -1,15 +1,22 @@
 ﻿using MongoDB.Driver;
+using Simple.Core.Localization;
+using Simple.MongoDB;
 using Simple.MongoDB.Test.Model;
 
-var connectionString = "mongodb://admin:a123456@192.168.0.21:27017";
-var client = new MongoClient(connectionString);
-string database = "test";
-IMongoDatabase db = client.GetDatabase(database);
-db.CreateCollection("user");
+var client = new MongoClient(AppsettingConfig.GetConnectionString("MongoConnection"));
+IMongoDatabase db = client.GetDatabase("test");
 
-IMongoCollection<User> collection = db.GetCollection<User>("user");
-collection.InsertOne(new User() { ID = 1 });
+var collection = db.GetCollection<User>();
 
-long count = collection.CountDocuments(c => c.ID == 1);
-User user = collection.Find(c => c.ID == 1).FirstOrDefault();
-user = collection.AsQueryable().Where(c => c.ID == 1).FirstOrDefault();
+db.Insert(new User() { ID = 1 });
+long count = db.Count<User>(c => c.ID == 1);
+User user = db.FirstOrDefault<User>(c => c.ID == 1);
+var query = db.Query<User>(c => c.ID == 1);
+bool exists = db.Any<User>(c => c.ID == 1);
+
+db.Delete<User>(c => c.ID == 1);
+count = query.Count();
+
+db.Update(new User { ID = 1 }, c => new { c.ID }, c => c.ID == 1);
+
+

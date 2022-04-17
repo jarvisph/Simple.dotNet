@@ -3,6 +3,14 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <Nullable>enable</Nullable>
+    <AssemblyName>Simple.dotNet.MongoDB</AssemblyName>
+    <RootNamespace>Simple.MongoDB</RootNamespace>
+    <Version>1.0.0</Version>
+    <PackageId>Simple.dotNet.MongoDB</PackageId>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Authors>jarvis</Authors>
+    <Company>jarvis</Company>
+    <Product>Simple.dotNet</Product>
   </PropertyGroup>
 
   <ItemGroup>

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace Simple.MongoDB.Test.Model
 {
+    [MongoDocument("user")]
     public class User
     {
         [BsonId]

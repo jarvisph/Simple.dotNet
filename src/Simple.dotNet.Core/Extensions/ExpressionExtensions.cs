@@ -22,22 +22,47 @@ namespace Simple.Core.Extensions
             return column == null ? node.Member.Name : column.Name;
         }
         /// <summary>
-        /// 获取PropertyInfo
+        /// 获取expression的属性
         /// </summary>
-        /// <typeparam name="TEntity"></typeparam>
-        /// <typeparam name="TValue"></typeparam>
+        /// <typeparam name="TSource"></typeparam>
+        /// <typeparam name="TKey"></typeparam>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public static PropertyInfo GetPropertyInfo<TSource, TKey>(this Expression<Func<TSource, TKey>> expression)
+        {
+            PropertyInfo property = null;
+            switch (expression.Body.NodeType)
+            {
+                case ExpressionType.Convert:
+                    property = (PropertyInfo)((MemberExpression)((UnaryExpression)expression.Body).Operand).Member;
+                    break;
+                case ExpressionType.MemberAccess:
+                    property = (PropertyInfo)((MemberExpression)expression.Body).Member;
+                    break;
+            }
+            return property;
+        }
+        /// <summary>
+        /// 获取Propertys
+        /// </summary>
+        /// <typeparam name="TSource"></typeparam>
+        /// <typeparam name="Key"></typeparam>
         /// <param name="exp"></param>
         /// <returns></returns>
-        public static PropertyInfo ToPropertyInfo<TEntity, TValue>(this Expression<Func<TEntity, TValue>> exp)
+        public static IEnumerable<PropertyInfo> GetPropertys<TSource, Key>(this Expression<Func<TSource, Key>> expression)
         {
-            MemberExpression node = exp.Body as MemberExpression;
-            if (node == null)
+            NewExpression? node = expression.Body as NewExpression;
+            if (node != null)
             {
-                var visitor = new MemberAccesses(exp.Parameters[0]);
-                visitor.Visit(exp);
-                node = visitor.Member;
+                foreach (MemberInfo member in node.Members)
+                {
+                    yield return (PropertyInfo)member;
+                }
             }
-            return (PropertyInfo)node.Member;
+            else
+            {
+                yield return expression.GetPropertyInfo();
+            }
         }
         /// <summary>
         /// 获取表达式对应sql运算类型
