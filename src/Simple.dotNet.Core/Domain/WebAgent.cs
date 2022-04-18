@@ -9,7 +9,7 @@ namespace Simple.Core.Domain
     {
         public static T[] GetArray<T>(string str, char split = ',')
         {
-            return str.ToArray<T>(split);
+            return str.GetArray<T>(split);
         }
     }
 }

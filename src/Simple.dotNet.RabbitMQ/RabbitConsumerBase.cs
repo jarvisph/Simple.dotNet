@@ -13,7 +13,7 @@ namespace Simple.RabbitMQ
         public abstract void Invoke(TMessageQueue message, object sender, BasicDeliverEventArgs args);
         public override void Invoke(string message, object sender, BasicDeliverEventArgs args)
         {
-            TMessageQueue queue = JsonConvert.DeserializeObject<TMessageQueue>(message);
+            TMessageQueue? queue = JsonConvert.DeserializeObject<TMessageQueue>(message);
             if (queue == null) return;
             Invoke(queue, sender, args);
         }

@@ -33,43 +33,8 @@ namespace Simple.Core.Domain
                 }
                 if (request.AllKeys.Contains(name))
                 {
-                    object value = request[name];
-                    switch (property.PropertyType.Name)
-                    {
-                        case "Boolean":
-                            value = value.Equals("1") || value.ToString().Equals("true", StringComparison.CurrentCultureIgnoreCase);
-                            break;
-                        case "Int32[]":
-                            value = ((string)value).ToEnumerable<int>().ToArray();
-                            break;
-                        case "String[]":
-                            value = ((string)value).ToEnumerable<string>().ToArray();
-                            break;
-                        case "Byte[]":
-                            value = ((string)value).ToEnumerable<byte>().ToArray();
-                            break;
-                        case "Guid":
-                            value = ((string)value).ToValue<Guid>();
-                            break;
-                        default:
-                            if (property.PropertyType.IsArray)
-                            {
-                                Type arrayType = property.PropertyType.GetElementType();
-                                string[] values = ((string)value).Split(",");
-                                Array array = Array.CreateInstance(arrayType, values.Length);
-                                for (int i = 0; i < array.Length; i++)
-                                {
-                                    array.SetValue(values[i], i);
-                                }
-                                value = array;
-                            }
-                            else if (property.PropertyType.IsEnum)
-                            {
-
-                            }
-                            break;
-                    }
-                    property.SetValue(this, Convert.ChangeType(value, property.PropertyType), null);
+                    object value = request[name].GetValue(property.PropertyType);
+                    property.SetValue(this, Convert.ChangeType(value, property.PropertyType));
                 }
             }
         }
@@ -78,32 +43,26 @@ namespace Simple.Core.Domain
             List<string> list = new List<string>();
             foreach (PropertyInfo property in this.GetType().GetProperties())
             {
-                object value = property.GetValue(this, null);
+                string name = string.Empty;
+                ColumnAttribute column = property.GetCustomAttribute<ColumnAttribute>();
+                if (column == null)
+                {
+                    name = property.Name;
+                }
+                else
+                {
+                    name = column.Name;
+                }
+                object value = property.GetValue(this);
                 if (value != null)
                 {
-                    switch (property.PropertyType.Name)
+                    if (property.PropertyType.IsArray)
                     {
-                        case "Int32[]":
-                            value = string.Join(",", (int[])value);
-                            break;
-                        case "String[]":
-                            value = string.Join(",", (string[])value);
-                            break;
-                        default:
-                            if (property.PropertyType.IsArray)
-                            {
-                                Array array = (Array)value;
-                                string[] arrayValue = new string[array.Length];
-                                for (int i = 0; i < array.Length; i++)
-                                {
-                                    arrayValue[i] = array.GetValue(i).ToString();
-                                }
-                                value = string.Join(",", arrayValue);
-                            }
-                            break;
+                        Array array = (Array)value;
+                        value = string.Join(",", array.ToArray());
                     }
                 }
-                list.Add(string.Format("{0}={1}", property.Name, value == null ? "" : HttpUtility.UrlEncode(value.ToString())));
+                list.Add(string.Format("{0}={1}", name, value == null ? string.Empty : HttpUtility.UrlEncode(value.ToString())));
             }
             return string.Join("&", list);
         }

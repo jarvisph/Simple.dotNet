@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace Simple.Core.Extensions
 {
@@ -20,7 +22,7 @@ namespace Simple.Core.Extensions
         /// <returns></returns>
         public static object GetDefaultValue(this Type type)
         {
-            object value;
+            object value = null;
             switch (type.Name)
             {
                 case "Int16":
@@ -28,6 +30,7 @@ namespace Simple.Core.Extensions
                 case "Int64":
                 case "Double":
                 case "Decimal":
+                case "Single":
                     value = 0;
                     break;
                 case "Boolean":
@@ -36,8 +39,14 @@ namespace Simple.Core.Extensions
                 case "DateTime":
                     value = Convert.ToDateTime("1900-1-1");
                     break;
-                default:
-                    value = string.Empty;
+                case "String[]":
+                case "Int16[]":
+                case "Int32[]":
+                case "Int64[]":
+                case "Double[]":
+                case "Decimal[]":
+                case "Single[]":
+                    value = Array.CreateInstance(type, 0);
                     break;
             }
             return value;
@@ -45,36 +54,108 @@ namespace Simple.Core.Extensions
         /// <summary>
         /// 获取安全类型
         /// </summary>
-        /// <param name="type"></param>
-        /// <param name="value"></param>
+        /// <param name="value">来源类型</param>
+        /// <param name="type">转换的类型</param>
         /// <returns></returns>
-        public static object GetValue(this Type type, object value)
+        public static object GetValue(this object value, Type type)
         {
-            object defaultValue = null;
-            string name = type.Name;
-            if (name == "Nullable`1")
-            {
-                var generic = type.GenericTypeArguments[0];
-                name = generic.Name;
-            }
-
-            switch (name)
+            if (type == null) throw new ArgumentNullException();
+            if (value == null || value == DBNull.Value) return type.GetDefaultValue();
+            object defaultValue = type.GetDefaultValue();
+            if (type.IsGenericType) type = type.GenericTypeArguments[0];
+            switch (value.GetType().Name)
             {
                 case "String":
-                    defaultValue = (string)value;
-                    break;
-                case "Int32":
-                    defaultValue = Convert.ToInt32(value);
+                    {
+                        string val = (string)value;
+                        if (!string.IsNullOrWhiteSpace(val))
+                        {
+                            switch (type.Name)
+                            {
+                                case "Int16":
+                                    defaultValue = short.TryParse(val, out short shortVal) ? shortVal : defaultValue;
+                                    break;
+                                case "Int32":
+                                    defaultValue = int.TryParse(val, out int intValue) ? intValue : defaultValue;
+                                    break;
+                                case "Int64":
+                                    defaultValue = long.TryParse(val, out long longValue) ? longValue : defaultValue;
+                                    break;
+                                case "Boolean":
+                                    defaultValue = val.Equals("1") || val.Equals("true", StringComparison.CurrentCultureIgnoreCase) || val.Equals("on", StringComparison.CurrentCultureIgnoreCase) || val.Equals("yes", StringComparison.CurrentCultureIgnoreCase);
+                                    break;
+                                case "Decimal":
+                                    defaultValue = decimal.TryParse(val, out decimal decimalValue) ? decimalValue : defaultValue;
+                                    break;
+                                case "Double":
+                                    defaultValue = double.TryParse(val, out double doubleValue) ? doubleValue : defaultValue;
+                                    break;
+                                case "Single":
+                                    defaultValue = float.TryParse(val, out float floatValue) ? floatValue : defaultValue;
+                                    break;
+                                case "Byte":
+                                    defaultValue = byte.TryParse(val, out byte byteValue) ? byteValue : defaultValue;
+                                    break;
+                                case "DateTime":
+                                    defaultValue = DateTime.TryParse(val, out DateTime datetimeValue) ? datetimeValue : defaultValue;
+                                    break;
+                                case "Int16[]":
+                                case "Int32[]":
+                                case "Int64[]":
+                                case "Boolean[]":
+                                case "Decimal[]":
+                                case "Double[]":
+                                case "Single[]":
+                                case "Byte[]":
+                                    {
+                                        bool array = val.StartsWith("[") && val.EndsWith("]");
+                                        if (array)
+                                        {
+                                            defaultValue = JsonConvert.DeserializeObject(val, type);
+                                        }
+                                        else
+                                        {
+                                            switch (type.Name)
+                                            {
+                                                case "Int16[]":
+                                                    defaultValue = val.GetArray(typeof(short));
+                                                    break;
+                                                case "Int32[]":
+                                                    defaultValue = val.GetArray(typeof(int));
+                                                    break;
+                                                case "Int64[]":
+                                                    defaultValue = val.GetArray(typeof(long));
+                                                    break;
+                                                case "Boolean[]":
+                                                    defaultValue = val.GetArray(typeof(bool));
+                                                    break;
+                                                case "Decimal[]":
+                                                    defaultValue = val.GetArray(typeof(decimal));
+                                                    break;
+                                                case "Double[]":
+                                                    defaultValue = val.GetArray(typeof(double));
+                                                    break;
+                                                case "Single[]":
+                                                    defaultValue = val.GetArray(typeof(float));
+                                                    break;
+                                                case "Byte[]":
+                                                    defaultValue = val.GetArray(typeof(byte));
+                                                    break;
+                                            }
+
+                                        }
+                                    }
+                                    break;
+
+                            }
+                        }
+                    }
                     break;
                 default:
+                    defaultValue = Convert.ChangeType(value, type, CultureInfo.InvariantCulture);
                     break;
             }
             return defaultValue;
-        }
-        public static object GetValue(this object value, Type type)
-        {
-            if (value == null) return type.GetDefaultValue();
-            return value.ToValue(type);
         }
         internal static Type GetElementType(this Type seqType)
         {

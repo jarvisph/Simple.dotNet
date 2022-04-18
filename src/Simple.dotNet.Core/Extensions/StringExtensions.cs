@@ -372,10 +372,16 @@ namespace Simple.Core.Extensions
             return (invariantCulture ? char.ToUpperInvariant(str[0]) : char.ToUpper(str[0])) + str.Substring(1);
         }
 
-        public static IEnumerable<T> ToEnumerable<T>(this string str, char split = ',')
+        public static T[] GetArray<T>(this string str, char split = ',')
         {
-            if (string.IsNullOrWhiteSpace(str)) yield break;
-            switch (typeof(T).Name)
+            return (T[])str.GetArray(typeof(T), split);
+        }
+        public static Array GetArray(this string str, Type type, char split = ',')
+        {
+            if (string.IsNullOrWhiteSpace(str)) return Array.CreateInstance(type, 0);
+            var values = str.Split(split).Where(t => !string.IsNullOrEmpty(t)).ToArray();
+            Array array = Array.CreateInstance(type, values.Length);
+            switch (type.Name)
             {
                 case "Guid":
                 case "Decimal":
@@ -384,34 +390,28 @@ namespace Simple.Core.Extensions
                 case "Int32":
                 case "Byte":
                 case "Int64":
-                    foreach (string item in str.Split(split))
-                    {
-                        yield return item.ToValue<T>();
-                    }
-                    break;
                 case "String":
-                    foreach (string item in str.Split(split).Where(t => !string.IsNullOrEmpty(t)))
                     {
-                        yield return (T)(object)item;
+                        for (int i = 0; i < values.Length; i++)
+                        {
+                            array.SetValue(values[i].GetValue(type), i);
+                        }
                     }
                     break;
                 default:
-                    if (typeof(T).IsEnum)
+                    if (type.IsEnum)
                     {
-                        foreach (string item in str.Split(split).Where(t => !string.IsNullOrEmpty(t)))
+                        for (int i = 0; i < values.Length; i++)
                         {
-                            if (Enum.IsDefined(typeof(T), item))
+                            if (Enum.IsDefined(type, values[i]))
                             {
-                                yield return (T)Enum.Parse(typeof(T), item);
+                                array.SetValue(Enum.Parse(type, values[i]), i);
                             }
                         }
                     }
                     break;
             }
-        }
-        public static T[] ToArray<T>(this string str, char split = ',')
-        {
-            return str.ToEnumerable<T>(split).ToArray();
+            return array;
         }
     }
 }

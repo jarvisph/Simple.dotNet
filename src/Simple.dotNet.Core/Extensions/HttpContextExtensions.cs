@@ -10,6 +10,9 @@ using Microsoft.Extensions.Primitives;
 using Simple.Core.Helper;
 using Simple.Core.Domain.Enums;
 using System.Net.Http;
+using System.Reflection;
+using System.Web;
+using Simple.Core.Http;
 
 namespace Simple.Core.Extensions
 {
@@ -120,6 +123,39 @@ namespace Simple.Core.Extensions
             else if (context.Connection.RemoteIpAddress != null)
                 ip = IPHelper.IPRegex.Match(context.Connection.RemoteIpAddress.ToString())?.Value;
             return ip;
+        }
+        public static object Fill(this IFormCollection form, Type type, string prefix = null, bool isHtmlEncode = true)
+        {
+            object obj = Activator.CreateInstance(type);
+            if (obj == null) return null;
+            foreach (string key in form.Keys)
+            {
+                string name = key;
+                if (!string.IsNullOrEmpty(prefix))
+                {
+                    if (!name.StartsWith(prefix)) continue;
+                    name = name.Substring(prefix.Length);
+                }
+
+                PropertyInfo? property = type.GetProperty(name);
+                if (property == null) continue;
+                string value = form[key];
+                object v;
+
+                switch (property.PropertyType.Name)
+                {
+                    case "String":
+                        v = (isHtmlEncode && property.HasAttribute<HtmlEncodeAttribute>()) ? HttpUtility.HtmlDecode(value) : value;
+                        break;
+                    default:
+                        v = value.GetValue(property.PropertyType);
+                        break;
+                }
+
+                property.SetValue(obj, v);
+            }
+
+            return obj;
         }
         /// <summary>
         /// 获取当前登录用户ID，未登陆默认0

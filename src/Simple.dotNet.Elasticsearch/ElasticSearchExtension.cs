@@ -761,16 +761,16 @@ namespace Simple.Elasticsearch
                 switch (typeof(TValue).Name)
                 {
                     case "Int16":
-                        value = short.MinValue.ToString().ToArray<TValue>();
+                        value = short.MinValue.ToString().GetArray<TValue>();
                         break;
                     case "Int32":
-                        value = int.MinValue.ToString().ToArray<TValue>();
+                        value = int.MinValue.ToString().GetArray<TValue>();
                         break;
                     case "Int64":
-                        value = long.MinValue.ToString().ToArray<TValue>();
+                        value = long.MinValue.ToString().GetArray<TValue>();
                         break;
                     case "Byte":
-                        value = byte.MinValue.ToString().ToArray<TValue>();
+                        value = byte.MinValue.ToString().GetArray<TValue>();
                         break;
                     default:
                         break;
@@ -789,16 +789,16 @@ namespace Simple.Elasticsearch
                 switch (typeof(TValue).Name)
                 {
                     case "Int16":
-                        value = short.MinValue.ToString().ToArray<TValue>();
+                        value = short.MinValue.ToString().GetArray<TValue>();
                         break;
                     case "Int32":
-                        value = int.MinValue.ToString().ToArray<TValue>();
+                        value = int.MinValue.ToString().GetArray<TValue>();
                         break;
                     case "Int64":
-                        value = long.MinValue.ToString().ToArray<TValue>();
+                        value = long.MinValue.ToString().GetArray<TValue>();
                         break;
                     case "Byte":
-                        value = byte.MinValue.ToString().ToArray<TValue>();
+                        value = byte.MinValue.ToString().GetArray<TValue>();
                         break;
                     default:
                         break;
@@ -1299,7 +1299,7 @@ namespace Simple.Elasticsearch
         {
             IAggregationContainer group(AggregationContainerDescriptor<TDocument> aggs)
             {
-                string[] array = script.ToArray<string>().Select(c => $"doc['{c}'].value").ToArray();
+                string[] array = script.GetArray<string>().Select(c => $"doc['{c}'].value").ToArray();
                 return aggs.Terms("group_by_script", t => t.Script(string.Join("+'-'+", array)).Size(1_000_000).Aggregations(Aggregation(selector)));
             };
             return (s) =>
@@ -1698,7 +1698,7 @@ namespace Simple.Elasticsearch
             foreach (var item in response.Aggregations.Terms("group_by_script").Buckets)
             {
                 TDocument document = Activator.CreateInstance<TDocument>();
-                string[] key_value = item.Key.ToArray<string>('-');
+                string[] key_value = item.Key.GetArray<string>('-');
                 foreach (PropertyInfo property in properties)
                 {
                     if (!property.CanWrite) continue;
@@ -1803,7 +1803,7 @@ namespace Simple.Elasticsearch
                 TDocument document = Activator.CreateInstance<TDocument>();
                 foreach (var item in bucket.Terms("group_by_script").Buckets)
                 {
-                    string[] key_value = item.Key.ToArray<string>('-');
+                    string[] key_value = item.Key.GetArray<string>('-');
                     foreach (PropertyInfo property in properties)
                     {
                         if (!property.CanWrite) continue;

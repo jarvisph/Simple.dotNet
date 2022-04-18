@@ -41,7 +41,7 @@ namespace Simple.Core.Localization
             {
                 object value = GetConfig(application, property.Name);
                 if (value == null) continue;
-                property.SetValue(config, property.PropertyType.GetValue(value));
+                property.SetValue(config, value.GetValue(property.PropertyType));
             }
             return config;
         }

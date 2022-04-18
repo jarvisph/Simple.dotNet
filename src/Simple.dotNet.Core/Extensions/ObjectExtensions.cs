@@ -2,7 +2,6 @@
 using System;
 using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
 using System.Reflection;
 
 namespace Simple.Core.Extensions
@@ -37,7 +36,6 @@ namespace Simple.Core.Extensions
                 }
                 return (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(obj.ToString());
             }
-
             return (T)Convert.ChangeType(obj, typeof(T), CultureInfo.InvariantCulture);
         }
 
@@ -51,9 +49,9 @@ namespace Simple.Core.Extensions
         /// <typeparam name="T"></typeparam>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public static bool HasAttribute<T>(this Object obj) where T : Attribute
+        public static bool HasAttribute<T>(this object obj) where T : Attribute
         {
-            ICustomAttributeProvider custom = obj is ICustomAttributeProvider ? (ICustomAttributeProvider)obj : (ICustomAttributeProvider)obj.GetType();
+            ICustomAttributeProvider custom = obj is ICustomAttributeProvider ? (ICustomAttributeProvider)obj : obj.GetType();
             foreach (var t in custom.GetCustomAttributes(false))
             {
                 if (t.GetType().Equals(typeof(T))) return true;
@@ -69,7 +67,7 @@ namespace Simple.Core.Extensions
         public static T GetAttribute<T>(this object obj)
         {
             if (obj == null) return default(T);
-            ICustomAttributeProvider custom = obj is ICustomAttributeProvider ? (ICustomAttributeProvider)obj : (ICustomAttributeProvider)obj.GetType();
+            ICustomAttributeProvider custom = obj is ICustomAttributeProvider ? (ICustomAttributeProvider)obj : obj.GetType();
             foreach (var item in custom.GetCustomAttributes(true))
             {
                 if (item.GetType().Equals(typeof(T))) return (T)item;
