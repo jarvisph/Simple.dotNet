@@ -67,6 +67,11 @@ namespace Simple.Web.Middleware
                 context.Response.StatusCode = 403;
                 return Task.CompletedTask;
             }
+            else if (exception is DapperException)
+            {
+                context.Response.StatusCode = 500;
+                return context.Response.WriteAsync(new Result(false, Guid.NewGuid().ToString("N")).ToString());
+            }
             else//错误异常
             {
                 string logger_url = _configuration["Tool:Logger"];
