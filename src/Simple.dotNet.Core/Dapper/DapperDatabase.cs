@@ -5,10 +5,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Linq.Expressions;
 using System.Reflection;
-using Simple.Core.Dapper.Expressions;
 using Simple.Core.Data;
 using Simple.Core.Data.Schema;
 using Simple.Core.Extensions;
+using Simple.Core.Data.Expressions;
 
 namespace Simple.Core.Dapper
 {
@@ -190,9 +190,9 @@ namespace Simple.Core.Dapper
         /// </summary>
         /// <param name="expression"></param>
         /// <returns></returns>
-        public IExpressionVisitor GetExpressionVisitor(Expression expression, DatabaseType type)
+        internal ISqlExpressionVisitor GetExpressionVisitor(Expression expression, DatabaseType type)
         {
-            IExpressionVisitor visitor = null;
+            ISqlExpressionVisitor visitor = null;
             switch (type)
             {
                 case DatabaseType.SqlServer:

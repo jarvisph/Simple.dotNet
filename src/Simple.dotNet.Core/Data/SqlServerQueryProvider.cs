@@ -9,8 +9,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Simple.Core.Dapper;
-using Simple.Core.Dapper.Expressions;
 using Simple.Core.Data.Schema;
+using Simple.Core.Data.Expressions;
 
 namespace Simple.Core.Data
 {
@@ -48,9 +48,9 @@ namespace Simple.Core.Data
         }
         public IEnumerable<TResult> Executeable<TResult>(Expression expression)
         {
-            using (IExpressionVisitor visitor = new SqlServerExpressionVisitor(expression))
+            using (ISqlExpressionVisitor visitor = new SqlServerExpressionVisitor(expression))
             {
-                string sql = visitor.GetSelect(out DynamicParameters parameters, out Type type);
+                string sql = visitor.GetSqlText(out DynamicParameters parameters, out Type type);
                 IDataReader reader = _database.ExecuteReader(CommandType.Text, sql, parameters);
                 while (reader.Read())
                 {
@@ -64,21 +64,19 @@ namespace Simple.Core.Data
         public TResult Execute<TResult>(Expression expression)
         {
             TResult result = default;
-            using (IExpressionVisitor visitor = new SqlServerExpressionVisitor(expression))
+            using (ISqlExpressionVisitor visitor = new SqlServerExpressionVisitor(expression))
             {
-                string sql = visitor.GetSelect(out DynamicParameters parameters, out MethodType type);
-                switch (type)
+                string sql = visitor.GetSqlText(out DynamicParameters parameters, out string method);
+                switch (method)
                 {
-                    case MethodType.None:
-                        break;
-                    case MethodType.Any:
+                    case "Any":
                         result = (TResult)(object)(_database.ExecuteScalar(CommandType.Text, sql, parameters) != null);
                         break;
-                    case MethodType.Count:
+                    case "Count":
                         object value = _database.ExecuteScalar(CommandType.Text, sql, parameters);
                         result = (TResult)(object)(value == null ? 0 : (int)value);
                         break;
-                    case MethodType.FirstOrDefault:
+                    case "FirstOrDefault":
                         IDataReader reader = _database.ExecuteReader(CommandType.Text, sql, parameters);
                         while (reader.Read())
                         {

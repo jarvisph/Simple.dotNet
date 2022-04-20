@@ -22,5 +22,16 @@ namespace Simple.Core.Extensions
                 yield return (T)array.GetValue(i);
             }
         }
+        public static T Get<T>(this string[] args, string name, T defaultValue)
+        {
+            int index = Array.IndexOf(args, name);
+            if (index == -1 || args.Length <= index + 1) return defaultValue;
+            string value = args[index + 1];
+            return value.GetValue<T>() ?? defaultValue;
+        }
+        public static string Get(this string[] args, string name)
+        {
+            return args.Get(name, string.Empty);
+        }
     }
 }

@@ -48,6 +48,9 @@ namespace Simple.Core.Extensions
                 case "Single[]":
                     value = Array.CreateInstance(type, 0);
                     break;
+                case "String":
+                    value = string.Empty;
+                    break;
             }
             return value;
         }
@@ -98,6 +101,9 @@ namespace Simple.Core.Extensions
                                     break;
                                 case "DateTime":
                                     defaultValue = DateTime.TryParse(val, out DateTime datetimeValue) ? datetimeValue : defaultValue;
+                                    break;
+                                case "String":
+                                    defaultValue = val;
                                     break;
                                 case "Int16[]":
                                 case "Int32[]":
@@ -157,6 +163,19 @@ namespace Simple.Core.Extensions
             }
             return defaultValue;
         }
+
+        public static T GetValue<T>(this object value)
+        {
+            return (T)value.GetValue(typeof(T));
+        }
+
+        public static bool IsType<T>(this object value)
+        {
+            if (value == null) return false;
+            if (value is T) return true;
+            return false;
+        }
+
         internal static Type GetElementType(this Type seqType)
         {
             Type ienum = FindIEnumerable(seqType);

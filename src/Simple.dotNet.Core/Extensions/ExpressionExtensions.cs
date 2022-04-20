@@ -22,6 +22,18 @@ namespace Simple.Core.Extensions
             return column == null ? node.Member.Name : column.Name;
         }
         /// <summary>
+        /// 获取表达式字段名称，支持传入特性类
+        /// </summary>
+        /// <typeparam name="TAttribute"></typeparam>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public static string GetFieldName<TAttribute>(this Expression expression) where TAttribute : ColumnAttribute
+        {
+            MemberExpression member = (MemberExpression)expression;
+            ColumnAttribute column = member.Member.GetAttribute<ColumnAttribute>();
+            return column == null ? member.Member.Name : column.Name;
+        }
+        /// <summary>
         /// 获取expression的属性
         /// </summary>
         /// <typeparam name="TSource"></typeparam>

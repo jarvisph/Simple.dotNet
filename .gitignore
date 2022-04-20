@@ -301,3 +301,5 @@
 /console/Simple.MongoDB.Test/obj
 /src/Simple.dotNet.MongoDB/bin
 /src/Simple.dotNet.MongoDB/obj
+/console/Simple.Core.Test/bin
+/console/Simple.Core.Test/obj

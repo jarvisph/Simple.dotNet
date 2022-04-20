@@ -15,8 +15,6 @@ namespace Simple.Elasticsearch.Expressions
     internal class ElasticSearchExpressionVisitor<TDocument> : ExpressionVisitorBase, IElasticSearchExpressionVisitor<TDocument> where TDocument : class
     {
         private readonly Stack<QueryContainer> _query = new Stack<QueryContainer>();
-        private readonly Stack<object> _value = new Stack<object>();
-        private readonly Stack<Expression> _field = new Stack<Expression>();
         private readonly AggregationContainerDescriptor<TDocument> _aggs = new AggregationContainerDescriptor<TDocument>();
         private readonly SortDescriptor<TDocument> _sort = new SortDescriptor<TDocument>();
         private bool _not = false;
@@ -113,28 +111,7 @@ namespace Simple.Elasticsearch.Expressions
         }
         protected override Expression VisitConstant(ConstantExpression node)
         {
-            switch (node.Type.Name)
-            {
-                case "Int16":
-                case "Int32":
-                case "Int64":
-                case "Boolean":
-                case "String":
-                case "Decimal":
-                case "Single":
-                case "Double":
-                case "DateTime":
-                case "Byte":
-                    _value.Push(node.Value);
-                    break;
-                default:
-                    if (node.Type.IsGenericType)
-                    {
-                        this.Type = node.Type.GenericTypeArguments[0];
-                    }
-                    break;
-            }
-            return node;
+            return base.VisitConstant(node);
         }
         protected override Expression VisitNewArray(NewArrayExpression node)
         {
@@ -200,7 +177,7 @@ namespace Simple.Elasticsearch.Expressions
                         Expression field = _field.Pop();
                         if (value == null) return node;
                         Type type = value.GetType();
-                        if (type.BaseType.Name == "Array")
+                        if (type?.BaseType?.Name == "Array")
                         {
                             List<object> values = new List<object>();
                             foreach (object item in (Array)value)
@@ -292,6 +269,10 @@ namespace Simple.Elasticsearch.Expressions
                 case ExpressionType.NotEqual:
                     field = _field.Pop();
                     value = _value.Pop();
+                    if (value is DateTime)
+                    {
+                        value = value.GetValue<DateTime>().GetTimestamp();
+                    }
                     break;
             }
             if (value == null) return node;
@@ -318,60 +299,17 @@ namespace Simple.Elasticsearch.Expressions
             }
             return node;
         }
+
+        protected override Expression VisitMember(MemberExpression node)
+        {
+            return base.VisitMember(node);
+        }
         protected override Expression VisitNew(NewExpression node)
         {
             switch (node.NodeType)
             {
                 case ExpressionType.New:
                     _select = new ElasticSearchSelectExpressionVisitor().Visit(node).ToList();
-                    break;
-            }
-            return node;
-        }
-        protected override Expression VisitMember(MemberExpression node)
-        {
-            if (node == null) throw new ArgumentNullException("MemberExpression");
-            if (node.Expression == null)
-            {
-                switch (node.NodeType)
-                {
-                    case ExpressionType.MemberAccess:
-                        switch (node.Member.Name)
-                        {
-                            case "Now":
-                                _value.Push(DateTime.Now.GetTimestamp());
-                                break;
-                            default:
-                                break;
-                        }
-                        break;
-                }
-            }
-            else
-            {
-                switch (node.Expression.NodeType)
-                {
-                    case ExpressionType.MemberAccess:
-                        break;
-                    case ExpressionType.Constant:
-                        this.VisitConstant((ConstantExpression)node.Expression, node.Member);
-                        break;
-                    case ExpressionType.Parameter:
-                        _field.Push(node);
-                        break;
-                }
-            }
-            return node;
-        }
-        protected override Expression VisitConstant(ConstantExpression node, MemberInfo member)
-        {
-            switch (member.MemberType)
-            {
-                case MemberTypes.Field:
-                    _value.Push(((FieldInfo)member).GetValue(node.Value));
-                    break;
-                case MemberTypes.Property:
-                    _value.Push(((PropertyInfo)member).GetValue(node.Value));
                     break;
             }
             return node;

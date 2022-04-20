@@ -34,7 +34,7 @@ namespace Simple.Core.Domain
                 if (request.AllKeys.Contains(name))
                 {
                     object value = request[name].GetValue(property.PropertyType);
-                    property.SetValue(this, Convert.ChangeType(value, property.PropertyType));
+                    property.SetValue(this, value);
                 }
             }
         }

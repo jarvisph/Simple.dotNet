@@ -35,11 +35,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simple.dotNet.Sqlite.Test",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "console", "console", "{E26914D3-5C8F-4B3C-A262-A55E6A55BDC7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simple.RabbitMQ.Test", "console\Simple.RabbitMQ\Simple.RabbitMQ.Test.csproj", "{0FB6E75B-00CD-4E47-B039-96197E470A4C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simple.RabbitMQ.Test", "console\Simple.RabbitMQ\Simple.RabbitMQ.Test.csproj", "{0FB6E75B-00CD-4E47-B039-96197E470A4C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simple.dotNet.MongoDB", "src\Simple.dotNet.MongoDB\Simple.dotNet.MongoDB.csproj", "{2D93867D-2792-4A56-9DB3-CD89875FB3B7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simple.dotNet.MongoDB", "src\Simple.dotNet.MongoDB\Simple.dotNet.MongoDB.csproj", "{2D93867D-2792-4A56-9DB3-CD89875FB3B7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simple.MongoDB.Test", "console\Simple.MongoDB.Test\Simple.MongoDB.Test.csproj", "{8DC12455-79C5-4998-8BED-2C0F6489535D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simple.MongoDB.Test", "console\Simple.MongoDB.Test\Simple.MongoDB.Test.csproj", "{8DC12455-79C5-4998-8BED-2C0F6489535D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simple.Core.Test", "console\Simple.Core.Test\Simple.Core.Test.csproj", "{F22EAD5A-B61D-4EC4-99C7-1FCC3BF39C84}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -111,6 +113,10 @@ Global
 		{8DC12455-79C5-4998-8BED-2C0F6489535D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8DC12455-79C5-4998-8BED-2C0F6489535D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8DC12455-79C5-4998-8BED-2C0F6489535D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F22EAD5A-B61D-4EC4-99C7-1FCC3BF39C84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F22EAD5A-B61D-4EC4-99C7-1FCC3BF39C84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F22EAD5A-B61D-4EC4-99C7-1FCC3BF39C84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F22EAD5A-B61D-4EC4-99C7-1FCC3BF39C84}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -132,6 +138,7 @@ Global
 		{0FB6E75B-00CD-4E47-B039-96197E470A4C} = {E26914D3-5C8F-4B3C-A262-A55E6A55BDC7}
 		{2D93867D-2792-4A56-9DB3-CD89875FB3B7} = {5C245D31-DDED-4D39-BBC7-28E8403D5632}
 		{8DC12455-79C5-4998-8BED-2C0F6489535D} = {E26914D3-5C8F-4B3C-A262-A55E6A55BDC7}
+		{F22EAD5A-B61D-4EC4-99C7-1FCC3BF39C84} = {E26914D3-5C8F-4B3C-A262-A55E6A55BDC7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0DD327F2-3B1F-4726-9C61-72AE2099C521}

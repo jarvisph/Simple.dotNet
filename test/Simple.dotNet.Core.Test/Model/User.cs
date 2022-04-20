@@ -12,7 +12,7 @@ using Simple.Core.Domain.Enums;
 namespace Simple.Core.Test.Model
 {
     [Table("Users")]
-    public class User : IEntity
+    public class User : UserBase, IEntity
     {
 
         #region ======== 构造函数 ===========
@@ -33,7 +33,7 @@ namespace Simple.Core.Test.Model
 
 
         [Column("UserName")]
-        public string UserName { get; set; } = string.Empty;
+        public override string UserName { get; set; } = string.Empty;
 
 
         ///<summary>

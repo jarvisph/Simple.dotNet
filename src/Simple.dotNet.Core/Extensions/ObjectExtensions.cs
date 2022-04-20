@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Reflection;
@@ -37,6 +38,23 @@ namespace Simple.Core.Extensions
                 return (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(obj.ToString());
             }
             return (T)Convert.ChangeType(obj, typeof(T), CultureInfo.InvariantCulture);
+        }
+        public static string GetString(this object obj)
+        {
+            if (obj.GetType().IsArray)
+            {
+                Array array = (Array)obj;
+                List<object> list = new List<object>();
+                for (int i = 0; i < array.Length; i++)
+                {
+                    list.Add(array.GetValue(i));
+                }
+                return string.Join(",", list);
+            }
+            else
+            {
+                return obj.ToString();
+            }
         }
 
         public static object ToValue(this object obj, Type type)

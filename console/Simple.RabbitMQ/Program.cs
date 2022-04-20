@@ -6,7 +6,9 @@ using Simple.RabbitMQ.Test.Queues;
 
 IServiceCollection services = new ServiceCollection();
 services.AddDepency();
-services.AddRabbitMQ(new RabbitOption(AppsettingConfig.GetConnectionString("RabbitConnection")));
+RabbitOption options = new RabbitOption(AppsettingConfig.GetConnectionString("RabbitConnection"));
+string connectionString = options.ToString();
+services.AddRabbitMQ(options);
 Task.Run(() =>
 {
     while (true)
