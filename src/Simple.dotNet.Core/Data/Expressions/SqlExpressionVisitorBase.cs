@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Simple.Core.Dapper;
 using Simple.Core.Data.Schema;
 using Simple.Core.Expressions;
 using Simple.Core.Extensions;
@@ -18,7 +19,6 @@ namespace Simple.Core.Data.Expressions
         protected readonly Stack<string> _where = new Stack<string>();
         protected readonly Stack<string> _not = new Stack<string>();
         protected readonly Stack<bool> _array = new Stack<bool>();
-        protected readonly Stack<string> _method = new Stack<string>();
         protected List<SelectProperty> _select = new List<SelectProperty>();
         protected List<MemberExpression> _groupby = new List<MemberExpression>();
         protected List<MemberExpression> _orderby = new List<MemberExpression>();
@@ -49,9 +49,8 @@ namespace Simple.Core.Data.Expressions
             _where.Clear();
             return where;
         }
-        public string GetSqlText(out DynamicParameters parameters, out string method)
+        public string GetSqlText(out DynamicParameters parameters)
         {
-            method = string.Empty;
             parameters = new DynamicParameters();
             if (this.Type == null) throw new NullReferenceException("泛型类型未指定");
             string[] cmd = ArrayHelper.CreateInstance(4, string.Empty);
@@ -66,12 +65,15 @@ namespace Simple.Core.Data.Expressions
             {
                 cmd[2] = "WHERE " + string.Concat(_where.ToArray());
             }
-            while (_method.Count > 0)
+            foreach (var cell in this.Cells)
             {
-                string cell = _method.Pop();
-                if (string.IsNullOrWhiteSpace(method))
+                if (_select.Count == 0)
                 {
-                    method = cell;
+                    cmd[0] = string.Join(",", this.Type.GetProperties().Where(c => c.CanRead && c.CanWrite && !c.HasAttribute<NotMappedAttribute>()).Select(c => $"[{c.GetFieldName<ColumnAttribute>()}]"));
+                }
+                if (_orderby.Count == 0 && take > 0)
+                {
+                    throw new DapperException("Skip、Take，缺少OrderBY");
                 }
                 switch (cell)
                 {
@@ -103,10 +105,10 @@ namespace Simple.Core.Data.Expressions
                                         }
                                         break;
                                     case "Count":
-                                        fields.Add($"[{item.Method}] AS {item.Method}(0)");
+                                        fields.Add($"{item.Method}(0) AS [{item.Method}]");
                                         break;
                                     default:
-                                        fields.Add($"[{item.Method}] AS {item.Method}([{item.Member.GetFieldName<ColumnAttribute>()}])");
+                                        fields.Add($"{item.Method}([{item.Member.GetFieldName<ColumnAttribute>()}]) AS [{item.Method}]");
                                         break;
                                 }
                             }
@@ -114,10 +116,8 @@ namespace Simple.Core.Data.Expressions
                         }
                         break;
                     case "Skip":
-
-                        break;
                     case "Take":
-
+                        sql = "SELECT {0} FROM {1} {2} {3} " + $"OFFSET {skip} ROW FETCH NEXT {take} ROW ONLY";
                         break;
                     case "Any":
                         cmd[0] = "0";
@@ -183,7 +183,7 @@ namespace Simple.Core.Data.Expressions
                     }
                     break;
             }
-            this._method.Push(node.Method.Name);
+            this.Cells.Add(node.Method.Name);
             switch (node.Method.Name)
             {
                 case "GroupBy":
@@ -191,7 +191,7 @@ namespace Simple.Core.Data.Expressions
                         using (GroupByExpressionVisitor visitor = new GroupByExpressionVisitor())
                         {
                             _groupby = visitor.Visit(node).ToList();
-                            this.Type = visitor.Type;
+                            this.Type ??= visitor.Type;
                         }
                     }
                     break;
@@ -234,7 +234,11 @@ namespace Simple.Core.Data.Expressions
                 case "OrderByDescending":
                 case "OrderBy":
                     {
-                        _orderby = new OrderByExpressionVisitory().Visit(node).ToList();
+                        using (OrderByExpressionVisitory visitory = new OrderByExpressionVisitory())
+                        {
+                            _orderby = visitory.Visit(node).ToList();
+                            this.Type ??= visitory.Type;
+                        }
                     }
                     break;
                 case "Contains":
@@ -347,7 +351,6 @@ namespace Simple.Core.Data.Expressions
         {
             _parameters.Clear();
             _where.Clear();
-            _method.Clear();
             _value.Clear();
         }
     }

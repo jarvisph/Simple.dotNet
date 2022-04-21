@@ -10,6 +10,8 @@ namespace Simple.Core.Expressions
     {
         protected readonly Stack<object> _value = new Stack<object>();
         protected readonly Stack<Expression> _field = new Stack<Expression>();
+
+        public List<string> Cells { get; private set; } = new List<string>();
         public Type Type { get; protected set; }
 
 

@@ -1,4 +1,5 @@
 ﻿using Simple.Core.Data.Schema;
+using Simple.Core.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -8,19 +9,16 @@ using System.Threading.Tasks;
 
 namespace Simple.Core.Test.Model
 {
+    [Table("Users")]
     public class User : IEntity
     {
-        [Column("userid")]
-        public int Id { get; set; }
-        [Column("username")]
-        public string Name { get; set; } = string.Empty;
-        [Column("email")]
-        public string Email { get; set; } = string.Empty;
-        [Column("isadmin")]
+        [Column("UserID")]
+        public int ID { get; set; }
+        public string UserName { get; set; } = string.Empty;
         public bool IsAdmin { get; set; }
-        [Column("age")]
-        public int Age { get; set; }
-        [Column("created")]
-        public DateTime Created { get; set; }
+        public decimal Money { get; set; }
+        public DateTime CreateAt { get; set; }
+        public UserStatus Status { get; set; }
+
     }
 }

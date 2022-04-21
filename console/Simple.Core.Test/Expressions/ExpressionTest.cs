@@ -23,7 +23,7 @@ namespace Simple.Core.Test.Expressions
         {
             int id = 1;
             int[] ints = { 1, 2, 3 };
-            Query<User>(c => c.Id == id && !ints.Contains(c.Id) && (c.Age > 10 || c.Created < DateTime.Now) && c.IsAdmin == true && (!c.Name.Contains("ceshi") || c.Name.StartsWith("c") || c.Name.EndsWith("i")));
+            Query<User>(c => c.ID == id && !ints.Contains(c.ID) && (c.Money > 10 || c.CreateAt < DateTime.Now) && c.IsAdmin == true && (!c.UserName.Contains("ceshi") || c.UserName.StartsWith("c") || c.UserName.EndsWith("i")));
         }
         public void Cell()
         {
@@ -34,11 +34,11 @@ namespace Simple.Core.Test.Expressions
             using (IDapperDatabase db = DbConnectionFactory.CreateDatabase(AppsettingConfig.GetConnectionString("DbConnection"), System.Data.IsolationLevel.Unspecified, DatabaseType.SqlServer))
             {
                 var query = db.Query<User>();
-                //bool any = query.Any(c => c.Created < DateTime.Now);
-                //int count = query.Count(c => c.Age > 10);
-                //var user = query.OrderByDescending(c => c.Age).FirstOrDefault(c => c.Id == 1);
-                //var group = query.GroupBy(c => new { c.Age }).Select(c => new { c.Key.Age, Count = c.Count() }).ToList();
-                var list = query.Skip(10).Take(20).ToList();
+                bool any = query.Any(c => c.CreateAt < DateTime.Now);
+                int count = query.Count(c => c.Money > 0);
+                var user = query.OrderByDescending(c => c.CreateAt).FirstOrDefault(c => c.ID == 1);
+                var group = query.GroupBy(c => new { c.Status }).Select(c => new { c.Key.Status, Count = c.Count() }).ToList();
+                var list = query.OrderByDescending(c => c.ID).Skip(10).Take(20).ToList();
             }
         }
         public void Query<T>(Expression<Func<T, bool>> expression)

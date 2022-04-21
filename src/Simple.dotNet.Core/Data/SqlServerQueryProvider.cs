@@ -1,17 +1,15 @@
 ﻿using Dapper;
+using Simple.Core.Dapper;
+using Simple.Core.Data.Expressions;
+using Simple.Core.Data.Schema;
+using Simple.Core.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
-using Simple.Core.Dapper;
-using Simple.Core.Data.Schema;
-using Simple.Core.Data.Expressions;
-using Simple.Core.Extensions;
 
 namespace Simple.Core.Data
 {
@@ -51,18 +49,17 @@ namespace Simple.Core.Data
         {
             using (ISqlExpressionVisitor visitor = new SqlServerExpressionVisitor(expression))
             {
-                string sql = visitor.GetSqlText(out DynamicParameters parameters, out string method);
+                string sql = visitor.GetSqlText(out DynamicParameters parameters);
                 Console.WriteLine($"SQL语句：{sql}");
-                Console.WriteLine($"最后操作：{method}");
+                Console.WriteLine($"Cell：{string.Join(",", visitor.Cells)}");
                 Console.WriteLine($"条件值：{string.Join(",", parameters.ParameterNames.Select(c => $"{c}={parameters.Get<object>(c).GetString()}"))}");
-                yield break;
-                //IDataReader reader = _database.ExecuteReader(CommandType.Text, sql, parameters);
-                //while (reader.Read())
-                //{
-                //    object source = Activator.CreateInstance(type);
-                //    yield return (TResult)reader.GetReaderData(source);
-                //}
-                //reader.Close();
+                IDataReader reader = _database.ExecuteReader(CommandType.Text, sql, parameters);
+                while (reader.Read())
+                {
+                    object source = Activator.CreateInstance(typeof(TResult));
+                    yield return (TResult)reader.GetReaderData(source);
+                }
+                reader.Close();
             }
         }
 
@@ -71,30 +68,29 @@ namespace Simple.Core.Data
             TResult result = default;
             using (ISqlExpressionVisitor visitor = new SqlServerExpressionVisitor(expression))
             {
-                string sql = visitor.GetSqlText(out DynamicParameters parameters, out string method);
+                string sql = visitor.GetSqlText(out DynamicParameters parameters);
                 Console.WriteLine($"SQL语句：{sql}");
-                Console.WriteLine($"最后操作：{method}");
+                Console.WriteLine($"Cell：{string.Join(",", visitor.Cells)}");
                 Console.WriteLine($"条件值：{string.Join(",", parameters.ParameterNames.Select(c => $"{c}={parameters.Get<object>(c).GetString()}"))}");
-                //switch (method)
-                //{
-                //    case "Any":
-                //        result = (TResult)(object)(_database.ExecuteScalar(CommandType.Text, sql, parameters) != null);
-                //        break;
-                //    case "Count":
-                //        object value = _database.ExecuteScalar(CommandType.Text, sql, parameters);
-                //        result = (TResult)(object)(value == null ? 0 : (int)value);
-                //        break;
-                //    case "FirstOrDefault":
-                //        IDataReader reader = _database.ExecuteReader(CommandType.Text, sql, parameters);
-                //        while (reader.Read())
-                //        {
-                //            result = reader.GetReaderData<TResult>();
-                //        }
-                //        reader.Close();
-                //        break;
-                //    default:
-                //        break;
-                //}
+                if (visitor.Cells.Any(c => c == "Any"))
+                {
+                    result = (TResult)(object)(_database.ExecuteScalar(CommandType.Text, sql, parameters) != null);
+                }
+                else if (visitor.Cells.Any(c => c == "Count"))
+                {
+                    object value = _database.ExecuteScalar(CommandType.Text, sql, parameters);
+                    result = (TResult)(object)(value == null ? 0 : (int)value);
+                }
+                else if (visitor.Cells.Any(c => c == "FirstOrDefault"))
+                {
+                    IDataReader reader = _database.ExecuteReader(CommandType.Text, sql, parameters);
+                    while (reader.Read())
+                    {
+                        result = reader.GetReaderData<TResult>();
+                    }
+                    reader.Close();
+                }
+
             }
             return result;
         }

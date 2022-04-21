@@ -22,13 +22,11 @@ namespace Simple.Elasticsearch.Expressions
         private List<Tuple<string, string, Type>>? _select;
 
         public string? Cell { get; private set; }
-        public List<string> Cells { get; private set; }
+
 
         public NewExpression? NewExpression { get; private set; }
-        public Type Type { get; private set; }
         public ElasticSearchExpressionVisitor()
         {
-            this.Cells = new List<string>();
             this.Type = typeof(TDocument);
         }
         public ElasticSearchExpressionVisitor(Expression expression) : this()

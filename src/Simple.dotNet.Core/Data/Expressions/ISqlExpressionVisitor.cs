@@ -16,9 +16,9 @@ namespace Simple.Core.Data.Expressions
         /// 获取sql语句
         /// </summary>
         /// <param name="parameters"></param>
-        /// <param name="methods"></param>
         /// <returns></returns>
-        string GetSqlText(out DynamicParameters parameters, out string method);
+        string GetSqlText(out DynamicParameters parameters);
+        List<string> Cells { get; }
         /// <summary>
         /// 获取sql语句，返回参数化及实体类类型
         /// </summary>
