@@ -33,5 +33,6 @@ namespace Simple.Core.Extensions
         {
             return args.Get(name, string.Empty);
         }
+       
     }
 }

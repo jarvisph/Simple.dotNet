@@ -4,7 +4,7 @@ using Simple.Core.Test.Expressions;
 using System.Reflection;
 
 string action = args.Get("-action", "expressions");
-string method = args.Get("-method", "Where");
+string method = args.Get("-method", "Cell");
 switch (action)
 {
     case "expressions":

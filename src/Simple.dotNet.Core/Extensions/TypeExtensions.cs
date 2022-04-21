@@ -158,7 +158,14 @@ namespace Simple.Core.Extensions
                     }
                     break;
                 default:
-                    defaultValue = Convert.ChangeType(value, type, CultureInfo.InvariantCulture);
+                    try
+                    {
+                        defaultValue = Convert.ChangeType(value, type, CultureInfo.InvariantCulture);
+                    }
+                    finally
+                    {
+
+                    }
                     break;
             }
             return defaultValue;

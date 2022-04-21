@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Simple.Elasticsearch.Expressions
 {
-    internal class ElasticSearchSelectExpressionVisitor : ExpressionVisitorBase
+    internal class ElasticSearchSelectExpressionVisitor : ExpressionVisitor
     {
         private readonly Queue<MemberInfo> _field = new Queue<MemberInfo>();
         private readonly Queue<Tuple<string, string, Type>> _select = new Queue<Tuple<string, string, Type>>();

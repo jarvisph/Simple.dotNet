@@ -11,7 +11,7 @@ namespace Simple.Elasticsearch.Expressions
 {
     internal class ElasticSearchGroupExpressionVisitor : ExpressionVisitorBase
     {
-        private readonly Stack<Tuple<string, string, DateInterval?>> _field = new Stack<Tuple<string, string, DateInterval?>>();
+        private readonly Stack<Tuple<string, string, DateInterval?>> _group = new Stack<Tuple<string, string, DateInterval?>>();
         public ElasticSearchGroupExpressionVisitor()
         {
 
@@ -24,9 +24,9 @@ namespace Simple.Elasticsearch.Expressions
         public new IEnumerable<Tuple<string, string, DateInterval?>> Visit(Expression node)
         {
             base.Visit(node);
-            while (_field.Count > 0)
+            while (_group.Count > 0)
             {
-                yield return _field.Pop();
+                yield return _group.Pop();
             }
         }
         protected override Expression VisitMember(MemberExpression node)
@@ -34,11 +34,11 @@ namespace Simple.Elasticsearch.Expressions
             if (node.Member.DeclaringType.Name == "DateTime")
             {
                 MemberExpression member = (MemberExpression)node.Expression;
-                _field.Push(new Tuple<string, string, DateInterval?>(member.Member.Name, "date", node.Member.Name.ToEnum<DateInterval>()));
+                _group.Push(new Tuple<string, string, DateInterval?>(member.Member.Name, "date", node.Member.Name.ToEnum<DateInterval>()));
             }
             else
             {
-                _field.Push(new Tuple<string, string, DateInterval?>(node.Member.HasAttribute<KeywordAttribute>() ? $"{node.Member.Name}.keyword" : node.Member.Name, "terms", null));
+                _group.Push(new Tuple<string, string, DateInterval?>(node.Member.HasAttribute<KeywordAttribute>() ? $"{node.Member.Name}.keyword" : node.Member.Name, "terms", null));
             }
             return node;
         }

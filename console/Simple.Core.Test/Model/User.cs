@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Simple.Core.Data.Schema;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Simple.Core.Test.Model
 {
-    public class User
+    public class User : IEntity
     {
         [Column("userid")]
         public int Id { get; set; }

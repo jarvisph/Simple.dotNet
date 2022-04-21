@@ -33,6 +33,11 @@ namespace Simple.Core.Extensions
             ColumnAttribute column = member.Member.GetAttribute<ColumnAttribute>();
             return column == null ? member.Member.Name : column.Name;
         }
+        public static string GetFieldName<TAttribute>(this MemberInfo member) where TAttribute : ColumnAttribute
+        {
+            ColumnAttribute column = member.GetAttribute<ColumnAttribute>();
+            return column == null ? member.Name : column.Name;
+        }
         /// <summary>
         /// 获取expression的属性
         /// </summary>
