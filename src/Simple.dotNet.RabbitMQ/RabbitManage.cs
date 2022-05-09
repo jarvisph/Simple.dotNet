@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using RabbitMQ.Client;
 using System;
-using System.Collections.Generic;
 using System.Text;
 using Simple.Core.Extensions;
 using System.Diagnostics;
