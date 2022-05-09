@@ -56,6 +56,10 @@ namespace Simple.Core.Expressions
                 switch (node.Expression.NodeType)
                 {
                     case ExpressionType.MemberAccess:
+                        MemberExpression member = (MemberExpression)node.Expression;
+                        ConstantExpression constant = (ConstantExpression)member.Expression;
+                        var model = ((FieldInfo)member.Member).GetValue(constant.Value);
+                        _value.Push(model.GetType().GetProperty(node.Member.Name).GetValue(model));
                         break;
                     case ExpressionType.Constant:
                         this.VisitConstant((ConstantExpression)node.Expression, node.Member);

@@ -34,6 +34,7 @@ namespace Simple.Web.Jwt
         }
         public virtual Task Invoke(HttpContext context)
         {
+            if (_options == null) return _next(context);
             try
             {
                 StringValues value = context.Request.Headers.Where(c => c.Key == _options.TokenName).FirstOrDefault().Value;

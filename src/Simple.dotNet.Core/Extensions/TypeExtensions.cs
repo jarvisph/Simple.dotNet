@@ -105,6 +105,9 @@ namespace Simple.Core.Extensions
                                 case "String":
                                     defaultValue = val;
                                     break;
+                                case "Guid":
+                                    defaultValue = Guid.TryParse(val, out Guid guidValue) ? guidValue : defaultValue;
+                                    break;
                                 case "Int16[]":
                                 case "Int32[]":
                                 case "Int64[]":

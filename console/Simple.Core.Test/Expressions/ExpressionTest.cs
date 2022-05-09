@@ -21,9 +21,13 @@ namespace Simple.Core.Test.Expressions
     {
         public void Where()
         {
+            User user = new User
+            {
+                ID = 1
+            };
             int id = 1;
             int[] ints = { 1, 2, 3 };
-            Query<User>(c => c.ID == id && !ints.Contains(c.ID) && (c.Money > 10 || c.CreateAt < DateTime.Now) && c.IsAdmin == true && (!c.UserName.Contains("ceshi") || c.UserName.StartsWith("c") || c.UserName.EndsWith("i")));
+            Query<User>(c => c.ID == user.ID && !ints.Contains(c.ID) && (c.Money > 10 || c.CreateAt < DateTime.Now) && c.IsAdmin == true && (!c.UserName.Contains("ceshi") || c.UserName.StartsWith("c") || c.UserName.EndsWith("i")));
         }
         public void Cell()
         {

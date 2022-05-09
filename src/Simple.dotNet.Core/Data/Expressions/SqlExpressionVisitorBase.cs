@@ -170,9 +170,14 @@ namespace Simple.Core.Data.Expressions
         /// <returns></returns>
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
+
             switch (node.NodeType)
             {
                 case ExpressionType.Call:
+                    foreach (var item in node.Arguments)
+                    {
+                        this.Visit(item);
+                    }
                     if (node.Object != null)
                     {
                         this.VisitMember((MemberExpression)node.Object);
@@ -245,8 +250,8 @@ namespace Simple.Core.Data.Expressions
                 case "StartsWith":
                 case "EndsWith":
                     {
-                        string param = _where.Pop();
                         string field = _where.Pop();
+                        string param = _where.Pop();
                         string not = string.Empty;
                         bool array = false;
                         while (_not.Count > 0)
@@ -259,7 +264,7 @@ namespace Simple.Core.Data.Expressions
                         }
                         if (array)
                         {
-                            _where.Push($"{param} {not} IN ({field})");
+                            _where.Push($"{field} {not} IN ({param})");
                         }
                         else
                         {
