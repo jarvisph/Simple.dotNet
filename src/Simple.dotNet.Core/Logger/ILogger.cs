@@ -7,5 +7,6 @@ namespace Simple.Core.Logger
     public interface ILogger
     {
         public bool Log(string message);
+        public bool Log(Exception exception);
     }
 }

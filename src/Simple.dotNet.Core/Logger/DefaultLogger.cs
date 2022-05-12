@@ -11,5 +11,10 @@ namespace Simple.Core.Logger
             Console.WriteLine(message);
             return true;
         }
+
+        public bool Log(Exception exception)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

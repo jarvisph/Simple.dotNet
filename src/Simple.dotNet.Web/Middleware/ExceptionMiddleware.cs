@@ -25,10 +25,12 @@ namespace Simple.Web.Middleware
         /// </summary>
         private readonly RequestDelegate _next;
         private readonly IConfiguration _configuration;
-        public ExceptionMiddleware(RequestDelegate next, IConfiguration configuration)
+        private readonly ILogger _logger;
+        public ExceptionMiddleware(RequestDelegate next, IConfiguration configuration, ILogger logger)
         {
             this._next = next;
             this._configuration = configuration;
+            this._logger = logger;
         }
         public virtual async Task Invoke(HttpContext context)
         {
@@ -72,50 +74,10 @@ namespace Simple.Web.Middleware
                 context.Response.StatusCode = 500;
                 return context.Response.WriteAsync(new Result(false, Guid.NewGuid().ToString("N")).ToString());
             }
-            else//错误异常
+            else
             {
-                string logger_url = _configuration["Tool:Logger"];
-                if (!string.IsNullOrEmpty(logger_url))
-                {
-                    Uri uri = new Uri(logger_url);
-                    if (string.IsNullOrWhiteSpace(uri.Scheme))
-                    {
-                        return context.Response.WriteAsync(new Result(false, "错误异常", new
-                        {
-                            Type = "Exception",
-                            exception.Message
-                        }).ToString());
-                    }
-                    Regex regex = new Regex(@"Channel=(?<Token>[\w\\_-]+)", RegexOptions.Multiline | RegexOptions.IgnoreCase);
-                    Dictionary<string, string> stack = new Dictionary<string, string>();
-                    stack.Add("StackTrace", exception.StackTrace);
-                    stack.Add("Message", exception.Message);
-                    stack.Add("Source", exception.Source);
-                    Dictionary<string, object> parmas = new Dictionary<string, object>()
-                {
-                    {"Title",exception.Message.Substring(0,exception.Message.Length>128?127:exception.Message.Length) },
-                    {"RequestInfo", context.GetRequestInfo().Replace("&"," ") },
-                    {"Stack",stack.ToJson().Replace("&"," ") },
-                    { "Level",LoggerLevel.Error }
-                };
-                    try
-                    {
-                        string info = NetHelper.Post(uri.Scheme + "://" + uri.Authority + "/logger/error", parmas, new Dictionary<string, string>() { { "Token", regex.Match(uri.Query).Groups["Token"].Value } });
-                        return context.Response.WriteAsync(info);
-                    }
-                    catch (Exception ex)
-                    {
-                        return context.Response.WriteAsync(new Result(false, "错误异常", new
-                        {
-                            Type = "Exception",
-                            ex.Message
-                        }).ToString());
-                    }
-                }
-                else
-                {
-                    return context.Response.WriteAsync(new Result(false, "Exception").ToString());
-                }
+                _logger?.Log(exception);
+                return context.Response.WriteAsync(new Result(false, "Exception").ToString());
             }
         }
     }
