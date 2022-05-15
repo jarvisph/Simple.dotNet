@@ -23,15 +23,27 @@ namespace Simple.Core.Jobs
             foreach (var assemblie in AssemblyHelper.GetAssemblies())
             {
                 IEnumerable<Type> types = assemblie.GetTypes().Where(t => t.IsPublic && !t.IsAbstract && t.BaseType == typeof(JobServiceBase));
-                Parallel.ForEach(types, type =>
+                foreach (Type type in types)
                 {
-                    Console.WriteLine($"==============已启动{type.Name}任务=================");
-                    JobServiceBase service = (JobServiceBase)Activator.CreateInstance(type);
-                    if (service != null)
+                    Task.Run(() =>
                     {
-                        service.Start();
-                    }
-                });
+                        Console.WriteLine($"==============已启动{type.Name}任务=================");
+                        JobServiceBase service = (JobServiceBase)Activator.CreateInstance(type);
+                        if (service != null)
+                        {
+                            service.Start();
+                        }
+                    });
+                }
+                //Parallel.ForEach(types, type =>
+                //{
+                //    Console.WriteLine($"==============已启动{type.Name}任务=================");
+                //    JobServiceBase service = (JobServiceBase)Activator.CreateInstance(type);
+                //    if (service != null)
+                //    {
+                //        service.Start();
+                //    }
+                //});
             }
             return services;
         }

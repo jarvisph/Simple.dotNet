@@ -12,6 +12,7 @@ using Simple.Core.Domain.Enums;
 using Simple.Core.Extensions;
 using Simple.Core.Helper;
 using Simple.Core.Logger;
+using Simple.Core.Dependency;
 
 namespace Simple.Web.Middleware
 {
@@ -26,11 +27,11 @@ namespace Simple.Web.Middleware
         private readonly RequestDelegate _next;
         private readonly IConfiguration _configuration;
         private readonly ILogger _logger;
-        public ExceptionMiddleware(RequestDelegate next, IConfiguration configuration, ILogger logger)
+        public ExceptionMiddleware(RequestDelegate next, IConfiguration configuration)
         {
             this._next = next;
             this._configuration = configuration;
-            this._logger = logger;
+            this._logger = IocCollection.Resolve<ILogger>();
         }
         public virtual async Task Invoke(HttpContext context)
         {
