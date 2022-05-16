@@ -32,7 +32,7 @@ namespace Simple.Web.Jwt
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
                 Subject = identity,
                 IssuedAt = DateTime.Now,
-                Expires = DateTime.Now.Add(options.Expire)
+                Expires = DateTime.Now.AddHours(options.Expire ?? 1)
             });
             //生成令牌字符串
             return handler.WriteToken(securityToken);
