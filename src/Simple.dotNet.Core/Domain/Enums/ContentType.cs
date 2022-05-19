@@ -25,6 +25,12 @@ namespace Simple.Core.Domain.Enums
         [Description("text/html;charset=UTF-8")]
         Text,
         [Description("image/png")]
-        PNG
+        PNG,
+        [Description("application/js")]
+        JS,
+        [Description("application/css")]
+        CSS,
+        [Description("application/html")]
+        HTML,
     }
 }
