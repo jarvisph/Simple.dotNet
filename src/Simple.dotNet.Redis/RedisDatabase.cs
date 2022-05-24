@@ -1,4 +1,5 @@
-﻿using StackExchange.Redis;
+﻿using Simple.Core.Dependency;
+using StackExchange.Redis;
 using System;
 
 namespace Simple.Redis
@@ -19,10 +20,18 @@ namespace Simple.Redis
         /// 库 
         /// </summary>
         protected virtual int Db => -1;
-        public RedisDatabase(string connectionString)
+
+        private RedisConnection ConnectionString
+        {
+            get
+            {
+                return IocCollection.Resolve<RedisConnection>();
+            }
+        }
+        public RedisDatabase()
         {
             if (_connection == null)
-                _connection = RedisConnectionFactory.GetConnection(connectionString);
+                _connection = RedisConnectionFactory.GetConnection(ConnectionString.ConnectionString);
             this.Redis = _connection.GetDatabase(Db);
         }
 

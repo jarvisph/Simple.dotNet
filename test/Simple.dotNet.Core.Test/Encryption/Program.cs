@@ -15,6 +15,16 @@ namespace Simple.Core.Test.Encryption
         [TestMethod]
         public void Main()
         {
+
+        }
+        [TestMethod]
+        public void MD5()
+        {
+            string md5 = MD5Encryption.Encryption("nihao");
+        }
+
+        public void AES()
+        {
             var data = new
             {
                 UserID = 1

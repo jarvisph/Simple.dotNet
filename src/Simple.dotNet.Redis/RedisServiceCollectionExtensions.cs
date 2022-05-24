@@ -8,8 +8,9 @@ namespace Simple.Redis
     /// </summary>
     public static class RedisServiceCollectionExtensions
     {
-        public static IServiceCollection AddRedis(this IServiceCollection services)
+        public static IServiceCollection AddRedis(this IServiceCollection services, string connectionString)
         {
+            services.AddSingleton(c => new RedisConnection(connectionString));
             return services;
         }
     }
