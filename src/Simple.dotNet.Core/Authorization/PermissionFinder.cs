@@ -34,7 +34,7 @@ namespace Simple.Core.Authorization
         /// <param name="permissions"></param>
         /// <param name="providers"></param>
         /// <returns></returns>
-        public static IReadOnlyList<PermissionChildren> GetMemu(string[] permissions, params AuthorizationProvider[] providers)
+        public static IReadOnlyList<PermissionChildren> GetMenu(string[] permissions, params AuthorizationProvider[] providers)
         {
             return new InternalPermissionFinder(false, providers).GetMenu(permissions);
         }

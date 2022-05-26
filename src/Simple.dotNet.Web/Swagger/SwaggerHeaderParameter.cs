@@ -16,7 +16,7 @@ namespace Simple.Web.Swagger
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
             operation.Parameters = operation.Parameters ?? new List<OpenApiParameter>();
-
+            if (context.ApiDescription.HttpMethod == null) return;
             if (!context.ApiDescription.HttpMethod.Equals("POST", StringComparison.OrdinalIgnoreCase) &&
                 !context.ApiDescription.HttpMethod.Equals("PUT", StringComparison.OrdinalIgnoreCase) &&
                 !context.ApiDescription.HttpMethod.Equals("GET", StringComparison.OrdinalIgnoreCase) &&
