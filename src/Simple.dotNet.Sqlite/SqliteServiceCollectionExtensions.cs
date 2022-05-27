@@ -2,7 +2,6 @@
 using Simple.Core.Dapper;
 using Simple.Core.Data.Provider;
 using Simple.Core.Data.Repository;
-using Simple.Core.Localization;
 
 namespace Simple.Sqlite
 {
@@ -11,7 +10,8 @@ namespace Simple.Sqlite
     {
         public static IServiceCollection AddSqlite(this IServiceCollection services)
         {
-            return services.AddSqlite(AppsettingConfig.GetConnectionString("DbConnection"));
+            services.AddSingleton<ISqliteConnectionProvider, SqliteConnectionProvider>();
+            return services;
         }
         /// <summary>
         /// 注册
@@ -25,22 +25,6 @@ namespace Simple.Sqlite
             services.AddScoped<IReadRepository>(opt => new SqliteRepository(connectionString));
             services.AddScoped<IDapperDatabase>(opt => new SqliteRepository(connectionString));
             services.AddScoped<IProcedureRepository>(opt => new SqliteRepository(connectionString));
-            services.AddSingleton<ISqliteConnectionProvider, SqliteConnectionProvider>();
-            return services;
-        }
-        /// <summary>
-        /// 注册
-        /// </summary>
-        /// <param name="services"></param>
-        /// <param name="writeConnectionString">写库</param>
-        /// <param name="readConnectionString">读库</param>
-        /// <returns></returns>
-        public static IServiceCollection AddSqlite(this IServiceCollection services, string writeConnectionString, string readConnectionString)
-        {
-            services.AddScoped<IWriteRepository>(opt => new SqliteRepository(writeConnectionString));
-            services.AddScoped<IReadRepository>(opt => new SqliteRepository(readConnectionString));
-            services.AddScoped<IDapperDatabase>(opt => new SqliteRepository(writeConnectionString));
-            services.AddScoped<IProcedureRepository>(opt => new SqliteRepository(writeConnectionString));
             services.AddSingleton<ISqliteConnectionProvider, SqliteConnectionProvider>();
             return services;
         }
