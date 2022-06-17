@@ -8,11 +8,23 @@ namespace Simple.Core.Authorization
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
     public class PermissionAttribute : Attribute
     {
-        public string Permission { get; set; }
+        /// <summary>
+        /// 单权限
+        /// </summary>
+        public string Permission { get; private set; }
+        /// <summary>
+        /// 多权限
+        /// </summary>
+        public string[] Permissions { get; private set; }
 
         public PermissionAttribute(string premission)
         {
             this.Permission = premission;
+            this.Permissions = new string[] { premission };
+        }
+        public PermissionAttribute(params string[] permissions)
+        {
+            this.Permissions = permissions;
         }
     }
 }
