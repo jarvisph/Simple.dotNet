@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Simple.Core.Dependency;
 using Simple.Core.Domain.Enums;
-using Simple.Core.Localization;
 
 namespace Simple.Redis.Test
 {
@@ -14,6 +13,7 @@ namespace Simple.Redis.Test
         {
             IServiceCollection services = new ServiceCollection();
             services.AddDepency();
+            services.AddRedis("");
             TestCacheService _testCacheService = IocCollection.Resolve<TestCacheService>();
             _testCacheService.SaveHash(new UserModel
             {
@@ -29,7 +29,7 @@ namespace Simple.Redis.Test
     public class TestCacheService : RedisDatabase, ISingletonDependency
     {
         protected override int Db => 1;
-        public TestCacheService() : base(AppsettingConfig.GetConnectionString("RedisConnection"))
+        public TestCacheService()
         {
 
         }
