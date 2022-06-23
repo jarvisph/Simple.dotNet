@@ -12,7 +12,7 @@ namespace Simple.Redis
         public static IConnectionMultiplexer GetConnection(string connectionString)
         {
             var options = ConfigurationOptions.Parse(connectionString);
-            options.SyncTimeout = int.MaxValue;
+            options.SyncTimeout = 500;
             options.AllowAdmin = true;
             var connect = ConnectionMultiplexer.Connect(options);
             //注册如下事件

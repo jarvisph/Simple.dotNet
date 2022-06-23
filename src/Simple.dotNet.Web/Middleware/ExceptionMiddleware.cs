@@ -78,7 +78,7 @@ namespace Simple.Web.Middleware
             else
             {
                 _logger?.Log(exception);
-                return context.Response.WriteAsync(new Result(false, "Exception").ToString());
+                return context.Response.WriteAsync(new Result(false, Guid.NewGuid().ToString("N")).ToString());
             }
         }
     }
