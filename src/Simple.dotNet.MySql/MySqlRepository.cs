@@ -7,7 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Simple.Core.Dapper;
-using Simple.Core.Dapper.Expressions;
+using Simple.Core.Data.Expressions;
 using Simple.Core.Data;
 using Simple.Core.Data.Schema;
 using Simple.Core.Extensions;
@@ -32,7 +32,7 @@ namespace Simple.MySql
 
         public override bool Any<TEntity>(Expression<Func<TEntity, bool>> expression)
         {
-            using (IExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.MySql))
+            using (ISqlExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.MySql))
             {
                 string sql = $"SELECT 0 WHERE EXISTS(SELECT 0 FROM {typeof(TEntity).GetTableName()} WHERE {exp.GetCondition(out DynamicParameters parameters)});";
                 return this.ExecuteScalar(CommandType.Text, sql, parameters) != null;
@@ -48,7 +48,7 @@ namespace Simple.MySql
 
         public override int Count<TEntity>(Expression<Func<TEntity, bool>> expression)
         {
-            using (IExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.MySql))
+            using (ISqlExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.MySql))
             {
                 string sql = $"SELECT COUNT(0) FROM {typeof(TEntity).GetTableName()} WHERE {exp.GetCondition(out DynamicParameters parameters)};";
                 object value = this.ExecuteScalar(CommandType.Text, sql, parameters);
@@ -71,7 +71,7 @@ namespace Simple.MySql
 
         public override bool Delete<TEntity>(Expression<Func<TEntity, bool>> expression)
         {
-            using (IExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.MySql))
+            using (ISqlExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.MySql))
             {
                 string sql = $"DELETE FROM {typeof(TEntity).GetTableName()} WHERE {exp.GetCondition(out DynamicParameters parameters)};";
                 return this.Execute(CommandType.Text, sql, parameters) > 0;
@@ -81,7 +81,7 @@ namespace Simple.MySql
 
         public override TEntity FirstOrDefault<TEntity>(Expression<Func<TEntity, bool>> expression)
         {
-            using (IExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.MySql))
+            using (ISqlExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.MySql))
             {
                 IEnumerable<ColumnProperty> columns = typeof(TEntity).GetColumns();
                 string sql = $"SELECT  {string.Join(",", columns.Select(c => c.Name).ToArray())} FROM {typeof(TEntity).GetTableName()} WHERE {exp.GetCondition(out DynamicParameters parameters)} LIMIT 0,1;";
@@ -98,7 +98,7 @@ namespace Simple.MySql
 
         public override TValue FirstOrDefault<TEntity, TValue>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, TValue>> field)
         {
-            using (IExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.MySql))
+            using (ISqlExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.MySql))
             {
                 string sql = $"SELECT {field.GetFieldName()} FROM {typeof(TEntity).GetTableName()} WHERE {exp.GetCondition(out DynamicParameters parameters)} LIMIT 0,1;";
                 object value = this.ExecuteScalar(CommandType.Text, sql, parameters);
@@ -121,7 +121,7 @@ namespace Simple.MySql
         }
         public override IEnumerable<TEntity> GetAll<TEntity>(Expression<Func<TEntity, bool>> expression)
         {
-            using (IExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.MySql))
+            using (ISqlExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.MySql))
             {
                 IEnumerable<ColumnProperty> columns = typeof(TEntity).GetColumns();
                 string sql = $"SELECT {string.Join(",", columns.Select(c => c.Name).ToArray())} FROM {typeof(TEntity).GetTableName()} WHERE {exp.GetCondition(out DynamicParameters parameters)};";
@@ -180,7 +180,7 @@ namespace Simple.MySql
 
         public override bool Update<TEntity, TValue>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, TValue>> field, TValue value)
         {
-            using (IExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.MySql))
+            using (ISqlExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.MySql))
             {
                 string sql = $"UPDATE {typeof(TEntity).GetTableName()} SET {field.GetFieldName()}=@Value_01 WHERE {exp.GetCondition(out DynamicParameters parameters)};";
                 parameters.Add("Value_01", value);
@@ -190,7 +190,7 @@ namespace Simple.MySql
 
         public override bool Plus<TEntity, TValue>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, TValue>> field, TValue value)
         {
-            using (IExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.MySql))
+            using (ISqlExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.MySql))
             {
                 string sql = $"UPDATE {typeof(TEntity).GetTableName()} SET {field.GetFieldName()}+=@Value_01 WHERE {exp.GetCondition(out DynamicParameters parameters)};";
                 parameters.Add("Value_01", value);
@@ -199,7 +199,7 @@ namespace Simple.MySql
         }
         public override bool Update<TEntity>(TEntity entity, Expression<Func<TEntity, bool>> expression, params Expression<Func<TEntity, object>>[] fields)
         {
-            using (IExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.MySql))
+            using (ISqlExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.MySql))
             {
                 string where = exp.GetCondition(out DynamicParameters parameters);
                 Stack<string> update_fields = new Stack<string>();

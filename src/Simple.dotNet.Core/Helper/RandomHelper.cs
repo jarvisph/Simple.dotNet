@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Simple.Core.Extensions;
+using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 
@@ -37,6 +39,16 @@ namespace Simple.Core.Helper
             Random random = new Random();
             string[] color = beautifulColors[random.Next(beautifulColors.Length)].Split(',');
             return Color.FromArgb(int.Parse(color[0]), int.Parse(color[1]), int.Parse(color[2]));
+        }
+        public static int RandomNumber(int length = 6)
+        {
+            StringBuilder sb = new StringBuilder(length);
+            Random random = new Random();
+            for (int i = 0; i < 6; i++)
+            {
+                sb.Append(random.Next(0, 9));
+            }
+            return sb.ToString().ToValue<int>();
         }
         /// <summary>
         /// 随机获取字母

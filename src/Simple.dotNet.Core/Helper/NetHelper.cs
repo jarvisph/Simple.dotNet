@@ -105,7 +105,6 @@ namespace Simple.Core.Helper
         {
             byte[] data = Encoding.UTF8.GetBytes(jsonString);
             if (headers == null) headers = new Dictionary<string, string>();
-            if (!headers.ContainsKey("Content-Encoding")) headers.Add("Content-Encoding", "UTF-8");
             return Post(url, ContentType.JSON, data, headers);
         }
         public static string Post(string url, IDictionary<string, string> headers = null)

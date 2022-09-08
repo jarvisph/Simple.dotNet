@@ -12,7 +12,7 @@ namespace Simple.Core.Logger
             return true;
         }
 
-        public bool Log(Exception exception)
+        public bool Errror(Exception exception)
         {
             throw new NotImplementedException();
         }

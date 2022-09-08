@@ -5,10 +5,10 @@ using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
 using Simple.Core.Dapper;
-using Simple.Core.Dapper.Expressions;
 using Simple.Core.Data;
 using Simple.Core.Data.Schema;
 using Simple.Core.Extensions;
+using Simple.Core.Data.Expressions;
 
 namespace Simple.Sqlite
 {
@@ -30,7 +30,7 @@ namespace Simple.Sqlite
 
         public override bool Any<TEntity>(Expression<Func<TEntity, bool>> expression)
         {
-            using (IExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.Sqlite))
+            using (ISqlExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.Sqlite))
             {
                 string sql = $"SELECT 0 WHERE EXISTS(SELECT 0 FROM {typeof(TEntity).GetTableName()} WHERE {exp.GetCondition(out DynamicParameters parameters)}) ";
                 return this.ExecuteScalar(CommandType.Text, sql, parameters) != null;
@@ -46,7 +46,7 @@ namespace Simple.Sqlite
 
         public override int Count<TEntity>(Expression<Func<TEntity, bool>> expression)
         {
-            using (IExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.Sqlite))
+            using (ISqlExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.Sqlite))
             {
                 string sql = $"SELECT COUNT(0) FROM {typeof(TEntity).GetTableName()} WHERE {exp.GetCondition(out DynamicParameters parameters)}";
                 object value = this.ExecuteScalar(CommandType.Text, sql, parameters);
@@ -69,7 +69,7 @@ namespace Simple.Sqlite
 
         public override bool Delete<TEntity>(Expression<Func<TEntity, bool>> expression)
         {
-            using (IExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.Sqlite))
+            using (ISqlExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.Sqlite))
             {
                 string sql = $"DELETE FROM {typeof(TEntity).GetTableName()} WHERE {exp.GetCondition(out DynamicParameters parameters)}";
                 return this.Execute(CommandType.Text, sql, parameters) > 0;
@@ -120,7 +120,7 @@ namespace Simple.Sqlite
 
         public override bool Update<TEntity, TValue>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, TValue>> field, TValue value)
         {
-            using (IExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.Sqlite))
+            using (ISqlExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.Sqlite))
             {
                 string sql = $"UPDATE {typeof(TEntity).GetTableName()} SET {field.GetFieldName()}=@Value_01 WHERE {exp.GetCondition(out DynamicParameters parameters)};";
                 parameters.Add("Value_01", value);
@@ -130,7 +130,7 @@ namespace Simple.Sqlite
 
         public override bool Update<TEntity>(TEntity entity, Expression<Func<TEntity, bool>> expression, params Expression<Func<TEntity, object>>[] fields)
         {
-            using (IExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.Sqlite))
+            using (ISqlExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.Sqlite))
             {
                 string where = exp.GetCondition(out DynamicParameters parameters);
                 Stack<string> update_fields = new Stack<string>();
@@ -156,7 +156,7 @@ namespace Simple.Sqlite
         }
         public override bool Plus<TEntity, TValue>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, TValue>> field, TValue value)
         {
-            using (IExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.Sqlite))
+            using (ISqlExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.Sqlite))
             {
                 string sql = $"UPDATE {typeof(TEntity).GetTableName()} SET {field.GetFieldName()}+=@Value_01 WHERE {exp.GetCondition(out DynamicParameters parameters)}";
                 parameters.Add("Value_01", value);
@@ -166,7 +166,7 @@ namespace Simple.Sqlite
 
         public override TEntity FirstOrDefault<TEntity>(Expression<Func<TEntity, bool>> expression)
         {
-            using (IExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.Sqlite))
+            using (ISqlExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.Sqlite))
             {
                 IEnumerable<ColumnProperty> columns = typeof(TEntity).GetColumns();
                 string sql = $"SELECT  {string.Join(",", columns.Select(c => $"[{c.Name}]").ToArray())} FROM {typeof(TEntity).GetTableName()} WHERE {exp.GetCondition(out DynamicParameters parameters)} LIMIT 1;";
@@ -183,7 +183,7 @@ namespace Simple.Sqlite
 
         public override TValue FirstOrDefault<TEntity, TValue>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, TValue>> field)
         {
-            using (IExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.Sqlite))
+            using (ISqlExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.Sqlite))
             {
                 string sql = $"SELECT [{field.GetFieldName()}] FROM {typeof(TEntity).GetTableName()} WHERE {exp.GetCondition(out DynamicParameters parameters)};";
                 object value = this.ExecuteScalar(CommandType.Text, sql, parameters);
@@ -196,7 +196,7 @@ namespace Simple.Sqlite
 
         public override IEnumerable<TEntity> GetAll<TEntity>(Expression<Func<TEntity, bool>> expression)
         {
-            using (IExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.Sqlite))
+            using (ISqlExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.Sqlite))
             {
                 IEnumerable<ColumnProperty> columns = typeof(TEntity).GetColumns();
                 string sql = $"SELECT {string.Join(",", columns.Select(c => $"[{c.Name}]").ToArray())} FROM {typeof(TEntity).GetTableName()} WHERE {exp.GetCondition(out DynamicParameters parameters)};";

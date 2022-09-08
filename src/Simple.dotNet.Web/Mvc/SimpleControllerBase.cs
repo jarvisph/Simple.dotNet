@@ -107,12 +107,12 @@ namespace Simple.Web.Mvc
         /// json返回
         /// </summary>
         /// <param name="success"></param>
-        /// <param name="message"></param>
-        /// <param name="data"></param>
+        /// <param name="msg"></param>
+        /// <param name="info"></param>
         /// <returns></returns>
-        protected ActionResult JsonResult(bool success, string message, object? data)
+        protected ActionResult JsonResult(bool success, string msg, object? info)
         {
-            return Ok(new Result(success, message, data).ToString());
+            return Ok(new { success, msg, info });
         }
         protected ActionResult JsonResult(bool success, object data) => this.JsonResult(success, string.Empty, data);
         /// <summary>

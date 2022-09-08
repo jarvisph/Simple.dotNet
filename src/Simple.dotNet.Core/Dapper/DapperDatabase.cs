@@ -190,7 +190,7 @@ namespace Simple.Core.Dapper
         /// </summary>
         /// <param name="expression"></param>
         /// <returns></returns>
-        internal ISqlExpressionVisitor GetExpressionVisitor(Expression expression, DatabaseType type)
+        public ISqlExpressionVisitor GetExpressionVisitor(Expression expression, DatabaseType type)
         {
             ISqlExpressionVisitor visitor = null;
             switch (type)

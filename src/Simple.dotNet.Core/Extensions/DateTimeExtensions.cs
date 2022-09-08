@@ -18,6 +18,11 @@ namespace Simple.Core.Extensions
         {
             return (int)Math.Round((date.ToUniversalTime() - new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero)).TotalSeconds);
         }
+        public static DateTime GetDateTime(this long timestamp)
+        {
+            return new DateTime(1970, 1, 1).Add(TimeZoneInfo.Local.BaseUtcOffset).AddSeconds(timestamp);
+        }
+
         /// <summary>
         /// 获取时间戳
         /// </summary>
