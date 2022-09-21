@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Simple.Core.Logger
 {
-    internal class DefaultLogger : ILogger
+    internal class DefaultLogger
     {
         public bool Log(string message)
         {
@@ -12,9 +12,10 @@ namespace Simple.Core.Logger
             return true;
         }
 
-        public bool Errror(Exception exception)
+        public bool Error(Guid guid, Exception exception)
         {
-            throw new NotImplementedException();
+            Console.WriteLine(exception);
+            return true;
         }
     }
 }

@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Security.Cryptography;
+using System.Linq;
+using System.Text.RegularExpressions;
+using Simple.Core.Helper;
 
 namespace Simple.Core.Encryption
 {
-    public class MD5Encryption
+    public static class MD5Encryption
     {
         /// <summary>
         /// 对字符串进行MD5加密
@@ -25,6 +28,45 @@ namespace Simple.Core.Encryption
                     sb.Append(item.ToString("X2"));
                 }
                 return sb.ToString();
+            }
+        }
+        private const string MD5CHAR = "0123456789ABCDEF";
+        /// <summary>
+        /// 返回簡寫的MD5值（64位編碼，4位16進制轉化成爲1位）
+        /// </summary>
+        /// <param name="md5">必須是大寫的MD5</param>
+        /// <returns>8位编码</returns>
+        public static string toMD5Short(this string md5)
+        {
+            md5 = md5.ToUpper();
+            md5 = Regex.Replace(md5, $@"[^{MD5CHAR}]", "0");
+            int unit = 4;
+            if (md5.Length % 4 != 0) md5 = md5.Substring(0, md5.Length / 4 * 4);
+            Stack<char> value = new Stack<char>();
+            for (int i = 0; i < md5.Length / 4; i++)
+            {
+                string str = md5.Substring(i * unit, unit);
+                int num = 0;
+                for (int n = 0; n < str.Length; n++)
+                {
+                    int charIndex = MD5CHAR.IndexOf(str[n]) * (int)Math.Pow(MD5CHAR.Length, str.Length - n - 1);
+                    num += charIndex;
+                }
+                value.Push(MathHelper.HEX_62[num % MathHelper.HEX_62.Length]);
+            }
+            return string.Join(string.Empty, value);
+        }
+        /// <summary>
+        /// 获取一个二进制流的MD5值（大寫）
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <returns></returns>
+        public static string toMD5(byte[] buffer)
+        {
+            using (MD5 md5 = new MD5CryptoServiceProvider())
+            {
+                byte[] data = md5.ComputeHash(buffer);
+                return string.Join(string.Empty, data.Select(t => t.ToString("x2"))).ToUpper();
             }
         }
         /// <summary>

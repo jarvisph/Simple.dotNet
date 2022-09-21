@@ -1,23 +1,17 @@
 ﻿using RabbitMQ.Client;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
 using Simple.Core.Dependency;
-using Simple.Core.Extensions;
-using Simple.Core.Localization;
 
 namespace Simple.RabbitMQ
 {
     /// <summary>
     /// Rabbitmq连接基类
     /// </summary>
-    public class RabbitConnection
+    public abstract class RabbitConnection
     {
         private readonly RabbitOption _options;
         private readonly ConnectionFactory _factory;
         private readonly IConnection _connection;
-        private readonly IModel _channel;
+        protected IModel _channel;
 
         public RabbitConnection()
         {
@@ -32,19 +26,11 @@ namespace Simple.RabbitMQ
                 AutomaticRecoveryEnabled = true
             };
             _connection = _factory.CreateConnection();
-            _channel = _connection.CreateModel();
-        }
 
-        public IModel Channel
+        }
+        public void Open()
         {
-            get
-            {
-                if (!_channel.IsOpen)
-                {
-                    return _connection.CreateModel();
-                }
-                return _channel;
-            }
+            if (_channel == null || !_channel.IsOpen) _channel = _connection.CreateModel();
         }
         /// <summary>
         /// 关闭
@@ -54,10 +40,8 @@ namespace Simple.RabbitMQ
             if (_channel != null)
             {
                 _channel.Close();
-            }
-            if (_connection != null)
-            {
-                _connection.Close();
+                _channel.Dispose();
+                _channel = null;
             }
         }
     }

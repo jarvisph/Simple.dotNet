@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Simple.Core.Logger
 {
     public interface ILogger
     {
-        public bool Log(string message);
-        public bool Errror(Exception exception);
+        bool Log(string message);
+        bool Error(Guid guid, Exception exception);
     }
 }

@@ -46,8 +46,7 @@ namespace Simple.Core.Data.Repository
         /// <param name="field"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        bool Plus<TEntity, TValue>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, TValue>> field, TValue value) where TEntity : IEntity where TValue : struct;
-
+        TValue Plus<TEntity, TValue>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, TValue>> field, TValue value) where TEntity : IEntity where TValue : struct;
 
     }
 }

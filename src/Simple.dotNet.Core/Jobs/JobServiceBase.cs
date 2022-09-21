@@ -8,9 +8,9 @@ namespace Simple.Core.Jobs
     public abstract class JobServiceBase
     {
         /// <summary>
-        /// 间隔时间（默认1秒中执行一次）
+        /// 间隔时间
         /// </summary>
-        public virtual TimeSpan Time { get; set; } = TimeSpan.FromSeconds(1);
+        public abstract int Time { get; set; }
         /// <summary>
         /// 任务状态
         /// </summary>

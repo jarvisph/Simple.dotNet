@@ -37,7 +37,7 @@ namespace Simple.Core.Dapper
         public abstract bool Update<TEntity, TValue>(TEntity entity, Expression<Func<TEntity, TValue>> field, TValue value) where TEntity : IEntity;
         public abstract bool Update<TEntity, TValue>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, TValue>> field, TValue value) where TEntity : IEntity;
         public abstract bool Update<TEntity>(TEntity entity, Expression<Func<TEntity, bool>> expression, params Expression<Func<TEntity, object>>[] fields) where TEntity : IEntity;
-        public abstract bool Plus<TEntity, TValue>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, TValue>> field, TValue value)
+        public abstract TValue Plus<TEntity, TValue>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, TValue>> field, TValue value)
          where TEntity : IEntity
          where TValue : struct;
 

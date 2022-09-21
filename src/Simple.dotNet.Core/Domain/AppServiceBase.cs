@@ -42,7 +42,7 @@ namespace Simple.Core.Domain
         }
         public AppServiceBase()
         {
-            this.Logger = IocCollection.Resolve<ILogger>() ?? new DefaultLogger();
+            this.Logger = IocCollection.Resolve<ILogger>();
             this.WriteRepository = IocCollection.Resolve<IWriteRepository>();
             this.ReadRepository = IocCollection.Resolve<IReadRepository>();
         }

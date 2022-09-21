@@ -60,6 +60,7 @@ namespace Simple.Web.Middleware
         {
             context.Response.ContentType = ContentType.JSON.GetDescription();
             context.Response.StatusCode = 200;
+            Guid guid = Guid.NewGuid();
             Console.WriteLine(exception);
             if (exception is MessageException)
             {
@@ -73,12 +74,12 @@ namespace Simple.Web.Middleware
             else if (exception is DapperException)
             {
                 context.Response.StatusCode = 500;
-                return context.Response.WriteAsync(new Result(false, Guid.NewGuid().ToString("N")).ToString());
+                return context.Response.WriteAsync(new Result(false, guid.ToString("N")).ToString());
             }
             else
             {
-                _logger?.Errror(exception);
-                return context.Response.WriteAsync(new Result(false, Guid.NewGuid().ToString("N")).ToString());
+                _logger?.Error(guid, exception);
+                return context.Response.WriteAsync(new Result(false, guid.ToString("N")).ToString());
             }
         }
     }

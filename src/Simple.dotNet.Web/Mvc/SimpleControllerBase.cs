@@ -112,7 +112,7 @@ namespace Simple.Web.Mvc
         /// <returns></returns>
         protected ActionResult JsonResult(bool success, string msg, object? info)
         {
-            return Ok(new { success, msg, info });
+            return Ok(new Result(success, msg, info).ToString());
         }
         protected ActionResult JsonResult(bool success, object data) => this.JsonResult(success, string.Empty, data);
         /// <summary>

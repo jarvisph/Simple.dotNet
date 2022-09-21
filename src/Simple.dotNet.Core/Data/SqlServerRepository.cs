@@ -156,13 +156,13 @@ namespace Simple.Core.Data
                 return this.Execute(CommandType.Text, sql, parameters) > 0;
             }
         }
-        public override bool Plus<TEntity, TValue>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, TValue>> field, TValue value)
+        public override TValue Plus<TEntity, TValue>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, TValue>> field, TValue value)
         {
             using (ISqlExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.SqlServer))
             {
                 string sql = $"UPDATE {typeof(TEntity).GetTableName()} SET {field.GetFieldName()}+=@Value_01 WHERE {exp.GetCondition(out DynamicParameters parameters)}";
                 parameters.Add("Value_01", value);
-                return this.Execute(CommandType.Text, sql, parameters) > 0;
+                return (TValue)this.ExecuteScalar(CommandType.Text, sql, parameters);
             }
         }
 

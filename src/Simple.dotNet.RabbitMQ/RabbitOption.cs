@@ -8,6 +8,10 @@ namespace Simple.RabbitMQ
     /// </summary>
     public class RabbitOption : QuerySetting
     {
+        public RabbitOption()
+        {
+
+        }
         public RabbitOption(string querystring) : base(querystring)
         {
 

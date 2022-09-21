@@ -277,6 +277,21 @@ namespace Simple.Core.Extensions
             return context.Request.Form[key].ToString().ToValue<T>();
         }
         /// <summary>
+        /// 上传的文件对象转换成为byte[]
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        public static byte[]? ToArray(this IFormFile file)
+        {
+            if (file == null) return null;
+            using (MemoryStream ms = new())
+            {
+                file.CopyTo(ms);
+                return ms.ToArray();
+            }
+        }
+
+        /// <summary>
         /// 流转string
         /// </summary>
         /// <param name="context"></param>

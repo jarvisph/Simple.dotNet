@@ -198,6 +198,30 @@ namespace Simple.Core.Helper
             return true;
         }
         /// <summary>
+        /// 检查名称
+        /// </summary>
+        /// <param name="nickname"></param>
+        /// <param name="message"></param>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <returns></returns>
+        public static bool CheckName(string nickname, out string message, int min = 5, int max = 16)
+        {
+            message = string.Empty;
+            if (string.IsNullOrWhiteSpace(nickname))
+            {
+                message = "不能为空";
+                return false;
+            }
+            if (!Regex.IsMatch(nickname, "^[\u4e00-\u9fa5_a-zA-Z0-9]{" + min + "," + max + "}"))
+            {
+                message = $"格式错误，由中文、字母、数字组成，长度{min}-{max}字符";
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
         /// 验证密码
         /// </summary>
         /// <param name="password">密码，明文</param>

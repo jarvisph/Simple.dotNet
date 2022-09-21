@@ -231,5 +231,42 @@ namespace Simple.Core.Helper
             }
             return null;
         }
+
+
+        /// <summary>
+        /// 下载小文件
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        public static byte[]? DownloadFile(string url, Dictionary<string, string>? header = null, WebClient? wc = null)
+        {
+            bool isNew = false;
+            if (wc == null)
+            {
+                wc = CreateWebClient(url, Encoding.UTF8);
+                isNew = true;
+            }
+            if (header != null)
+            {
+                foreach (KeyValuePair<string, string> item in header)
+                {
+                    wc.Headers[item.Key] = item.Value;
+                }
+            }
+            byte[]? data = null;
+            try
+            {
+                data = wc.DownloadData(url);
+            }
+            catch
+            {
+                data = null;
+            }
+            finally
+            {
+                if (isNew) wc.Dispose();
+            }
+            return data;
+        }
     }
 }
