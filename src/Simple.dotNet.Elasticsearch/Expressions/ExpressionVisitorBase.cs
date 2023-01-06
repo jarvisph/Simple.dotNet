@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Simple.Core.Expressions
+namespace Simple.Elasticsearch.Expressions
 {
     public abstract class ExpressionVisitorBase : ExpressionVisitor
     {

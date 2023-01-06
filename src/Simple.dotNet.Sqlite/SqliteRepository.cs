@@ -154,15 +154,15 @@ namespace Simple.Sqlite
                 return this.Execute(CommandType.Text, sql, parameters) > 0;
             }
         }
-        public override bool Plus<TEntity, TValue>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, TValue>> field, TValue value)
-        {
-            using (ISqlExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.Sqlite))
-            {
-                string sql = $"UPDATE {typeof(TEntity).GetTableName()} SET {field.GetFieldName()}+=@Value_01 WHERE {exp.GetCondition(out DynamicParameters parameters)}";
-                parameters.Add("Value_01", value);
-                return this.Execute(CommandType.Text, sql, parameters) > 0;
-            }
-        }
+        //public override bool Plus<TEntity, TValue>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, TValue>> field, TValue value)
+        //{
+        //    using (ISqlExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.Sqlite))
+        //    {
+        //        string sql = $"UPDATE {typeof(TEntity).GetTableName()} SET {field.GetFieldName()}+=@Value_01 WHERE {exp.GetCondition(out DynamicParameters parameters)}";
+        //        parameters.Add("Value_01", value);
+        //        return this.Execute(CommandType.Text, sql, parameters) > 0;
+        //    }
+        //}
 
         public override TEntity FirstOrDefault<TEntity>(Expression<Func<TEntity, bool>> expression)
         {
@@ -241,6 +241,11 @@ namespace Simple.Sqlite
         }
 
         public override IQueryable<TEntity> Query<TEntity>()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override TValue Plus<TEntity, TValue>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, TValue>> field, TValue value)
         {
             throw new NotImplementedException();
         }
