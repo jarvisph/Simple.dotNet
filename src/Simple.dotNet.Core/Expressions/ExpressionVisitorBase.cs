@@ -58,7 +58,19 @@ namespace Simple.Core.Expressions
                         MemberExpression member = (MemberExpression)node.Expression;
                         ConstantExpression constant = (ConstantExpression)member.Expression;
                         var model = ((FieldInfo)member.Member).GetValue(constant.Value);
-                        _value.Push(model.GetType().GetProperty(node.Member.Name).GetValue(model));
+                        switch (node.Member.MemberType)
+                        {
+                            case MemberTypes.Field:
+                                {
+                                    _value.Push(model.GetType().GetField(node.Member.Name).GetValue(model));
+                                }
+                                break;
+                            case MemberTypes.Property:
+                                {
+                                    _value.Push(model.GetType().GetProperty(node.Member.Name).GetValue(model));
+                                }
+                                break;
+                        }
                         break;
                     case ExpressionType.Constant:
                         this.VisitConstant((ConstantExpression)node.Expression, node.Member);

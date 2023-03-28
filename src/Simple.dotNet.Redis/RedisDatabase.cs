@@ -62,7 +62,7 @@ namespace Simple.Redis
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        protected string Login(int userId)
+        protected  string Login(int userId)
         {
             //获取会员登录键
             string loginKey = this.GetLoginKey(userId);
@@ -89,7 +89,7 @@ namespace Simple.Redis
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        protected int GetTokenID(string token)
+        protected  int GetTokenID(string token)
         {
             string key = this.GetTokenKey(token);
             return this.Redis.HashGet(key, token).GetRedisValue<int>();
@@ -98,7 +98,7 @@ namespace Simple.Redis
         /// 退出
         /// </summary>
         /// <param name="userId"></param>
-        protected void Logout(int userId)
+        protected  void Logout(int userId)
         {
             //获取会员登录键
             string loginKey = this.GetLoginKey(userId);

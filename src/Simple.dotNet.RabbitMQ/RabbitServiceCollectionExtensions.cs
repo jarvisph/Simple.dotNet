@@ -23,5 +23,10 @@ namespace Simple.RabbitMQ
             services.AddSingleton(c => options);
             return services;
         }
+        public static IServiceCollection AddRabbitMQ(this IServiceCollection services, string connection)
+        {
+            RabbitOption options = new RabbitOption(connection);
+            return services.AddRabbitMQ(options);
+        }
     }
 }

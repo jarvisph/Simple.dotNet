@@ -1,8 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
+﻿using System.Drawing;
 using System.IO;
-using System.Text;
 
 namespace Simple.Core.Extensions
 {
@@ -13,13 +10,36 @@ namespace Simple.Core.Extensions
         /// </summary>
         /// <param name="stream"></param>
         /// <returns></returns>
-        public static byte[] GetAllBytes(this Stream stream)
+        public static byte[] StreamToByteArray(this Stream stream)
         {
-            using (var memoryStream = new MemoryStream())
-            {
-                stream.CopyTo(memoryStream);
-                return memoryStream.ToArray();
-            }
+            using MemoryStream ms = new MemoryStream();
+            stream.CopyTo(ms);
+            return ms.ToArray();
+        }
+
+        /// <summary>
+        /// image 转 byte
+        /// </summary>
+        /// <param name="image"></param>
+        /// <returns></returns>
+        public static byte[] ImageToByteArray(this Image image)
+        {
+            MemoryStream ms = new MemoryStream();
+            if (image == null)
+                return new byte[ms.Length];
+            image.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+            byte[] array = new byte[ms.Length];
+            array = ms.GetBuffer();
+            return array;
+        }
+
+        public static Image ByteToImage(byte[] buffer)
+        {
+            if (buffer.Length == 0)
+                return null;
+            System.IO.MemoryStream ms = new System.IO.MemoryStream(buffer);
+            System.Drawing.Image image = System.Drawing.Image.FromStream(ms);
+            return image;
         }
     }
 }

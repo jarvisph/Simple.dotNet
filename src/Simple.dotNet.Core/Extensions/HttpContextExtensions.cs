@@ -277,6 +277,21 @@ namespace Simple.Core.Extensions
             return context.Request.Form[key].ToString().ToValue<T>();
         }
         /// <summary>
+        /// 获取form所有内容
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static Dictionary<string, object> GetForm(this HttpContext context)
+        {
+            Dictionary<string, object> data = new Dictionary<string, object>();
+            foreach (var item in context.Request.Form)
+            {
+                data.Add(item.Key, item.Value);
+            }
+            return data;
+        }
+
+        /// <summary>
         /// 上传的文件对象转换成为byte[]
         /// </summary>
         /// <param name="file"></param>

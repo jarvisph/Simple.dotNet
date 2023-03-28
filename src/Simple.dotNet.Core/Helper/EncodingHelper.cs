@@ -10,7 +10,7 @@ namespace Simple.Core.Helper
     {
         public static string ReadStringFromStream(Stream stream)
         {
-            var bytes = stream.GetAllBytes();
+            var bytes = stream.StreamToByteArray();
             var skipCount = HasBom(bytes) ? 3 : 0;
             return Encoding.UTF8.GetString(bytes, skipCount, bytes.Length - skipCount);
         }

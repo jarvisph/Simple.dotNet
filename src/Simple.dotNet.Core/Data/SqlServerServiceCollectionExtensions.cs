@@ -28,5 +28,6 @@ namespace Simple.Core.Data
             services.AddSingleton<ISqlServerConnectionProvider, SqlServerConnectionProvider>();
             return services;
         }
+
     }
 }
