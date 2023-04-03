@@ -1,5 +1,6 @@
 ﻿using RabbitMQ.Client;
 using Simple.Core.Dependency;
+using System;
 
 namespace Simple.RabbitMQ
 {
@@ -37,12 +38,25 @@ namespace Simple.RabbitMQ
         /// </summary>
         public void Close()
         {
-            if (_channel != null)
+            try
             {
-                _channel.Close();
-                _channel.Dispose();
-                _channel = null;
+                if (_channel != null)
+                {
+                    _channel.Close();
+                    _channel.Dispose();
+                    _channel = null;
+                }
+
             }
+            catch
+            {
+                if (_channel != null)
+                {
+                    _channel.Dispose();
+                    _channel = null;
+                }
+            }
+
         }
     }
 }

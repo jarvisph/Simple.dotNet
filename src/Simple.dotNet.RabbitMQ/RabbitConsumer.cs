@@ -81,28 +81,31 @@ namespace Simple.RabbitMQ
             Task.Factory.StartNew(token =>
             {
                 var cancellationToken = (CancellationToken)token;
-                try
+                while (true)
                 {
-                    while (true)
+                    try
                     {
-                        cancellationToken.ThrowIfCancellationRequested();
-                        // 未打开、关闭状态、上一次ACK超时，则重启
-                        if (_channel == null || _channel.IsClosed)
+                        while (true)
                         {
-                            Console.WriteLine($"队列：{_consumer.QueueName} \n时间：{DateTime.Now}\n内容：RabbitMQ连接已关闭，开始重新连接");
-                            ReStart();
+                            cancellationToken.ThrowIfCancellationRequested();
+                            // 未打开、关闭状态、上一次ACK超时，则重启
+                            if (_channel == null || _channel.IsClosed)
+                            {
+                                Console.WriteLine($"队列：{_consumer.QueueName} \n时间：{DateTime.Now}\n内容：RabbitMQ连接已关闭，开始重新连接");
+                                ReStart();
+                            }
+                            else if ((DateTime.Now - _lastAckAt).TotalSeconds >= _lastAckTimeoutRestart)
+                            {
+                                Console.WriteLine($"队列：{_consumer.QueueName} \n时间：{DateTime.Now}\n内容：Rabbit距上一次消费过去了{(DateTime.Now - _lastAckAt).TotalSeconds}秒后没有新的消息，尝试重新连接Rabbit。");
+                                ReStart();
+                            }
+                            Thread.Sleep(3000);
                         }
-                        else if ((DateTime.Now - _lastAckAt).TotalSeconds >= _lastAckTimeoutRestart)
-                        {
-                            Console.WriteLine($"队列：{_consumer.QueueName} \n时间：{DateTime.Now}\n内容：Rabbit距上一次消费过去了{(DateTime.Now - _lastAckAt).TotalSeconds}秒后没有新的消息，尝试重新连接Rabbit。");
-                            ReStart();
-                        }
-                        Thread.Sleep(3000);
                     }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                    }
                 }
             }, _cts.Token);
         }

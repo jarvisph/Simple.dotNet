@@ -160,9 +160,13 @@ namespace Simple.Core.Data
         {
             using (ISqlExpressionVisitor exp = this.GetExpressionVisitor(expression, DatabaseType.SqlServer))
             {
-                string sql = $"UPDATE {typeof(TEntity).GetTableName()} SET {field.GetFieldName()}+=@Value_01 WHERE {exp.GetCondition(out DynamicParameters parameters)}";
+                string fieldName = field.GetFieldName();
+                string tableName = typeof(TEntity).GetTableName();
+                string where = exp.GetCondition(out DynamicParameters parameters);
+                string sql = $"UPDATE [{tableName}] SET {fieldName}+=@Value_01 WHERE {where};SELECT [{fieldName}] FROM [{tableName}] WHERE {where}";
                 parameters.Add("Value_01", value);
-                return (TValue)this.ExecuteScalar(CommandType.Text, sql, parameters);
+                object result = this.ExecuteScalar(CommandType.Text, sql, parameters);
+                return result.GetValue<TValue>();
             }
         }
 

@@ -28,7 +28,7 @@ namespace Simple.Core.Extensions
         /// </summary>
         /// <param name="date"></param>
         /// <returns></returns>
-        public static long GetTimestamp(this DateTime date)
+        public static long GetTimestamps(this DateTime date)
         {
             return (date.ToUniversalTime().Ticks - 621355968000000000) / 10000;
         }

@@ -106,22 +106,24 @@ namespace Simple.Core.Extensions
         public static string GetIp(this HttpContext context)
         {
             //1、没有使用代理服务器的情况
-            string ip = "127.0.0.1";
+            string ip = "0.0.0.0";
             if (context == null) return ip;
-            if (context.Request.Headers["HTTP_X_FORWARDED_FOR"].FirstOrDefault() != null)
-                ip = context.Request.Headers["HTTP_X_FORWARDED_FOR"].FirstOrDefault();
-            else if (context.Request.Headers["X-Real-IP"].FirstOrDefault() != null)
-                ip = context.Request.Headers["X-Real-IP"].FirstOrDefault();
-            else if (context.Request.Headers["X_FORWARDED_FOR"].FirstOrDefault() != null)
-                ip = context.Request.Headers["X_FORWARDED_FOR"].FirstOrDefault();
-            else if (context.Request.Headers["REMOTE_ADDR "].FirstOrDefault() != null)
-                ip = context.Request.Headers["REMOTE_ADDR"].FirstOrDefault();
-            else if (context.Request.Headers["HTTP_VIA"].FirstOrDefault() != null)
-                ip = context.Request.Headers["HTTP_VIA"].FirstOrDefault();
-            else if (context.Request.Headers["HTTP_CLIENT_IP"].FirstOrDefault() != null)
-                ip = context.Request.Headers["HTTP_CLIENT_IP"].FirstOrDefault();
-            else if (context.Connection.RemoteIpAddress != null)
-                ip = IPHelper.IPRegex.Match(context.Connection.RemoteIpAddress.ToString())?.Value;
+            string[] fields = new[] { "Ali-CDN-Real-IP", "X-Real-IP", "X-Forwarded-IP", "X-Forwarded-For" };
+            foreach (string key in fields)
+            {
+                if (key == null || !context.Request.Headers.ContainsKey(key)) continue;
+                string values = context.Request.Headers[key];
+                if (string.IsNullOrEmpty(values)) continue;
+                foreach (string value in values.Split(','))
+                {
+                    if (IPAddress.TryParse(value.Trim(), out IPAddress? address))
+                    {
+                        ip = address.ToString();
+                        break;
+                    }
+                }
+                if (!string.IsNullOrEmpty(ip)) break;
+            }
             return ip;
         }
         public static object Fill(this IFormCollection form, Type type, string prefix = null, bool isHtmlEncode = true)
@@ -239,7 +241,7 @@ namespace Simple.Core.Extensions
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static string GetRequestInfo(this HttpContext context)
+        public static string GetRequestInfo(this HttpContext context, Dictionary<string, string> dic = null)
         {
             //没有使用代理服务器的情况返回空字符串
             if (context == null) return string.Empty;
@@ -257,6 +259,13 @@ namespace Simple.Core.Extensions
             if (context.User != null)
             {
                 param.Add("Claims", context.User.Claims.ToDictionary(c => c.Type, c => c.Value));
+            }
+            if (dic != null)
+            {
+                foreach (var item in dic)
+                {
+                    param.Add(item.Key, item.Value);
+                }
             }
             return param.ToJson();
         }

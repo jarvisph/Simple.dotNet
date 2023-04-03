@@ -71,11 +71,6 @@ namespace Simple.Web.Middleware
                 context.Response.StatusCode = 403;
                 return Task.CompletedTask;
             }
-            else if (exception is DapperException)
-            {
-                context.Response.StatusCode = 500;
-                return context.Response.WriteAsync(new Result(false, guid.ToString("N")).ToString());
-            }
             else
             {
                 _logger?.Error(guid, exception);
