@@ -198,6 +198,30 @@ namespace Simple.Core.Helper
             return true;
         }
         /// <summary>
+        /// 检查非法字符
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="message"></param>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <returns></returns>
+        public static bool CheckContent(string content, out string message, int min = 5, int max = 16)
+        {
+            message = string.Empty;
+            if (string.IsNullOrWhiteSpace(content))
+            {
+                message = "不能为空";
+                return false;
+            }
+            if (!Regex.IsMatch(content, "^[\u4e00-\u9fa5_，,！!.。？?“”a-zA-Z0-9]{" + min + "," + max + "}"))
+            {
+                message = $"格式错误，存在非法字符，请检查内容，长度为{min}-{max}字符";
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
         /// 检查名称
         /// </summary>
         /// <param name="nickname"></param>
