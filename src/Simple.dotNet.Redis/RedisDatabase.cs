@@ -6,13 +6,28 @@ namespace Simple.Redis
 {
     public abstract class RedisDatabase
     {
-        private readonly IConnectionMultiplexer _connection;
+        private static IConnectionMultiplexer _connection;
+
+        private static readonly object _lock = new object();
         /// <summary>
         /// 获取Database
         /// </summary>
         /// <param name="db"></param>
         /// <returns></returns>
-        public IDatabase Redis { get; }
+        public IDatabase Redis
+        {
+            get
+            {
+                if (_connection == null)
+                {
+                    lock (_lock)
+                    {
+                        _connection ??= RedisConnectionFactory.GetConnection(ConnectionString.ConnectionString);
+                    }
+                }
+                return _connection.GetDatabase(Db);
+            }
+        }
 
         private const string LOGIN = "LOGIN:";
         private const string TOKEN = "TOKEN:";
@@ -30,9 +45,10 @@ namespace Simple.Redis
         }
         public RedisDatabase()
         {
-            if (_connection == null)
-                _connection = RedisConnectionFactory.GetConnection(ConnectionString.ConnectionString);
-            this.Redis = _connection.GetDatabase(Db);
+            lock (_lock)
+            {
+                _connection ??= RedisConnectionFactory.GetConnection(ConnectionString.ConnectionString);
+            }
         }
 
         public void SetHash(string key, string hashKey, object value) => Redis.HashSet(key, hashKey.ToRedisValue(), value.ToRedisValue());

@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Simple.Core.Helper;
+using System;
 using System.Threading;
 
 namespace Simple.Core.Jobs
@@ -10,7 +9,7 @@ namespace Simple.Core.Jobs
         /// <summary>
         /// 间隔时间
         /// </summary>
-        public abstract int Time { get; set; }
+        public abstract int Time { get; }
         /// <summary>
         /// 任务状态
         /// </summary>
@@ -24,13 +23,12 @@ namespace Simple.Core.Jobs
             {
                 try
                 {
-                    int count = this.Invoke();
-                    Console.WriteLine($"[{this.GetType().Name}]-{DateTime.Now}，执行{count}笔数据");
+                    this.Invoke();
                     Thread.Sleep(Time);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex);
+                    ConsoleHelper.WriteLine(ex.Message, ConsoleColor.Red);
                 }
             }
         }
@@ -48,6 +46,6 @@ namespace Simple.Core.Jobs
         {
             this.Status = true;
         }
-        public abstract int Invoke();
+        public abstract void Invoke();
     }
 }
