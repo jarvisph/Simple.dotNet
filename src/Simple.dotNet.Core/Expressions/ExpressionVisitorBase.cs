@@ -55,22 +55,25 @@ namespace Simple.Core.Expressions
                 switch (node.Expression.NodeType)
                 {
                     case ExpressionType.MemberAccess:
-                        MemberExpression member = (MemberExpression)node.Expression;
-                        ConstantExpression constant = (ConstantExpression)member.Expression;
-                        var model = ((FieldInfo)member.Member).GetValue(constant.Value);
-                        switch (node.Member.MemberType)
-                        {
-                            case MemberTypes.Field:
-                                {
-                                    _value.Push(model.GetType().GetField(node.Member.Name).GetValue(model));
-                                }
-                                break;
-                            case MemberTypes.Property:
-                                {
-                                    _value.Push(model.GetType().GetProperty(node.Member.Name).GetValue(model));
-                                }
-                                break;
-                        }
+
+                        //MemberExpression member = (MemberExpression)node.Expression;
+                        //ConstantExpression constant = (ConstantExpression)member.Expression;
+                        //object model = ((FieldInfo)member.Member).GetValue(constant.Value);
+
+                        //switch (node.Member.MemberType)
+                        //{
+                        //    case MemberTypes.Field:
+                        //        {
+                        //            _value.Push(model.GetType().GetField(node.Member.Name).GetValue(model));
+                        //        }
+                        //        break;
+                        //    case MemberTypes.Property:
+                        //        {
+                        //            _value.Push(model.GetType().GetProperty(node.Member.Name).GetValue(model));
+                        //        }
+                        //        break;
+                        //}
+                        this.VisitMemberAccess(node, new Stack<MemberInfo>());
                         break;
                     case ExpressionType.Constant:
                         this.VisitConstant((ConstantExpression)node.Expression, node.Member);
@@ -82,7 +85,47 @@ namespace Simple.Core.Expressions
             }
             return node;
         }
+        protected void VisitMemberAccess(MemberExpression node, Stack<MemberInfo> members)
+        {
+            members.Push(node.Member);
+            switch (node.Expression.NodeType)
+            {
+                case ExpressionType.Constant:
+                    this.VisitConstantAccess((ConstantExpression)node.Expression, members);
+                    break;
+                case ExpressionType.MemberAccess:
+                    this.VisitMemberAccess((MemberExpression)node.Expression, members);
+                    break;
+                case ExpressionType.Parameter:
+                    _field.Push(node);
+                    break;
+                default:
+                    break;
+            }
+        }
 
+        protected void VisitConstantAccess(ConstantExpression node, Stack<MemberInfo> members)
+        {
+            object value = node.Value;
+            foreach (var item in members)
+            {
+                switch (item.MemberType)
+                {
+                    case MemberTypes.Field:
+                        value = ((FieldInfo)item).GetValue(value) ?? string.Empty;
+                        break;
+                    case MemberTypes.Property:
+                        value = ((PropertyInfo)item).GetValue(value) ?? string.Empty;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if (value != null)
+            {
+                _value.Push(value);
+            }
+        }
         protected override Expression VisitConstant(ConstantExpression node)
         {
             switch (node.Type.Name)
