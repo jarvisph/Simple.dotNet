@@ -52,4 +52,41 @@ namespace Simple.Core.Domain.Enums
         [Description("删除")]
         Deleted = 10
     }
+
+    /// <summary>
+    /// 浏览器类型
+    /// </summary>
+    public enum BrowserType : byte
+    {
+        [Description("Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.5615.87 Safari/537.36")]
+        Chrome_Windows_112 = 1,
+        [Description("Mozilla/5.0 (Macintosh; Intel Mac OS X 11_2_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.5481.77 Safari/537.36")]
+        Chrome_MacOS_110 = 2,
+        [Description("Mozilla/5.0 (Linux; Android 11; SM-N770F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.5563.115 Mobile Safari/537.36")]
+        Chrome_Andriod_111 = 3,
+        [Description("Mozilla/5.0 (iPhone; CPU iPhone OS 15_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/111.0.5563.72 Mobile/15E148 Safari/604.1")]
+        Chrome_IOS_111 = 4,
+
+
+        [Description("Mozilla/5.0 (Windows NT 10.0; Win64; rv:106.0) Gecko/20100101 Firefox/106.0")]
+        Firefox_Windows_107,
+        [Description("Mozilla/5.0 (Macintosh; Intel Mac OS X 11_12; rv:108.0) Gecko/20100101 Firefox/108.0")]
+        Firefox_MacOS_108
+
+    }
+
+    /// <summary>
+    /// 代理类型
+    /// </summary>
+    public enum ProxyType : byte
+    {
+        [Description("NGINX")]
+        NGINX = 1,
+        [Description("HTTP")]
+        HTTP = 2,
+        [Description("HTTPS")]
+        HTTPS = 3,
+        [Description("SOCKS5")]
+        SOCKS5 = 5,
+    }
 }

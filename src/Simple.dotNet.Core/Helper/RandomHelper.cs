@@ -50,6 +50,11 @@ namespace Simple.Core.Helper
             }
             return sb.ToString().ToValue<int>();
         }
+        public static int RandomNumber(int min, int max)
+        {
+            Random random = new Random();
+            return random.Next(min, max);
+        }
         /// <summary>
         /// 随机获取字母
         /// </summary>

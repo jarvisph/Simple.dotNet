@@ -41,5 +41,23 @@ namespace Simple.Core.Domain
         {
             return new DateTime(1970, 1, 1).Add(TimeZoneInfo.Local.BaseUtcOffset).AddMilliseconds(timestamp);
         }
+
+        /// <summary>
+        /// 获取两个时间差（时间戳）
+        /// </summary>
+        /// <param name="startAt"></param>
+        /// <param name="endAt"></param>
+        /// <returns></returns>
+        public static long GetTimeDifference(long startAt, long endAt)
+        {
+            long start = startAt;
+            long end = endAt;
+            if (startAt < endAt)
+            {
+                start = endAt;
+                end = startAt;
+            }
+            return start - end;
+        }
     }
 }

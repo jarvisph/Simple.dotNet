@@ -40,6 +40,8 @@ namespace Simple.Redis
             Type type = typeof(T);
             return (T)value.GetRedisValue(type);
         }
+
+
         public static object GetRedisValue(this RedisValue value, Type type)
         {
             object obj;
@@ -58,7 +60,7 @@ namespace Simple.Redis
                     obj = (long)value;
                     break;
                 case "Decimal":
-                    obj = (decimal)value;
+                    obj = ((long)value).ToRedisValue();
                     break;
                 case "DateTime":
                     obj = new DateTime((long)value);
@@ -113,11 +115,32 @@ namespace Simple.Redis
             return obj;
         }
         /// <summary>
+        /// 整形与MONEY型互转（保留四位小数）
+        /// </summary>
+        /// <param name="money"></param>
+        /// <returns></returns>
+        public static long ToRedisValue(this decimal money)
+        {
+            return (long)(money * 10000M);
+        }
+
+
+        /// <summary>
+        /// 整形转为MONEY（保留四位小数）
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static decimal ToRedisValue(this long value)
+        {
+            return (decimal)value / 10000M;
+        }
+
+        /// <summary>
         /// 转换RedisValue类型
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public static RedisValue ToRedisValue(this object obj)
+        public static RedisValue GetRedisValue(this object obj)
         {
             if (obj == null) return new RedisValue();
             Type type = obj.GetType();
@@ -140,7 +163,7 @@ namespace Simple.Redis
                     value = (double)obj;
                     break;
                 case "Decimal":
-                    value = (double)obj;
+                    value = ((decimal)obj).ToRedisValue();
                     break;
                 case "Byte[]":
                     value = new byte[] { (byte)obj };
@@ -228,7 +251,7 @@ namespace Simple.Redis
             FieldInfo[] fields = GetFields(typeof(TStruct));
             foreach (FieldInfo field in fields)
             {
-                span.Add(new HashEntry(field.Name, field.GetValue(value).ToRedisValue()));
+                span.Add(new HashEntry(field.Name, field.GetValue(value).GetRedisValue()));
             }
             return span.ToArray();
         }

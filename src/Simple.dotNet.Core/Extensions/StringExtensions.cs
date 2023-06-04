@@ -73,6 +73,15 @@ namespace Simple.Core.Extensions
 
             return c + str;
         }
+
+        public static string Replace(this string str, string[] olds, string newValue)
+        {
+            foreach (var oldValue in olds)
+            {
+                str = str.Replace(oldValue, newValue);
+            }
+            return str;
+        }
         /// <summary>
         /// 非空非NULL判断
         /// </summary>

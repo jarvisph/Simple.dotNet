@@ -20,8 +20,7 @@ namespace Simple.Core.Helper
         {
             return _memoryCache.GetOrCreate(key, factory =>
              {
-                 if (time.HasValue)
-                     factory.SetSlidingExpiration(time.Value);
+                 if (time.HasValue) factory.AbsoluteExpirationRelativeToNow = time.Value;
                  return action();
              });
         }
@@ -51,8 +50,7 @@ namespace Simple.Core.Helper
         /// <returns></returns>
         public static T Set<T>(string key, TimeSpan time, T value)
         {
-            var cacheEntryOptions = new MemoryCacheEntryOptions().SetSlidingExpiration(time);
-            return _memoryCache.Set(key, value, cacheEntryOptions);
+            return _memoryCache.Set(key, value, time);
         }
         /// <summary>
         /// 设置键

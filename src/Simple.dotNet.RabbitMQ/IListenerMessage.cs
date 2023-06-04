@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json;
 using RabbitMQ.Client.Events;
+using Simple.Core.Helper;
+using System;
 
 namespace Simple.RabbitMQ
 {
@@ -20,10 +22,20 @@ namespace Simple.RabbitMQ
 
         public void Invoke(string message, object sender, BasicDeliverEventArgs args)
         {
-            if (string.IsNullOrEmpty(message)) return;
-            TMessageQueue? model = JsonConvert.DeserializeObject<TMessageQueue>(message);
-            if (model == null) return;
-            this.Invoke(model);
+            try
+            {
+
+                if (string.IsNullOrEmpty(message)) return;
+                TMessageQueue? model = JsonConvert.DeserializeObject<TMessageQueue>(message);
+                if (model == null) return;
+                this.Invoke(model);
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                ConsoleHelper.WriteLine(message, ConsoleColor.Red);
+            }
         }
         public abstract void Invoke(TMessageQueue message);
     }

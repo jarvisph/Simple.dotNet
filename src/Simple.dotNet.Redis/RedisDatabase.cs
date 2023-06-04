@@ -1,12 +1,14 @@
 ﻿using Simple.Core.Dependency;
 using StackExchange.Redis;
 using System;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Simple.Redis
 {
     public abstract class RedisDatabase
     {
-        private static IConnectionMultiplexer _connection;
+        private static ConnectionMultiplexer _connectionMultiplexer;
+        private static RedisConnection _connectionString;
 
         private static readonly object _lock = new object();
         /// <summary>
@@ -14,20 +16,7 @@ namespace Simple.Redis
         /// </summary>
         /// <param name="db"></param>
         /// <returns></returns>
-        public IDatabase Redis
-        {
-            get
-            {
-                if (_connection == null)
-                {
-                    lock (_lock)
-                    {
-                        _connection ??= RedisConnectionFactory.GetConnection(ConnectionString.ConnectionString);
-                    }
-                }
-                return _connection.GetDatabase(Db);
-            }
-        }
+        public IDatabase Redis => Connection().GetDatabase(this.Db);
 
         private const string LOGIN = "LOGIN:";
         private const string TOKEN = "TOKEN:";
@@ -36,22 +25,27 @@ namespace Simple.Redis
         /// </summary>
         protected virtual int Db => -1;
 
-        private RedisConnection ConnectionString
+        public ConnectionMultiplexer Connection()
         {
-            get
-            {
-                return IocCollection.Resolve<RedisConnection>();
-            }
+            return _connectionMultiplexer;
         }
+
         public RedisDatabase()
         {
+            _connectionString = IocCollection.Resolve<RedisConnection>();
             lock (_lock)
             {
-                _connection ??= RedisConnectionFactory.GetConnection(ConnectionString.ConnectionString);
+                if (_connectionMultiplexer == null)
+                {
+                    ConfigurationOptions opt = ConfigurationOptions.Parse(_connectionString.ConnectionString);
+                    opt.SyncTimeout = int.MaxValue;
+                    opt.AllowAdmin = true;
+                    _connectionMultiplexer = ConnectionMultiplexer.Connect(opt);
+                }
             }
         }
 
-        public void SetHash(string key, string hashKey, object value) => Redis.HashSet(key, hashKey.ToRedisValue(), value.ToRedisValue());
+        public void SetHash(string key, string hashKey, object value) => Redis.HashSet(key, hashKey.GetRedisValue(), value.GetRedisValue());
 
         public T GetHash<T>(string key, string hashKey) => this.Redis.HashGet(key, hashKey).GetRedisValue<T>();
 
@@ -133,6 +127,7 @@ namespace Simple.Redis
                 string oldKey = this.GetTokenKey(value);
                 batch.HashDeleteAsync(oldKey, value.GetRedisValue<string>());
             }
+            batch.Execute();
         }
     }
 }

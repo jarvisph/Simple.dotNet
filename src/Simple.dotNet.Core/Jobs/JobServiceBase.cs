@@ -1,5 +1,8 @@
-﻿using Simple.Core.Helper;
+﻿using Simple.Core.Dependency;
+using Simple.Core.Helper;
+using Simple.Core.Logger;
 using System;
+using System.Diagnostics;
 using System.Threading;
 
 namespace Simple.Core.Jobs
@@ -11,9 +14,21 @@ namespace Simple.Core.Jobs
         /// </summary>
         public abstract int Time { get; }
         /// <summary>
+        /// 任务类型
+        /// </summary>
+        public string Type => this.GetType().Name;
+        /// <summary>
         /// 任务状态
         /// </summary>
         private bool Status = true;
+
+        public Stopwatch Stopwatch { get; set; } = new Stopwatch();
+        public ILogger Logger { get; }
+
+        public JobServiceBase()
+        {
+            Logger = IocCollection.Resolve<ILogger>();
+        }
         /// <summary>
         /// 开始任务
         /// </summary>
@@ -21,14 +36,20 @@ namespace Simple.Core.Jobs
         {
             while (Status)
             {
+                Stopwatch.Restart();
+                Stopwatch.Start();
                 try
                 {
                     this.Invoke();
-                    Thread.Sleep(Time);
                 }
                 catch (Exception ex)
                 {
-                    ConsoleHelper.WriteLine(ex.Message, ConsoleColor.Red);
+                    Console.WriteLine(ex);
+                    Logger.Error(Guid.NewGuid(), ex);
+                }
+                finally
+                {
+                    Thread.Sleep(Time);
                 }
             }
         }

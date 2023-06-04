@@ -22,7 +22,7 @@ namespace Simple.Core.Jobs
         {
             foreach (var assemblie in AssemblyHelper.GetAssemblies())
             {
-                IEnumerable<Type> types = assemblie.GetTypes().Where(t => t.IsPublic && !t.IsAbstract && t.BaseType == typeof(JobServiceBase));
+                IEnumerable<Type> types = assemblie.GetTypes().Where(t => typeof(JobServiceBase).IsAssignableFrom(t)).Where(c => c.IsPublic && !c.IsAbstract);
                 foreach (Type type in types)
                 {
                     Task.Run(() =>

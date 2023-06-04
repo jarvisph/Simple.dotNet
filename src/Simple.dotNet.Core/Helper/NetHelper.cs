@@ -11,6 +11,10 @@ using Simple.Core.Extensions;
 using Simple.Core.Logger;
 using System.IO.Compression;
 using System.Threading;
+using System.Net.Http;
+using Simple.Core.Domain.Model;
+using static Dapper.SqlMapper;
+using System.Text.Json.Nodes;
 
 namespace Simple.Core.Helper
 {
@@ -111,6 +115,11 @@ namespace Simple.Core.Helper
         {
             return HttpWebRequest(url, "Post", null, null, headers);
         }
+        public static string Form(string url, IDictionary<string, object> parameter, IDictionary<string, string> headers = null)
+        {
+            byte[] data = Encoding.UTF8.GetBytes(parameter.ToQueryString());
+            return HttpWebRequest(url, "Post", ContentType.Form, data, headers);
+        }
         /// <summary>
         /// Post请求，Form格式提交
         /// </summary>
@@ -147,8 +156,7 @@ namespace Simple.Core.Helper
             //创建远程地址
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(new Uri(url));
             request.Method = method;
-            request.UserAgent = null;
-            request.Timeout = Timeout.Infinite;
+            request.Timeout = 1000 * 60 * 1;
             request.KeepAlive = true;
             request.ServicePoint.Expect100Continue = false;
             if (type != null) request.ContentType = type.GetDescription();
@@ -183,6 +191,81 @@ namespace Simple.Core.Helper
             }
             response.Close();
             return result;
+        }
+
+        public static string Get(string url, ProxySetting setting) => Get(url, new Dictionary<string, string>(), setting);
+        /// <summary>
+        /// get请求（代理模式）
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="headers"></param>
+        /// <param name="setting"></param>
+        /// <returns></returns>
+        public static string Get(string url, Dictionary<string, string> headers, ProxySetting setting)
+        {
+            if (setting.Type == ProxyType.NGINX)
+            {
+                return Get(setting.GetProxyUrl() + url, headers);
+            }
+            else
+            {
+                var proxy = new WebProxy(setting.GetProxyUrl());
+                NetworkCredential credential = new NetworkCredential(setting.UserName, setting.Password);
+                HttpClientHandler handler = new HttpClientHandler()
+                {
+                    Proxy = proxy,
+                    UseProxy = true,
+                    Credentials = credential
+                };
+                var client = new HttpClient(handler);
+                // 增加头部
+                foreach (var item in headers)
+                {
+                    client.DefaultRequestHeaders.Add(item.Key, item.Value);
+                }
+                var response = client.GetAsync(url).Result;
+                response.EnsureSuccessStatusCode();
+                return response.Content.ReadAsStringAsync().Result;
+            }
+
+        }
+
+        /// <summary>
+        /// Post提交（代理模式）
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="data"></param>
+        /// <param name="headers"></param>
+        /// <param name="setting"></param>
+        /// <returns></returns>
+        public static string Post(string url, string data, ContentType type, Dictionary<string, string> headers, ProxySetting setting)
+        {
+            if (setting.Type == ProxyType.NGINX)
+            {
+                return Post(setting.GetProxyUrl() + url, type, Encoding.UTF8.GetBytes(data), headers);
+            }
+            else
+            {
+                var proxy = new WebProxy(setting.GetProxyUrl());
+                NetworkCredential credential = new NetworkCredential(setting.UserName, setting.Password);
+                HttpClientHandler httpClientHandler = new HttpClientHandler()
+                {
+                    Proxy = proxy,
+                    UseProxy = true,
+                    Credentials = credential,
+                    AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+                };
+                var client = new HttpClient(httpClientHandler);
+                // 增加头部
+                foreach (var item in headers)
+                {
+                    client.DefaultRequestHeaders.Add(item.Key, item.Value);
+                }
+                var content = new StringContent(data, Encoding.UTF8, type.GetDescription());
+                var response = client.PostAsync(url, content).Result;
+                response.EnsureSuccessStatusCode();
+                return response.Content.ReadAsStringAsync().Result;
+            }
         }
         /// <summary>
         /// 通过流获取文件类型

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -267,6 +268,19 @@ namespace Simple.Core.Helper
                 return false;
             }
             return true;
+        }
+
+        public static bool IsJson(string jsonStr)
+        {
+            try
+            {
+                JsonConvert.DeserializeObject(jsonStr);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }

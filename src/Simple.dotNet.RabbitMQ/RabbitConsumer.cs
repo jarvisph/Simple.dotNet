@@ -43,7 +43,7 @@ namespace Simple.RabbitMQ
                 try
                 {
                     _lastAckAt = DateTime.Now;
-                    ConsoleHelper.WriteLine($"队列：{_consumer.QueueName}\n时间：{DateTime.Now}\n内容：{message}", ConsoleColor.Green);
+                    ConsoleHelper.WriteLine($"队列：{_consumer.QueueName} 时间：{DateTime.Now}", ConsoleColor.Green);
                     _listener.Invoke(message, s, t);
                     //Channel.BasicReject(t.DeliveryTag, true);
                 }
