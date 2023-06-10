@@ -169,16 +169,25 @@ namespace Simple.Core.Helper
             }
             HttpWebResponse response = (HttpWebResponse)request.GetResponse();
             string result = string.Empty;
-            if (headers.ContainsKey("Accept-Encoding"))
+            if (headers.ContainsKey("Accept-Encoding") || headers.ContainsKey("accept-encoding"))
             {
-                if (headers["Accept-Encoding"].Contains("gzip"))
+
+                Stream stream = response.GetResponseStream();
+                if (response.ContentLength == -1)
                 {
-                    using (GZipStream gzip = new GZipStream(response.GetResponseStream(), CompressionMode.Decompress))
+                    using (GZipStream gzip = new GZipStream(stream, CompressionMode.Decompress))
                     {
                         using (StreamReader reader = new StreamReader(gzip, Encoding.UTF8))
                         {
                             result = reader.ReadToEnd();
                         }
+                    }
+                }
+                else
+                {
+                    using (StreamReader reader = new StreamReader(stream))
+                    {
+                        result = Encoding.UTF8.GetString(Encoding.UTF8.GetBytes(reader.ReadToEnd()));
                     }
                 }
             }
@@ -209,25 +218,33 @@ namespace Simple.Core.Helper
             }
             else
             {
-                var proxy = new WebProxy(setting.GetProxyUrl());
-                NetworkCredential credential = new NetworkCredential(setting.UserName, setting.Password);
-                HttpClientHandler handler = new HttpClientHandler()
-                {
-                    Proxy = proxy,
-                    UseProxy = true,
-                    Credentials = credential
-                };
-                var client = new HttpClient(handler);
-                // 增加头部
-                foreach (var item in headers)
-                {
-                    client.DefaultRequestHeaders.Add(item.Key, item.Value);
-                }
+                var client = GetHttpClient(setting, headers);
                 var response = client.GetAsync(url).Result;
                 response.EnsureSuccessStatusCode();
                 return response.Content.ReadAsStringAsync().Result;
             }
+        }
 
+        private static HttpClient GetHttpClient(ProxySetting setting, Dictionary<string, string> headers)
+        {
+            string proxyURL = setting.GetProxyUrl();
+            WebProxy proxy = new()
+            {
+                Address = new Uri(proxyURL),
+                Credentials = new NetworkCredential(setting.UserName, setting.Password)
+            };
+            HttpClientHandler handler = new HttpClientHandler()
+            {
+                Proxy = proxy,
+                UseProxy = true,
+            };
+            var client = new HttpClient(handler);
+            // 增加头部
+            foreach (var item in headers)
+            {
+                client.DefaultRequestHeaders.Add(item.Key, item.Value);
+            }
+            return client;
         }
 
         /// <summary>
@@ -246,21 +263,7 @@ namespace Simple.Core.Helper
             }
             else
             {
-                var proxy = new WebProxy(setting.GetProxyUrl());
-                NetworkCredential credential = new NetworkCredential(setting.UserName, setting.Password);
-                HttpClientHandler httpClientHandler = new HttpClientHandler()
-                {
-                    Proxy = proxy,
-                    UseProxy = true,
-                    Credentials = credential,
-                    AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
-                };
-                var client = new HttpClient(httpClientHandler);
-                // 增加头部
-                foreach (var item in headers)
-                {
-                    client.DefaultRequestHeaders.Add(item.Key, item.Value);
-                }
+                var client = GetHttpClient(setting, headers);
                 var content = new StringContent(data, Encoding.UTF8, type.GetDescription());
                 var response = client.PostAsync(url, content).Result;
                 response.EnsureSuccessStatusCode();

@@ -1,4 +1,5 @@
-﻿using Simple.Core.Helper;
+﻿using Simple.Core.Domain.Dto;
+using Simple.Core.Helper;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,46 +12,37 @@ namespace Simple.dotNet.Core
 {
     public static class WebSocket
     {
-        /// <summary>
-        /// 连接
-        /// </summary>
-        /// <param name="wss"></param>
-        /// <param name="ws"></param>
-        /// <param name="buffer"></param>
-        /// <returns></returns>
-        private static WebSocketReceiveResult Connection(string wss, out ClientWebSocket ws, out byte[] buffer)
-        {
-            Stopwatch sw = Stopwatch.StartNew();
-            ws = new ClientWebSocket();
-            ws.Options.SetRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36");
-            //ws.Options.SetRequestHeader("Origin", "https://dtpawspctw01.ce4caer.com");
-            //ws.Options.SetRequestHeader("Sec-WebSocket-Protocol", "mqtt");
-            ws.ConnectAsync(new Uri(wss), CancellationToken.None).Wait();
-
-            ConsoleHelper.WriteLine($"{wss} => 连接成功 ,耗时:{sw.ElapsedMilliseconds}ms", ConsoleColor.DarkGreen);
-            sw.Restart();
-
-            //缓冲区
-            buffer = new byte[1024 * 4];
-            WebSocketReceiveResult result = ws.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None).Result;
-
-            ConsoleHelper.WriteLine($"{wss} => 监听成功 ,耗时:{sw.ElapsedMilliseconds}ms", ConsoleColor.DarkGreen);
-            return result;
-        }
 
         /// <summary>
         /// web socket
         /// </summary>
         /// <param name="wss"></param>
         /// <param name="action"></param>
-        public static void WebSocketData(string wss, Action<string, ClientWebSocket> action)
+        public static void WebSocketData(string wss, Action<string, ClientWebSocket> action, Dictionary<string, string> headers = null)
         {
             while (true)
             {
                 try
                 {
                     List<byte> bs = new List<byte>();
-                    WebSocketReceiveResult result = Connection(wss, out ClientWebSocket ws, out byte[] buffer);
+                    Stopwatch sw = Stopwatch.StartNew();
+                    ClientWebSocket ws = new ClientWebSocket();
+                    ws.Options.SetRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36");
+                    if (headers != null)
+                    {
+                        foreach (var item in headers)
+                        {
+                            ws.Options.SetRequestHeader(item.Key, item.Value);
+                        }
+                    }
+                    //连接
+                    ws.ConnectAsync(new Uri(wss), CancellationToken.None).Wait();
+
+                    //监听
+                    byte[] buffer = new byte[1024 * 4];
+                    WebSocketReceiveResult result = ws.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None).Result;
+                    ConsoleHelper.WriteLine($"{wss} => 连接监听成功 ,耗时:{sw.ElapsedMilliseconds}ms", ConsoleColor.DarkGreen);
+
                     while (!result.CloseStatus.HasValue)
                     {
                         //文本消息
@@ -74,11 +66,11 @@ namespace Simple.dotNet.Core
                             {
                                 result = ws.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None).Result;
                             }
-                            catch (Exception)
+                            catch
                             {
+                                ConsoleHelper.WriteLine(ws.State.ToString(), ConsoleColor.Red);
                                 ws.CloseAsync(WebSocketCloseStatus.Empty, null, CancellationToken.None).Wait();
                                 ws.Dispose();
-                                throw new Exception("监听失败，尝试重连...");
                             }
                         }
                     }
@@ -88,7 +80,6 @@ namespace Simple.dotNet.Core
                     Console.WriteLine($"[{DateTime.Now}]{ex.Message}");
                     Console.WriteLine(ex);
                 }
-
             }
         }
     }
