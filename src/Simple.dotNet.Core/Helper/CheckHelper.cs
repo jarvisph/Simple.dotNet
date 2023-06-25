@@ -17,10 +17,6 @@ namespace Simple.Core.Helper
         /// </summary>
         public const string PhoneRegex = @"^[1]+[3,4,5,6,7,8,9]+\d{9}";
         /// <summary>
-        /// 中文正则
-        /// </summary>
-        public const string ChineseRegex = @"[\\u4e00-\\u9fa5]+";
-        /// <summary>
         /// 邮箱正则
         /// </summary>
         public const string EmailRegex = @"[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?";
@@ -47,9 +43,16 @@ namespace Simple.Core.Helper
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
-        public static bool IsChinese(string str)
+        public static bool IsChinese(string str, out string message)
         {
-            return Regex.IsMatch(str, ChineseRegex);
+            message = string.Empty;
+            if (!Regex.IsMatch(str, "[\u4e00-\u9fa5]"))
+            {
+                message = "非中文字符";
+                return false;
+            }
+            return true;
+
         }
         /// <summary>
         /// 根据身份证计算 生日、年龄、性别  返回Json格式
@@ -193,7 +196,7 @@ namespace Simple.Core.Helper
             }
             if (!Regex.IsMatch(username, "[A-Za-z0-9]{" + min + "," + max + "}"))
             {
-                message = $"格式错误，由字母、数字组成，长度为{min}-{max}字符";
+                message = $"用户名格式错误，由字母、数字组成，长度为{min}-{max}字符";
                 return false;
             }
             return true;

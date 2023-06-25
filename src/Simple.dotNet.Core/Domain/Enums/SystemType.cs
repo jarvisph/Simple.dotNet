@@ -89,4 +89,32 @@ namespace Simple.Core.Domain.Enums
         [Description("SOCKS5")]
         SOCKS5 = 5,
     }
+
+    /// <summary>
+    /// 虚拟币钱包类型
+    /// </summary>
+    public enum WalletType : byte
+    {
+        [Description("波场")]
+        TRC20,
+
+    }
+
+    /// <summary>
+    /// 银行卡类型
+    /// </summary>
+    public enum BankType : int
+    {
+        [Description("中国银行")]
+        BOC = 1,
+        [Description("中国农业银行")]
+        ABC = 2,
+        [Description("中国工商银行")]
+        ICBC = 3,
+        [Description("中国建设银行")]
+        CCB = 4,
+        [Description("中国邮政储蓄银行")]
+        PSBC = 5,
+
+    }
 }
