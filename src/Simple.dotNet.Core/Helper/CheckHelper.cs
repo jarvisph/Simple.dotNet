@@ -25,8 +25,9 @@ namespace Simple.Core.Helper
         /// </summary>
         /// <param name="phone"></param>
         /// <returns></returns>
-        public static bool IsMobilePhone(string phone)
+        public static bool IsMobilePhone(string phone, bool isNull = false)
         {
+            if (isNull && string.IsNullOrWhiteSpace(phone)) return true;
             return Regex.IsMatch(phone, PhoneRegex);
         }
         /// <summary>
@@ -43,9 +44,10 @@ namespace Simple.Core.Helper
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
-        public static bool IsChinese(string str, out string message)
+        public static bool IsChinese(string str, out string message, bool isNull = false)
         {
             message = string.Empty;
+            if (isNull && string.IsNullOrEmpty(str)) return true;
             if (!Regex.IsMatch(str, "[\u4e00-\u9fa5]"))
             {
                 message = "非中文字符";

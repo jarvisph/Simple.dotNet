@@ -24,7 +24,7 @@ namespace Simple.Core.Http.File
         /// <returns></returns>
         public static string GetImage(this string path, string defaultPath)
         {
-            if (_filePathConfiguration == null) return defaultPath;
+            if (_filePathConfiguration == null) return $"{defaultPath}{path}";
             if (string.IsNullOrEmpty(path))
             {
                 if (string.IsNullOrEmpty(defaultPath)) return defaultPath;

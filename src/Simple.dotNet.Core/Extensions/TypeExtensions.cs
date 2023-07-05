@@ -1,7 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
+using System.Reflection;
 
 namespace Simple.Core.Extensions
 {
@@ -184,6 +186,21 @@ namespace Simple.Core.Extensions
             if (value == null) return false;
             if (value is T) return true;
             return false;
+        }
+
+
+        public static string GetDescription(this Type type)
+        {
+            DescriptionAttribute attribute = type.GetAttribute<DescriptionAttribute>();
+            if (attribute == null) return type.Name;
+            return attribute?.Description;
+        }
+
+        public static string GetDescription(this PropertyInfo property)
+        {
+            DescriptionAttribute attribute = property.GetAttribute<DescriptionAttribute>();
+            if (attribute == null) return property.Name;
+            return attribute?.Description;
         }
 
         internal static Type GetElementType(this Type seqType)

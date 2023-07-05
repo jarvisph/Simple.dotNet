@@ -4,6 +4,11 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Newtonsoft.Json;
+using Simple.Core.Domain;
+using Simple.Core.Domain.Enums;
+using Simple.Core.Domain.Model;
+using Simple.Core.Helper;
 using Simple.Core.Languages;
 
 namespace Simple.Core.Extensions
@@ -182,6 +187,64 @@ namespace Simple.Core.Extensions
                 return field.GetAttribute<TAttribute>();
             }
             return (TAttribute)default;
+        }
+        /// <summary>
+        /// 获取配置模块
+        /// </summary>
+        /// <param name="em"></param>
+        /// <returns></returns>
+        public static IEnumerable<SettingModel> GetSettings(this Enum em, string jsonString = null)
+        {
+            Assembly assembly = AssemblyHelper.GetAssemblies().FirstOrDefault(c => c.FullName == em.GetType().Assembly.FullName);
+            if (assembly == null) yield break;
+
+            Type type = assembly.GetTypes().FirstOrDefault(c => c.Name == em.ToString());
+            if (type == null) yield break;
+            object data = null;
+            if (string.IsNullOrWhiteSpace(jsonString))
+            {
+                data = Activator.CreateInstance(type);
+            }
+            else
+            {
+                data = JsonConvert.DeserializeObject(jsonString, type);
+            }
+            foreach (PropertyInfo property in type.GetProperties())
+            {
+                FormType form = FormType.Text;
+                string @enum = string.Empty;
+                if (property.PropertyType.IsEnum)
+                {
+                    @enum = property.PropertyType.FullName;
+                }
+                if (property.HasAttribute<FormAttribute>())
+                {
+                    FormAttribute attribute = property.GetAttribute<FormAttribute>();
+                    form = attribute.Type;
+                }
+                else
+                {
+                    form = property.PropertyType.IsEnum ? FormType.Radio : property.PropertyType.Name switch
+                    {
+                        "String" => FormType.Text,
+                        "Enum" => FormType.Radio,
+                        _ => FormType.Text
+                    };
+                }
+                object value = null;
+                if (data != null)
+                {
+                    value = property.GetValue(data);
+                }
+                yield return new SettingModel()
+                {
+                    Description = property.GetDescription(),
+                    Name = property.Name,
+                    Type = form,
+                    Value = value,
+                    Enum = @enum
+                };
+            }
         }
     }
 }

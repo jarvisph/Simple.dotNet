@@ -9,14 +9,6 @@ namespace Simple.Core.Domain
 {
     public abstract class JsonSetting
     {
-        public JsonSetting()
-        {
-
-        }
-        public JsonSetting(string jsonString)
-        {
-         
-        }
 
         public override string ToString()
         {

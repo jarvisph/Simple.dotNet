@@ -15,6 +15,7 @@ using System.Net.Http;
 using Simple.Core.Domain.Model;
 using static Dapper.SqlMapper;
 using System.Text.Json.Nodes;
+using Microsoft.Data.SqlClient.Server;
 
 namespace Simple.Core.Helper
 {
@@ -119,6 +120,25 @@ namespace Simple.Core.Helper
         {
             byte[] data = Encoding.UTF8.GetBytes(parameter.ToQueryString());
             return HttpWebRequest(url, "Post", ContentType.Form, data, headers);
+        }
+
+        /// <summary>
+        /// 上传文件
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        public static string Form(string url, IFormFile file)
+        {
+            byte[] stream = file.GetData();
+            MultipartFormDataContent formData = new MultipartFormDataContent
+            {
+                { new ByteArrayContent(stream), "file", file.FileName }
+            };
+            HttpClient client = new HttpClient();
+            HttpResponseMessage response = client.PostAsync(url, formData).Result;
+            response.EnsureSuccessStatusCode();
+            return response.Content.ReadAsStringAsync().Result;
         }
         /// <summary>
         /// Post请求，Form格式提交
