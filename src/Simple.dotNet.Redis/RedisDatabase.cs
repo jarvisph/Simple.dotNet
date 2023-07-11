@@ -58,6 +58,13 @@ namespace Simple.Redis
         {
             return $"{LOGIN}{userId % 10}";
         }
+
+        protected string GetToken(int userId)
+        {
+            string key = GetLoginKey(userId);
+            return this.Redis.HashGet(key, userId).GetRedisValue<string>();
+        }
+
         /// <summary>
         /// 获取token键
         /// </summary>

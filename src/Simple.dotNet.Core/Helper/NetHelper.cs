@@ -121,6 +121,12 @@ namespace Simple.Core.Helper
             byte[] data = Encoding.UTF8.GetBytes(parameter.ToQueryString());
             return HttpWebRequest(url, "Post", ContentType.Form, data, headers);
         }
+        public static string Form(string url, string queryString, IDictionary<string, string> headers = null)
+        {
+            byte[] data = Encoding.UTF8.GetBytes(queryString);
+            return HttpWebRequest(url, "Post", ContentType.Form, data, headers);
+        }
+
 
         /// <summary>
         /// 上传文件
