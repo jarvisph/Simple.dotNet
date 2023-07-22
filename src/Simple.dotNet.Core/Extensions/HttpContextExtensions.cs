@@ -409,6 +409,10 @@ namespace Simple.Core.Extensions
         {
             return file.FileName.Substring(file.FileName.LastIndexOf('.'), file.FileName.Length - file.FileName.LastIndexOf('.')).Substring(1);
         }
+        public static string GetFileExt(this string fileName)
+        {
+            return fileName.Substring(fileName.LastIndexOf("."), fileName.Length - fileName.LastIndexOf(".")).Substring(1);
+        }
 
     }
 }

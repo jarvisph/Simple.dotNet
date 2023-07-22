@@ -127,19 +127,22 @@ namespace Simple.Core.Helper
             return HttpWebRequest(url, "Post", ContentType.Form, data, headers);
         }
 
-
+        public static string UploadFile(string url, IFormFile file)
+        {
+            byte[] stream = file.GetData();
+            return UploadFile(url, stream, file.GetFileExt());
+        }
         /// <summary>
         /// 上传文件
         /// </summary>
         /// <param name="url"></param>
         /// <param name="file"></param>
         /// <returns></returns>
-        public static string Form(string url, IFormFile file)
+        public static string UploadFile(string url, byte[] stream, string ext)
         {
-            byte[] stream = file.GetData();
             MultipartFormDataContent formData = new MultipartFormDataContent
             {
-                { new ByteArrayContent(stream), "file", file.FileName }
+                { new ByteArrayContent(stream), "file", $"file.{ext}" }
             };
             HttpClient client = new HttpClient();
             HttpResponseMessage response = client.PostAsync(url, formData).Result;
