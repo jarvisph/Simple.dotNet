@@ -241,16 +241,23 @@ namespace Simple.Core.Helper
         /// <returns></returns>
         public static string Get(string url, Dictionary<string, string> headers, ProxySetting setting)
         {
-            if (setting.Type == ProxyType.NGINX)
+            if (setting == null || string.IsNullOrWhiteSpace(setting.Proxy))
             {
-                return Get(setting.GetProxyUrl() + url, headers);
+                return Get(url, headers);
             }
             else
             {
-                var client = GetHttpClient(setting, headers);
-                var response = client.GetAsync(url).Result;
-                response.EnsureSuccessStatusCode();
-                return response.Content.ReadAsStringAsync().Result;
+                if (setting.Type == ProxyType.NGINX)
+                {
+                    return Get(setting.GetProxyUrl() + url, headers);
+                }
+                else
+                {
+                    var client = GetHttpClient(setting, headers);
+                    var response = client.GetAsync(url).Result;
+                    response.EnsureSuccessStatusCode();
+                    return response.Content.ReadAsStringAsync().Result;
+                }
             }
         }
 
