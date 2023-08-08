@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Simple.Elasticsearch.Expressions
 {
@@ -192,18 +193,26 @@ namespace Simple.Elasticsearch.Expressions
                         }
                         else
                         {
-                            switch (node.Method.Name)
+                            if (field.Type.BaseType.Name == "Array" && node.Method.Name == "Contains")
                             {
-                                case "Contains":
-                                    _query.Push(new QueryContainerDescriptor<TDocument>().Wildcard(field, $"*{value}*"));
-                                    break;
-                                case "StartsWith":
-                                    _query.Push(new QueryContainerDescriptor<TDocument>().Wildcard(field, $"{value}*"));
-                                    break;
-                                case "EndsWith":
-                                    _query.Push(new QueryContainerDescriptor<TDocument>().Wildcard(field, $"*{value}"));
-                                    break;
+                                _query.Push(new QueryContainerDescriptor<TDocument>().Bool(b => b.Must(m => m.Terms(t => t.Field(field).Terms(value)))));
                             }
+                            else
+                            {
+                                switch (node.Method.Name)
+                                {
+                                    case "Contains":
+                                        _query.Push(new QueryContainerDescriptor<TDocument>().Wildcard(field, $"*{value}*"));
+                                        break;
+                                    case "StartsWith":
+                                        _query.Push(new QueryContainerDescriptor<TDocument>().Wildcard(field, $"{value}*"));
+                                        break;
+                                    case "EndsWith":
+                                        _query.Push(new QueryContainerDescriptor<TDocument>().Wildcard(field, $"*{value}"));
+                                        break;
+                                }
+                            }
+
                         }
                     }
                     break;
@@ -267,7 +276,7 @@ namespace Simple.Elasticsearch.Expressions
                     value = _value.Pop();
                     if (value is DateTime)
                     {
-                        value = value.GetValue<DateTime>().GetTimestamp();
+                        value = value.GetValue<DateTime>().GetTimestamps();
                     }
                     break;
             }
@@ -275,7 +284,25 @@ namespace Simple.Elasticsearch.Expressions
             switch (node.NodeType)
             {
                 case ExpressionType.Equal:
-                    _query.Push(new QueryContainerDescriptor<TDocument>().Term(t => t.Field(field).Value(value)));
+                    {
+                        //var member = (MemberExpression)field;
+                        //var property = ((PropertyInfo)member.Member).PropertyType;
+                        //switch (property.Name)
+                        //{
+                        //    case "String":
+                        //    case "Guid":
+                        //        {
+                        //            _query.Push(new QueryContainerDescriptor<TDocument>().Term(t => t.Field($"{member.Member.Name}.keyword").Value(value)));
+                        //        }
+                        //        break;
+                        //    default:
+                        //        {
+                        //            _query.Push(new QueryContainerDescriptor<TDocument>().Term(t => t.Field(field).Value(value)));
+                        //        }
+                        //        break;
+                        //}
+                        _query.Push(new QueryContainerDescriptor<TDocument>().Term(t => t.Field(field).Value(value)));
+                    }
                     break;
                 case ExpressionType.GreaterThan:
                     _query.Push(new QueryContainerDescriptor<TDocument>().LongRange(t => t.Field(field).GreaterThan(value.ToValue<long>())));
