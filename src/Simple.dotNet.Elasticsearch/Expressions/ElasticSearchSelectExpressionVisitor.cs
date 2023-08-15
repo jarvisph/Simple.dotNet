@@ -17,6 +17,7 @@ namespace Simple.Elasticsearch.Expressions
         public new IEnumerable<Tuple<string, string, Type>> Visit(Expression node)
         {
             NewExpression expression = (NewExpression)node;
+            if (expression.Members == null) yield break;
             foreach (MemberInfo member in expression.Members)
             {
                 _field.Enqueue(member);
