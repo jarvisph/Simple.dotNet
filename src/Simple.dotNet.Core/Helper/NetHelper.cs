@@ -293,17 +293,24 @@ namespace Simple.Core.Helper
         /// <returns></returns>
         public static string Post(string url, string data, ContentType type, Dictionary<string, string> headers, ProxySetting setting)
         {
-            if (setting.Type == ProxyType.NGINX)
+            if (setting == null || string.IsNullOrWhiteSpace(setting.Proxy))
             {
-                return Post(setting.GetProxyUrl() + url, type, Encoding.UTF8.GetBytes(data), headers);
+                return HttpWebRequest(url, "POST", type, Encoding.UTF8.GetBytes(data), headers);
             }
             else
             {
-                var client = GetHttpClient(setting, headers);
-                var content = new StringContent(data, Encoding.UTF8, type.GetDescription());
-                var response = client.PostAsync(url, content).Result;
-                response.EnsureSuccessStatusCode();
-                return response.Content.ReadAsStringAsync().Result;
+                if (setting.Type == ProxyType.NGINX)
+                {
+                    return Post(setting.GetProxyUrl() + url, type, Encoding.UTF8.GetBytes(data), headers);
+                }
+                else
+                {
+                    var client = GetHttpClient(setting, headers);
+                    var content = new StringContent(data, Encoding.UTF8, type.GetDescription());
+                    var response = client.PostAsync(url, content).Result;
+                    response.EnsureSuccessStatusCode();
+                    return response.Content.ReadAsStringAsync().Result;
+                }
             }
         }
         /// <summary>

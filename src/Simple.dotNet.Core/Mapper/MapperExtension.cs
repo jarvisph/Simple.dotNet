@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Simple.Core.Extensions;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
 
 namespace Simple.Core.Mapper
@@ -24,6 +26,7 @@ namespace Simple.Core.Mapper
             {
                 object? value = property.GetValue(source);
                 if (value == null) continue;
+                if (property.HasAttribute<NotMappedAttribute>()) continue;
                 PropertyInfo? resultProperty = type.GetProperty(property.Name);
                 if (resultProperty == null) continue;
                 if (resultProperty.PropertyType != property.PropertyType) continue;

@@ -11,6 +11,7 @@ namespace Simple.Core.Languages
     /// </summary>
     public class LanguageModel : Dictionary<LanguageType, string>
     {
+        public LanguageModel() { }
         public LanguageModel(string jsonStr)
         {
             this.Clear();

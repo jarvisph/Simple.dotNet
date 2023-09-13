@@ -6,14 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Simple.Core.Http.OSS
+namespace Simple.Tool.Obs
 {
-    /// <summary>
-    /// OSS 的参数设定
-    /// </summary>
-    public class OSSSetting : QuerySetting
+    public class ObsSetting : QuerySetting
     {
-        public OSSSetting(string queryString) : base(queryString)
+        public ObsSetting(string queryString) : base(queryString)
         {
         }
 
@@ -24,15 +21,15 @@ namespace Simple.Core.Http.OSS
         public string? endpoint { get; set; }
 
         /// <summary>
-        /// 授权账户（RAM管理内）
+        /// Authorized account（RAM管理内）
         /// </summary>
-        [Description("授权账户")]
+        [Description("Authorized account")]
         public string? accessKeyId { get; set; }
 
         /// <summary>
-        /// 授权密钥（RAM管理内）
+        /// Authorization key（RAM管理内）
         /// </summary>
-        [Description("授权密钥")]
+        [Description("Authorization key")]
         public string? accessKeySecret { get; set; }
 
         /// <summary>

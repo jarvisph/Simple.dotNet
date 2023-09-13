@@ -16,7 +16,7 @@ namespace Simple.Core.Helper
         /// <summary>
         /// ip正则表达式
         /// </summary>
-        public static readonly Regex IPRegex = new Regex(@"\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b");
+        public static readonly Regex IPRegex = new Regex("^((2(5[0-5]|[0-4]\\d))|[0-1]?\\d{1,2})(\\.((2(5[0-5]|[0-4]\\d))|[0-1]?\\d{1,2})){3}$");
 
         /// <summary>
         /// IP库的路径

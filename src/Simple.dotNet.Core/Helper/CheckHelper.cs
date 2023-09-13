@@ -219,9 +219,9 @@ namespace Simple.Core.Helper
                 message = "不能为空";
                 return false;
             }
-            if (!Regex.IsMatch(content, "^[\u4e00-\u9fa5_，,！!.。？?“”a-zA-Z0-9]{" + min + "," + max + "}"))
+            if (!Regex.IsMatch(content, "^[\u4e00-\u9fa5_，,！!.。？?@“”()（）{}a-zA-Z0-9]{" + min + "," + max + "}"))
             {
-                message = $"格式错误，存在非法字符，请检查内容，长度为{min}-{max}字符";
+                message = $"格式错误，存在非法字符，长度为{min}-{max}字符 原文：{content}";
                 return false;
             }
             return true;

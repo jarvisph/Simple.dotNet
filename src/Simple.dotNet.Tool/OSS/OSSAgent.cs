@@ -1,5 +1,6 @@
 ﻿using Aliyun.OSS;
 using Microsoft.AspNetCore.Http;
+using OBS.Model;
 using Simple.Core.Encryption;
 using Simple.Core.Extensions;
 using Simple.Core.Helper;
@@ -7,12 +8,16 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CompleteMultipartUploadRequest = Aliyun.OSS.CompleteMultipartUploadRequest;
+using InitiateMultipartUploadRequest = Aliyun.OSS.InitiateMultipartUploadRequest;
+using ListObjectsRequest = Aliyun.OSS.ListObjectsRequest;
+using PartETag = Aliyun.OSS.PartETag;
+using UploadPartRequest = Aliyun.OSS.UploadPartRequest;
 
-namespace Simple.Core.Http.OSS
+namespace Simple.Tool.OSS
 {
     /// <summary>
     /// 阿里云OSS存储

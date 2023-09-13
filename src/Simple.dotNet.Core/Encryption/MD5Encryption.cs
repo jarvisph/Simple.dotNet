@@ -69,6 +69,21 @@ namespace Simple.Core.Encryption
                 return string.Join(string.Empty, data.Select(t => t.ToString("x2"))).ToUpper();
             }
         }
+
+        /// <summary>
+        /// MD5编码(32位大写）
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="encoding">默认UTF-8</param>
+        /// <returns>默认大写</returns>
+        public static string toMD5(this string input, Encoding? encoding = null, int length = 32)
+        {
+            if (encoding == null) encoding = Encoding.UTF8;
+            string md5 = toMD5(encoding.GetBytes(input ?? string.Empty));
+            if (length == 32) return md5;
+            return md5.Substring(0, length);
+        }
+
         /// <summary>
         /// 对文件流进行MD5加密
         /// </summary>
