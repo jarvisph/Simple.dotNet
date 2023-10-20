@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>1.0.6</Version>
+    <Version>1.0.7</Version>
     <Product>Simple.dotNet</Product>
     <PackageId>Simple.dotNet.Elasticsearch</PackageId>
     <Authors>Jarvis</Authors>

@@ -10,6 +10,7 @@ using Simple.Core.Domain.Enums;
 using Simple.Core.Domain.Model;
 using Simple.Core.Helper;
 using Simple.Core.Languages;
+using Simple.Core.Mapper;
 
 namespace Simple.Core.Extensions
 {
@@ -136,7 +137,7 @@ namespace Simple.Core.Extensions
             }
         }
         /// <summary>
-        /// 多语种获取枚举
+        /// 获取枚举备注信息（多语种获取）
         /// </summary>
         /// <param name="em"></param>
         /// <param name="language"></param>
@@ -149,23 +150,21 @@ namespace Simple.Core.Extensions
                 if (_enumDescription.ContainsKey(key)) return (string)_enumDescription[key];
                 foreach (FieldInfo field in em.GetType().GetFields())
                 {
-                    string enumKey = string.Format("{0}.{1}.{2}", em.GetType().FullName, em, language);
+                    string enumKey = string.Format("{0}.{1}.{2}", em.GetType().FullName, field.Name, language);
                     if (field.IsSpecialName) continue;
                     DescriptionAttribute desc = field.GetAttribute<DescriptionAttribute>();
-                    string description = string.Empty;
-                    if (desc == null)
+                    string description = desc == null ? field.Name : desc.Description;
+                    LanguageAttribute attribute = field.GetAttribute<LanguageAttribute>();
+                    if (attribute != null)
                     {
-                        description = field.Name;
-                    }
-                    else
-                    {
-                        if (language != LanguageType.CHN)
+                        PropertyInfo property = typeof(LanguageAttribute).GetProperty(language.ToString());
+                        if (property != null)
                         {
-                            description = desc.Description.Get(language);
-                        }
-                        else
-                        {
-                            description = desc.Description;
+                            object value = property.GetValue(attribute);
+                            if (value != null)
+                            {
+                                description = value.ToString();
+                            }
                         }
                     }
                     if (!_enumDescription.ContainsKey(enumKey)) _enumDescription.Add(enumKey, description);
