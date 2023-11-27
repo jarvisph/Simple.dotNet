@@ -22,6 +22,11 @@ namespace Simple.Core.Domain
             return GetTimestamps(DateTime.Now);
         }
 
+        public static long GetTimestamp()
+        {
+            return DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        }
+
         /// <summary>
         /// 获取时间戳（毫秒，GTM+0）
         /// </summary>
@@ -31,6 +36,7 @@ namespace Simple.Core.Domain
         {
             return (time.ToUniversalTime().Ticks - 621355968000000000) / 10000;
         }
+
 
         /// <summary>
         /// 时间戳转化成为本地时间（毫秒）

@@ -1,4 +1,6 @@
-﻿using Simple.Core.Domain.Dto;
+﻿using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using Simple.Core.Domain.Dto;
 using Simple.Core.Helper;
 using System;
 using System.Collections.Generic;
@@ -18,7 +20,7 @@ namespace Simple.dotNet.Core
         /// </summary>
         /// <param name="wss"></param>
         /// <param name="action"></param>
-        public static void WebSocketData(string wss, Action<string, ClientWebSocket> action, Dictionary<string, string> headers = null)
+        public static void WebSocketData(string wss, Action<string, ClientWebSocket> action, string send = null, Dictionary<string, string> headers = null)
         {
             while (true)
             {
@@ -37,7 +39,10 @@ namespace Simple.dotNet.Core
                     }
                     //连接
                     ws.ConnectAsync(new Uri(wss), CancellationToken.None).Wait();
-
+                    if (string.IsNullOrWhiteSpace(send))
+                    {
+                        ws.SendAsync(new ArraySegment<byte>(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(send))), System.Net.WebSockets.WebSocketMessageType.Text, false, CancellationToken.None).Wait();
+                    }
                     //监听
                     byte[] buffer = new byte[1024 * 4];
                     WebSocketReceiveResult result = ws.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None).Result;

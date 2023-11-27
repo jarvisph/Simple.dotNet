@@ -1,11 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <RootNamespace>Simple.Tool</RootNamespace>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<PackageId>Simple.dotNet.Tool</PackageId>
+		<Version>1.0.6</Version>
+		<Authors>jarvis</Authors>
+		<Product>Simple.dotNet</Product>
+		<RepositoryType>git</RepositoryType>
+		<RootNamespace>Simple.Tool</RootNamespace>
+		<AssemblyName>Simple.dotNet.Tool</AssemblyName>
+		<Company>jarvis</Company>
+	</PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Simple.dotNet.Core\Simple.dotNet.Core.csproj" />

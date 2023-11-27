@@ -200,23 +200,12 @@ namespace Simple.Core.Helper
             string result = string.Empty;
             if (headers.ContainsKey("Accept-Encoding") || headers.ContainsKey("accept-encoding"))
             {
-
                 Stream stream = response.GetResponseStream();
-                if (response.ContentLength == -1)
+                using (GZipStream gzip = new GZipStream(stream, CompressionMode.Decompress))
                 {
-                    using (GZipStream gzip = new GZipStream(stream, CompressionMode.Decompress))
+                    using (StreamReader reader = new StreamReader(gzip, Encoding.UTF8))
                     {
-                        using (StreamReader reader = new StreamReader(gzip, Encoding.UTF8))
-                        {
-                            result = reader.ReadToEnd();
-                        }
-                    }
-                }
-                else
-                {
-                    using (StreamReader reader = new StreamReader(stream))
-                    {
-                        result = Encoding.UTF8.GetString(Encoding.UTF8.GetBytes(reader.ReadToEnd()));
+                        result = reader.ReadToEnd();
                     }
                 }
             }
