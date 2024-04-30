@@ -31,6 +31,7 @@ namespace Simple.Core.Domain.Model
             {
                 ProxyType.NGINX => $"http://{this.Proxy}/?",
                 ProxyType.HTTP => $"http://{this.Proxy}",
+                ProxyType.SOCKS5 => $"socks5://{this.Proxy}",
                 _ => throw new System.Exception($"代理地址获取错误"),
             };
         }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using NReJSON;
+using Simple.Core.Localization;
 using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
@@ -17,29 +18,32 @@ namespace Simple.Redis.Test.NReJson
         [TestMethod]
         public void Main()
         {
-            string conn = "192.168.0.176:6379";
-            _connectionMultiplexer = ConnectionMultiplexer.Connect(conn);
+            _connectionMultiplexer = ConnectionMultiplexer.Connect(AppsettingConfig.GetConnectionString("RedisConnection"));
             IDatabase db = _connectionMultiplexer.GetDatabase();
-            UserInfo _userInfo = new UserInfo()
+            Dictionary<int, UserInfo> list = new Dictionary<int, UserInfo>();
+            for (int i = 0; i < 10; i++)
             {
-                UserID = "AC-67292",
-                FullName = "Bob James",
-                Email = "bobjames@sample.com",
-                Rank = 15,
-                Address = new Address()
+                list.Add(i, new UserInfo()
                 {
-                    Street = "678 Winona Street",
-                    City = "New Medford",
-                    State = "Delaware",
-                    Zip = "12345"
-                }
-            };
-            var value = new Item { Name = "张三" };
-            string key = "userprofile:" + _userInfo.Email.ToLower();
+                    UserID = i.ToString(),
+                    FullName = "Bob James",
+                    Email = "bobjames@sample.com",
+                    Rank = 15,
+                });
+            }
+            string key = "USERLIST";
+            //db.JsonSet(key, JsonConvert.SerializeObject(list));
+            //var result = db.JsonGet(key, "1", "2");
+            //var s = JsonConvert.DeserializeObject<Dictionary<int, UserInfo>>(result.ToString());
+            //db.JsonSet(key, JsonConvert.SerializeObject(888), "1.Rank");
+
+            var result = db.JsonGet(key);
+            //db.JsonDelete(key, "0");
+            //db.JsonDelete(key);
             //db.JsonSet(key, "[]", "Items");
             //db.JsonArrayInsert(key, "Items", 1, JsonConvert.SerializeObject(value));
             //var indexof = db.JsonArrayIndexOf(key, "Items", JsonConvert.SerializeObject(new { Name = "李四" }));
-            var result = db.JsonGet(key, "Items.[0]");
+            //var result = db.JsonGet(key, "Items.[0]");
             //db.JsonSet(key, JsonConvert.SerializeObject(value), "Items");
             //db.JsonSet(key, JsonConvert.SerializeObject("new york"), "Items.1.Name");
             //string json = JsonConvert.SerializeObject(_userInfo);

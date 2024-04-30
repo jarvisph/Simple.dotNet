@@ -19,11 +19,11 @@ namespace Simple.Redis.Test
         {
             return new HashEntry[]
             {
-                new HashEntry("Id",user.Id.ToRedisValue()),
-                new HashEntry("Name",user.Name.ToRedisValue()),
-                new HashEntry("Password",user.Password.ToRedisValue()),
-                new HashEntry("Email",user.Email.ToRedisValue()),
-                new HashEntry ("Status",user.Status.ToRedisValue())
+                //new HashEntry("Id",user.Id.ToRedisValue()),
+                //new HashEntry("Name",user.Name.ToRedisValue()),
+                //new HashEntry("Password",user.Password.ToRedisValue()),
+                //new HashEntry("Email",user.Email.ToRedisValue()),
+                //new HashEntry ("Status",user.Status.ToRedisValue())
             };
         }
     }

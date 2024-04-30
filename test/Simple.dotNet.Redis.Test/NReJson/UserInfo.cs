@@ -12,8 +12,6 @@ namespace Simple.Redis.Test.NReJson
         public string FullName { get; set; }
         public string Email { get; set; }
         public int Rank { get; set; }
-        public Address Address { get; set; }
-        public Item[] Items { get; set; }
     }
     public class Item
     {

@@ -28,7 +28,7 @@ namespace Simple.RabbitMQ
             var body = Encoding.UTF8.GetBytes(msg);
             //绑定交换机
             _channel.BasicPublish(exchange.Name, routingKey, properties, body);
-            ConsoleHelper.WriteLine($"交换机：{exchange.Name} 时间：{DateTime.Now}", ConsoleColor.Green);
+            //ConsoleHelper.WriteLine($"交换机：{exchange.Name} 时间：{DateTime.Now}", ConsoleColor.Green);
         }
     }
 }

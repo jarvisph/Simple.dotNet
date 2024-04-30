@@ -15,5 +15,6 @@ namespace Simple.Core.Domain.Enums
         Password = 2,
         Radio = 3,
         Checkbox = 4,
+        DateTime = 5,
     }
 }

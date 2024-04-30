@@ -29,7 +29,6 @@ namespace Simple.dotNet.Core
                     List<byte> bs = new List<byte>();
                     Stopwatch sw = Stopwatch.StartNew();
                     ClientWebSocket ws = new ClientWebSocket();
-                    ws.Options.SetRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36");
                     if (headers != null)
                     {
                         foreach (var item in headers)
@@ -39,15 +38,19 @@ namespace Simple.dotNet.Core
                     }
                     //连接
                     ws.ConnectAsync(new Uri(wss), CancellationToken.None).Wait();
-                    if (string.IsNullOrWhiteSpace(send))
+
+                    ConsoleHelper.WriteLine($"{wss} => 连接监听成功 ,耗时:{sw.ElapsedMilliseconds}ms", ConsoleColor.DarkGreen);
+                    if (!string.IsNullOrWhiteSpace(send))
                     {
-                        ws.SendAsync(new ArraySegment<byte>(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(send))), System.Net.WebSockets.WebSocketMessageType.Text, false, CancellationToken.None).Wait();
+                        Console.WriteLine("发送消息");
+                        Console.WriteLine(send);
+                        ws.SendAsync(new ArraySegment<byte>(Encoding.UTF8.GetBytes(send)), WebSocketMessageType.Text, false, CancellationToken.None).Wait();
                     }
+
                     //监听
                     byte[] buffer = new byte[1024 * 4];
                     WebSocketReceiveResult result = ws.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None).Result;
-                    ConsoleHelper.WriteLine($"{wss} => 连接监听成功 ,耗时:{sw.ElapsedMilliseconds}ms", ConsoleColor.DarkGreen);
-
+                   
                     while (!result.CloseStatus.HasValue)
                     {
                         //文本消息
@@ -84,6 +87,7 @@ namespace Simple.dotNet.Core
                 {
                     Console.WriteLine($"[{DateTime.Now}]{ex.Message}");
                     Console.WriteLine(ex);
+                    Thread.Sleep(1000);
                 }
             }
         }

@@ -226,6 +226,7 @@ namespace Simple.Core.Extensions
                     form = property.PropertyType.IsEnum ? FormType.Radio : property.PropertyType.Name switch
                     {
                         "String" => FormType.Text,
+                        "DateTime" => FormType.DateTime,
                         "Enum" => FormType.Radio,
                         _ => FormType.Text
                     };

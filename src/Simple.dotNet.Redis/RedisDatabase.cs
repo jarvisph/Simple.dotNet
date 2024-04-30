@@ -1,7 +1,6 @@
 ﻿using Simple.Core.Dependency;
 using StackExchange.Redis;
 using System;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Simple.Redis
 {
