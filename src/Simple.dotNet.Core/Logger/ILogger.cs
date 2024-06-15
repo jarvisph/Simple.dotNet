@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
+using System.Net.Http;
 
 namespace Simple.Core.Logger
 {
@@ -24,6 +26,7 @@ namespace Simple.Core.Logger
         /// <param name="exception"></param>
         /// <returns></returns>
         bool Error(Guid guid, Exception exception);
+        bool Error(Guid guid, HttpContext context, Exception exception);
         /// <summary>
         /// 警告
         /// </summary>

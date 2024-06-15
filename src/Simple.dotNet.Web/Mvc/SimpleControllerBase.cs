@@ -20,16 +20,16 @@ namespace Simple.Web.Mvc
     [ApiController]
     public abstract class SimpleControllerBase : ControllerBase
     {
-        protected IWriteRepository WriteRepository { get; }
-        protected IReadRepository ReadRepository { get; }
-        /// <summary>
-        /// 构造Controller基类
-        /// </summary>
-        public SimpleControllerBase()
-        {
-            this.WriteRepository = IocCollection.Resolve<IWriteRepository>();
-            this.ReadRepository = IocCollection.Resolve<IReadRepository>();
-        }
+        //protected IWriteRepository WriteRepository { get; }
+        //protected IReadRepository ReadRepository { get; }
+        ///// <summary>
+        ///// 构造Controller基类
+        ///// </summary>
+        //public SimpleControllerBase()
+        //{
+        //    this.WriteRepository = IocCollection.Resolve<IWriteRepository>();
+        //    this.ReadRepository = IocCollection.Resolve<IReadRepository>();
+        //}
         /// <summary>
         /// 页码
         /// </summary>

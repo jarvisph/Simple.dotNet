@@ -1,18 +1,14 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Simple.Core.Authorization;
-using Simple.Core.Dapper;
+using Simple.Core.Dependency;
 using Simple.Core.Domain.Dto;
 using Simple.Core.Domain.Enums;
 using Simple.Core.Extensions;
 using Simple.Core.Helper;
 using Simple.Core.Logger;
-using Simple.Core.Dependency;
+using System;
+using System.Threading.Tasks;
 
 namespace Simple.Web.Middleware
 {
@@ -73,7 +69,7 @@ namespace Simple.Web.Middleware
             }
             else
             {
-                _logger?.Error(guid, exception);
+                _logger?.Error(guid, context, exception);
                 return context.Response.WriteAsync(new Result(false, guid.ToString("N")).ToString());
             }
         }

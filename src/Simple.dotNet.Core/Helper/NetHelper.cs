@@ -238,31 +238,44 @@ namespace Simple.Core.Helper
             {
                 if (setting.Type == ProxyType.NGINX)
                 {
-                    return Get(setting.GetProxyUrl() + url, headers);
+                    url = setting.GetProxyUrl() + url;
                 }
-                else
-                {
-                    var client = GetHttpClient(setting, headers);
-                    var response = client.GetAsync(url).Result;
-                    response.EnsureSuccessStatusCode();
-                    return response.Content.ReadAsStringAsync().Result;
-                }
+                var client = GetHttpClient(setting, headers);
+                var response = client.GetAsync(url).Result;
+                response.EnsureSuccessStatusCode();
+                return response.Content.ReadAsStringAsync().Result;
             }
         }
 
         private static HttpClient GetHttpClient(ProxySetting setting, Dictionary<string, string> headers)
         {
             string proxyURL = setting.GetProxyUrl();
-            WebProxy proxy = new()
+            HttpClientHandler handler = new HttpClientHandler();
+            if (setting.Type != ProxyType.NGINX)
             {
-                Address = new Uri(proxyURL),
-                Credentials = new NetworkCredential(setting.UserName, setting.Password)
-            };
-            HttpClientHandler handler = new HttpClientHandler()
+                WebProxy proxy = new()
+                {
+                    Address = new Uri(proxyURL),
+                    Credentials = new NetworkCredential(setting.UserName, setting.Password)
+                };
+                handler = new HttpClientHandler()
+                {
+                    Proxy = proxy,
+                    UseProxy = true,
+                };
+            }
+            foreach (var item in headers)
             {
-                Proxy = proxy,
-                UseProxy = true,
-            };
+                if (item.Key.ToLower() == "accept-encoding")
+                {
+                    if (item.Value.Contains("gzip"))
+                    {
+                        handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+                        break;
+                    }
+                }
+            }
+
             var client = new HttpClient(handler);
             // 增加头部
             foreach (var item in headers)

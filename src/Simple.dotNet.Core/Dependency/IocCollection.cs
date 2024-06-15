@@ -20,10 +20,9 @@ namespace Simple.Core.Dependency
             get
             {
                 if (_services == null) return null;
-                if (HttpContextAccessor.HttpContext != null)
+                else if (HttpContextAccessor.HttpContext != null)
                     _provider = HttpContextAccessor.HttpContext.RequestServices;
-                if (_provider == null)
-                    _provider = _services.BuildServiceProvider();
+                else _provider ??= _services.BuildServiceProvider();
                 return _provider;
             }
         }
