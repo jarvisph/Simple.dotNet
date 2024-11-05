@@ -41,5 +41,7 @@ namespace Simple.Core.Logger
         /// <returns></returns>
         void Warn(string title, string message);
 
+        void Info(int userId, HttpContext context);
+
     }
 }

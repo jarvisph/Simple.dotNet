@@ -240,19 +240,22 @@ namespace Simple.Core.Helper
                 {
                     url = setting.GetProxyUrl() + url;
                 }
-                var client = GetHttpClient(setting, headers);
-                var response = client.GetAsync(url).Result;
-                response.EnsureSuccessStatusCode();
-                return response.Content.ReadAsStringAsync().Result;
+                using (var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(1000 * 10)))
+                {
+                    var client = CreateHttpClient(setting, headers);
+                    var response = client.GetAsync(url, cts.Token).Result;
+                    response.EnsureSuccessStatusCode();
+                    return response.Content.ReadAsStringAsync().Result;
+                }
             }
         }
 
-        private static HttpClient GetHttpClient(ProxySetting setting, Dictionary<string, string> headers)
+        public static HttpClient CreateHttpClient(ProxySetting setting, Dictionary<string, string> headers)
         {
-            string proxyURL = setting.GetProxyUrl();
             HttpClientHandler handler = new HttpClientHandler();
             if (setting.Type != ProxyType.NGINX)
             {
+                string proxyURL = setting.GetProxyUrl();
                 WebProxy proxy = new()
                 {
                     Address = new Uri(proxyURL),
@@ -263,6 +266,8 @@ namespace Simple.Core.Helper
                     Proxy = proxy,
                     UseProxy = true,
                 };
+                //忽略证书
+                handler.ServerCertificateCustomValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
             }
             foreach (var item in headers)
             {
@@ -282,9 +287,33 @@ namespace Simple.Core.Helper
             {
                 client.DefaultRequestHeaders.Add(item.Key, item.Value);
             }
+            client.Timeout = TimeSpan.FromMilliseconds(1000 * 10);
             return client;
         }
+        public static HttpClient CreateHttpClient(Dictionary<string, string> headers)
+        {
+            HttpClientHandler handler = new HttpClientHandler();
+            foreach (var item in headers)
+            {
+                if (item.Key.ToLower() == "accept-encoding")
+                {
+                    if (item.Value.Contains("gzip"))
+                    {
+                        handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+                        break;
+                    }
+                }
+            }
 
+            var client = new HttpClient(handler);
+            // 增加头部
+            foreach (var item in headers)
+            {
+                client.DefaultRequestHeaders.Add(item.Key, item.Value);
+            }
+            client.Timeout = TimeSpan.FromMilliseconds(1000 * 10);
+            return client;
+        }
         /// <summary>
         /// Post提交（代理模式）
         /// </summary>
@@ -303,16 +332,13 @@ namespace Simple.Core.Helper
             {
                 if (setting.Type == ProxyType.NGINX)
                 {
-                    return Post(setting.GetProxyUrl() + url, type, Encoding.UTF8.GetBytes(data), headers);
+                    url = setting.GetProxyUrl() + url;
                 }
-                else
-                {
-                    var client = GetHttpClient(setting, headers);
-                    var content = new StringContent(data, Encoding.UTF8, type.GetDescription());
-                    var response = client.PostAsync(url, content).Result;
-                    response.EnsureSuccessStatusCode();
-                    return response.Content.ReadAsStringAsync().Result;
-                }
+                var client = CreateHttpClient(setting, headers);
+                var content = new StringContent(data, Encoding.UTF8, type.GetDescription());
+                using var response = client.PostAsync(url, content).Result;
+                response.EnsureSuccessStatusCode();
+                return response.Content.ReadAsStringAsync().Result;
             }
         }
         /// <summary>

@@ -35,6 +35,15 @@ namespace Simple.Core.Domain.Model
                 _ => throw new System.Exception($"代理地址获取错误"),
             };
         }
+        public string GetProxyFormat()
+        {
+            return Type switch
+            {
+                ProxyType.HTTP => $"http://{this.UserName}:{this.Password}@{this.Proxy}",
+                ProxyType.SOCKS5 => $"socks5://{this.UserName}:{this.Password}@{this.Proxy}",
+                _ => throw new System.Exception($"代理地址获取错误"),
+            };
+        }
 
         public bool Check()
         {
