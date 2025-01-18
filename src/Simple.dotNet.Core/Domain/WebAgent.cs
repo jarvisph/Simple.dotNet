@@ -27,6 +27,7 @@ namespace Simple.Core.Domain
             return DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         }
 
+
         /// <summary>
         /// 获取时间戳（毫秒，GTM+0）
         /// </summary>

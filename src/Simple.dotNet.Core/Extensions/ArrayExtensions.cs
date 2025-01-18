@@ -33,6 +33,17 @@ namespace Simple.Core.Extensions
         {
             return args.Get(name, string.Empty);
         }
-       
+
+        public static T RandomItem<T>(this IList<T> list)
+        {
+            int count = list.Count;
+            if (count == 0)
+            {
+                return default(T);
+            }
+
+            int num = Math.Abs(Guid.NewGuid().GetHashCode());
+            return list.ElementAt(num % count);
+        }
     }
 }

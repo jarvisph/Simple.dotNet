@@ -22,7 +22,7 @@ namespace Simple.Core.Domain.Enums
         Word,
         [Description("application/octet-stream")]
         Stream,
-        [Description("text/html;charset=UTF-8")]
+        [Description("text/plain")]
         Text,
         [Description("image/png")]
         PNG,

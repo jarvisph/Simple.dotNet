@@ -38,6 +38,17 @@ namespace Simple.Core.Extensions
             return false;
         }
         /// <summary>
+        /// 判断User-Agent是否移动端
+        /// </summary>
+        /// <param name="userAgent"></param>
+        /// <returns></returns>
+        public static bool IsMobileBrowser(this string userAgent)
+        {
+            if (string.IsNullOrWhiteSpace(userAgent)) return false;
+            if (b.IsMatch(userAgent) || v.IsMatch(userAgent.Substring(0, 4))) return true;
+            return false;
+        }
+        /// <summary>
         /// 获取客户端请求操作系统，若无http代理，则返回本地系统类型
         /// </summary>
         /// <param name="request"></param>

@@ -19,7 +19,6 @@ namespace Simple.Core.Extensions
             string queryString = QueryString.Create(data.Select(c => new KeyValuePair<string, string>(c.Key, c.Value?.ToString()))).ToUriComponent();
             return queryString.Substring(1, queryString.Length - 1);
         }
-
         /// <summary>
         /// foreach循环，返回新集合
         /// </summary>

@@ -1,15 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using Simple.Core.Data.Repository;
 using Simple.Core.Dependency;
 using Simple.Core.Domain.Dto;
 using Simple.Core.Domain.Enums;
 using Simple.Core.Extensions;
 using Simple.Core.Languages;
-using Simple.Core.Mapper;
+using Simple.Core.Logger;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Result = Simple.Core.Domain.Dto.Result;
 
 namespace Simple.Web.Mvc
@@ -20,16 +18,14 @@ namespace Simple.Web.Mvc
     [ApiController]
     public abstract class SimpleControllerBase : ControllerBase
     {
-        //protected IWriteRepository WriteRepository { get; }
-        //protected IReadRepository ReadRepository { get; }
-        ///// <summary>
-        ///// 构造Controller基类
-        ///// </summary>
-        //public SimpleControllerBase()
-        //{
-        //    this.WriteRepository = IocCollection.Resolve<IWriteRepository>();
-        //    this.ReadRepository = IocCollection.Resolve<IReadRepository>();
-        //}
+        protected ILogger Logger { get; }
+        /// <summary>
+        /// 构造Controller基类
+        /// </summary>
+        public SimpleControllerBase()
+        {
+            this.Logger = IocCollection.Resolve<ILogger>();
+        }
         /// <summary>
         /// 页码
         /// </summary>

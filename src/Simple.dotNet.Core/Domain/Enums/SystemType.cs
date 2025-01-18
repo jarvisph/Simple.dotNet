@@ -88,6 +88,8 @@ namespace Simple.Core.Domain.Enums
         HTTPS = 3,
         [Description("SOCKS5")]
         SOCKS5 = 5,
+        [Description("Forwarded-For")]
+        FF = 6,
     }
 
     /// <summary>

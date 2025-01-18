@@ -100,6 +100,7 @@ namespace Simple.Core.Helper
         {
             return HttpWebRequest(url, "Get", null, null, headers);
         }
+     
         /// <summary>
         /// Post请求，Json格式提交
         /// </summary>

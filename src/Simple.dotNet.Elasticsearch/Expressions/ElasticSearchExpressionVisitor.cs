@@ -305,16 +305,45 @@ namespace Simple.Elasticsearch.Expressions
                     }
                     break;
                 case ExpressionType.GreaterThan:
-                    _query.Push(new QueryContainerDescriptor<TDocument>().LongRange(t => t.Field(field).GreaterThan(value.ToValue<long>())));
+                    if (value is long)
+                    {
+                        _query.Push(new QueryContainerDescriptor<TDocument>().LongRange(t => t.Field(field).GreaterThan(value.ToValue<long>())));
+
+                    }
+                    else
+                    {
+                        _query.Push(new QueryContainerDescriptor<TDocument>().Range(t => t.Field(field).GreaterThan(value.ToValue<double>())));
+                    }
                     break;
                 case ExpressionType.GreaterThanOrEqual:
-                    _query.Push(new QueryContainerDescriptor<TDocument>().LongRange(t => t.Field(field).GreaterThanOrEquals(value.ToValue<long>())));
+                    if (value is long)
+                    {
+                        _query.Push(new QueryContainerDescriptor<TDocument>().LongRange(t => t.Field(field).GreaterThanOrEquals(value.ToValue<long>())));
+                    }
+                    else
+                    {
+                        _query.Push(new QueryContainerDescriptor<TDocument>().Range(t => t.Field(field).GreaterThanOrEquals(value.ToValue<double>())));
+                    }
                     break;
                 case ExpressionType.LessThan:
-                    _query.Push(new QueryContainerDescriptor<TDocument>().LongRange(t => t.Field(field).LessThan(value.ToValue<long>())));
+                    if (value is long)
+                    {
+                        _query.Push(new QueryContainerDescriptor<TDocument>().LongRange(t => t.Field(field).LessThan(value.ToValue<long>())));
+                    }
+                    else
+                    {
+                        _query.Push(new QueryContainerDescriptor<TDocument>().Range(t => t.Field(field).LessThan(value.ToValue<double>())));
+                    }
                     break;
                 case ExpressionType.LessThanOrEqual:
-                    _query.Push(new QueryContainerDescriptor<TDocument>().LongRange(t => t.Field(field).LessThanOrEquals(value.ToValue<long>())));
+                    if (value is long)
+                    {
+                        _query.Push(new QueryContainerDescriptor<TDocument>().LongRange(t => t.Field(field).LessThanOrEquals(value.ToValue<long>())));
+                    }
+                    else
+                    {
+                        _query.Push(new QueryContainerDescriptor<TDocument>().Range(t => t.Field(field).LessThanOrEquals(value.ToValue<double>())));
+                    }
                     break;
                 case ExpressionType.NotEqual:
                     _query.Push(new QueryContainerDescriptor<TDocument>().Bool(b => b.MustNot(t => t.Term(f => f.Field(field).Value(value)))));
