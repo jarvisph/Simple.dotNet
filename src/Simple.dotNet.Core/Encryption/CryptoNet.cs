@@ -41,6 +41,20 @@ namespace Simple.Core.Encryption
                 }
             }
         }
+
+        public class HMAC
+        {
+            public static string Sha256(string plaintext, string salt)
+            {
+                var enc = Encoding.Default;
+                byte[]
+                baText2BeHashed = enc.GetBytes(plaintext),
+                baSalt = enc.GetBytes(salt);
+                HMACSHA256 hasher = new HMACSHA256(baSalt);
+                byte[] baHashedText = hasher.ComputeHash(baText2BeHashed);
+                return Convert.ToBase64String(baHashedText);
+            }
+        }
         public class AES
         {
             /// <summary>
