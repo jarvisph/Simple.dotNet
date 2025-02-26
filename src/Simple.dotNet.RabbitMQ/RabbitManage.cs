@@ -35,11 +35,20 @@ namespace Simple.RabbitMQ
             IRabbitProducer producer = IocCollection.Resolve<IRabbitProducer>();
             producer.Send(message, routingKey);
         }
-        public static void Consumer()
+        public static void Consumer(string[] args)
         {
+            string[] tasks = new string[] { };
+            if (args != null)
+            {
+                string jobs = args.Get("-consumer");
+                if (!string.IsNullOrWhiteSpace(jobs))
+                {
+                    tasks = jobs.Split(',');
+                }
+            }
             foreach (var assemblie in AssemblyHelper.GetAssemblies())
             {
-                Parallel.ForEach(assemblie.GetTypes().Where(t => t.IsPublic && !t.IsAbstract && typeof(IListenerMessage).IsAssignableFrom(t)), type =>
+                Parallel.ForEach(assemblie.GetTypes().Where(c => tasks.Contains(c.Name)).Where(t => t.IsPublic && !t.IsAbstract && typeof(IListenerMessage).IsAssignableFrom(t)), type =>
                 {
                     Stopwatch sw = Stopwatch.StartNew();
                     ConsumerAttribute? consumer = type.GetCustomAttribute<ConsumerAttribute>();
@@ -53,6 +62,7 @@ namespace Simple.RabbitMQ
                     }
                     else
                     {
+
                         IListenerMessage? service = (IListenerMessage?)Activator.CreateInstance(type);
                         if (service == null) return;
                         IRabbitConsumer _rabbit = new RabbitConsumer(service, consumer);

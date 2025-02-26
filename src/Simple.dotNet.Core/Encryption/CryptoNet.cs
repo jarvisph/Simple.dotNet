@@ -54,6 +54,16 @@ namespace Simple.Core.Encryption
                 byte[] baHashedText = hasher.ComputeHash(baText2BeHashed);
                 return Convert.ToBase64String(baHashedText);
             }
+            public static string Sha256HexString(string plaintext, string salt)
+            {
+                var enc = Encoding.Default;
+                byte[]
+                baText2BeHashed = enc.GetBytes(plaintext),
+                baSalt = enc.GetBytes(salt);
+                HMACSHA256 hasher = new HMACSHA256(baSalt);
+                byte[] baHashedText = hasher.ComputeHash(baText2BeHashed);
+                return Convert.ToHexString(baHashedText).ToLower();
+            }
         }
         public class AES
         {

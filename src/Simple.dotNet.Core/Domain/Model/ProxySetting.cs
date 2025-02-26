@@ -24,6 +24,10 @@ namespace Simple.Core.Domain.Model
         /// </summary>
         public string Password { get; set; }
 
+        /// <summary>
+        /// 代理格式
+        /// </summary>
+        public string Format => this.GetProxyFormat();
 
         public string GetProxyUrl()
         {
@@ -41,7 +45,8 @@ namespace Simple.Core.Domain.Model
             {
                 ProxyType.HTTP => $"http://{this.UserName}:{this.Password}@{this.Proxy}",
                 ProxyType.SOCKS5 => $"socks5://{this.UserName}:{this.Password}@{this.Proxy}",
-                _ => throw new System.Exception($"代理地址获取错误"),
+                ProxyType.FF => this.Proxy.Split(":")[0],
+                _ => "",
             };
         }
 
