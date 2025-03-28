@@ -109,4 +109,20 @@ namespace Simple.Core.Domain.Enums
         PSBC = 100,
 
     }
+
+    public enum DateType : byte
+    {
+        [Description("今日")]
+        Today,
+        [Description("昨日")]
+        Yesterday,
+        [Description("本周")]
+        ThisWeek,
+        [Description("本月")]
+        ThisMonth,
+        [Description("上个月")]
+        LastMonth,
+        [Description("近一个月")]
+        NearlyOneMonth,
+    }
 }

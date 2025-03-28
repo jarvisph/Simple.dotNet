@@ -37,7 +37,7 @@ namespace Simple.RabbitMQ
         }
         public static void Consumer(string[] args)
         {
-            string[] tasks = new string[] { };
+            string[]? tasks = null;
             if (args != null)
             {
                 string jobs = args.Get("-consumer");
@@ -48,8 +48,15 @@ namespace Simple.RabbitMQ
             }
             foreach (var assemblie in AssemblyHelper.GetAssemblies())
             {
-                Parallel.ForEach(assemblie.GetTypes().Where(c => tasks.Contains(c.Name)).Where(t => t.IsPublic && !t.IsAbstract && typeof(IListenerMessage).IsAssignableFrom(t)), type =>
+                Parallel.ForEach(assemblie.GetTypes().Where(t => t.IsPublic && !t.IsAbstract && typeof(IListenerMessage).IsAssignableFrom(t)), type =>
                 {
+                    if (tasks != null)
+                    {
+                        if (!tasks.Contains(type.Name))
+                        {
+                            return;
+                        }
+                    }
                     Stopwatch sw = Stopwatch.StartNew();
                     ConsumerAttribute? consumer = type.GetCustomAttribute<ConsumerAttribute>();
                     if (consumer == null)

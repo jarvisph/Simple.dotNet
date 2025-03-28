@@ -132,9 +132,12 @@ namespace Simple.Core.Extensions
             {
                 if (socure.ContainsKey(item.Key))
                 {
-                    throw new Exception("key contain dictionary");
+                    socure[item.Key] = item.Value;
                 }
-                socure.Add(item.Key, item.Value);
+                else
+                {
+                    socure.Add(item.Key, item.Value);
+                }
             }
             return socure;
         }
