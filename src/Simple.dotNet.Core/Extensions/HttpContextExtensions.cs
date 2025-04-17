@@ -48,6 +48,45 @@ namespace Simple.Core.Extensions
             if (b.IsMatch(userAgent) || v.IsMatch(userAgent.Substring(0, 4))) return true;
             return false;
         }
+
+        /// <summary>
+        /// 获取浏览器版本
+        /// </summary>
+        /// <param name="userAgent"></param>
+        /// <returns></returns>
+        public static string GetBrowserVersion(this string userAgent)
+        {
+            if (string.IsNullOrWhiteSpace(userAgent)) return string.Empty;
+            // 定义主流浏览器的正则表达式模式
+            var patterns = new[]
+            {
+            // Chrome 或基于 Chromium 的 Edge
+            new { Name = "Chrome", Pattern = @"(Chrome|Edg)\/([\d\.]+)" },
+            // Firefox
+            new { Name = "Firefox", Pattern = @"Firefox\/([\d\.]+)" },
+            // Safari
+            new { Name = "Safari", Pattern = @"Version\/([\d\.]+).*Safari\/" },
+            // 旧版 Edge (EdgeHTML)
+            new { Name = "Edge", Pattern = @"Edge\/([\d\.]+)" },
+            // Internet Explorer
+            new { Name = "IE", Pattern = @"(?:MSIE |rv:)([\d\.]+)" }
+        };
+
+            foreach (var browser in patterns)
+            {
+                var match = Regex.Match(userAgent, browser.Pattern);
+                if (match.Success)
+                {
+                    // 对于 IE，rv: 捕获组处理
+                    var version = browser.Name == "IE" && match.Groups[1].Value == "rv:"
+                        ? match.Groups[2].Value
+                        : match.Groups[match.Groups.Count - 1].Value;
+
+                    return browser.Name + version;
+                }
+            }
+            return "Unknown";
+        }
         /// <summary>
         /// 获取客户端请求操作系统，若无http代理，则返回本地系统类型
         /// </summary>

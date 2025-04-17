@@ -1,4 +1,5 @@
 ﻿using Simple.Core.Domain.Enums;
+using System;
 
 namespace Simple.Core.Domain.Model
 {
@@ -23,6 +24,11 @@ namespace Simple.Core.Domain.Model
         /// 密码
         /// </summary>
         public string Password { get; set; }
+
+        /// <summary>
+        /// 延迟
+        /// </summary>
+        public TimeSpan Delay { get; set; } = TimeSpan.FromSeconds(10);
 
         /// <summary>
         /// 代理格式

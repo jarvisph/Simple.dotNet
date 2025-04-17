@@ -100,7 +100,7 @@ namespace Simple.Core.Helper
         {
             return HttpWebRequest(url, "Get", null, null, headers);
         }
-     
+
         /// <summary>
         /// Post请求，Json格式提交
         /// </summary>
@@ -288,7 +288,7 @@ namespace Simple.Core.Helper
             {
                 client.DefaultRequestHeaders.Add(item.Key, item.Value);
             }
-            client.Timeout = TimeSpan.FromMilliseconds(1000 * 10);
+            client.Timeout = setting.Delay;
             return client;
         }
         public static HttpClient CreateHttpClient(Dictionary<string, string> headers)
