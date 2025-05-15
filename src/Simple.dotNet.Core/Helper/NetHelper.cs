@@ -237,10 +237,7 @@ namespace Simple.Core.Helper
             }
             else
             {
-                if (setting.Type == ProxyType.NGINX)
-                {
-                    url = setting.GetProxyUrl() + url;
-                }
+                setting.GetProxyUrl(ref url);
                 using (var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(1000 * 10)))
                 {
                     var client = CreateHttpClient(setting, headers);

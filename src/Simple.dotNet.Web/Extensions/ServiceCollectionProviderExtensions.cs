@@ -1,7 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Simple.Core.Dependency;
-using Microsoft.AspNetCore.Http;
-using Simple.Core.Domain.Dto;
 
 namespace Simple.Web.Extensions
 {

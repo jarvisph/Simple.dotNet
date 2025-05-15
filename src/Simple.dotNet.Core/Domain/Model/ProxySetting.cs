@@ -13,6 +13,14 @@ namespace Simple.Core.Domain.Model
         /// </summary>
         public ProxyType Type { get; set; }
         /// <summary>
+        /// IP地址
+        /// </summary>
+        public string IP { get; set; }
+        /// <summary>
+        /// 端口
+        /// </summary>
+        public int Port { get; set; }
+        /// <summary>
         /// 代理地址
         /// </summary>
         public string Proxy { get; set; }
@@ -24,7 +32,6 @@ namespace Simple.Core.Domain.Model
         /// 密码
         /// </summary>
         public string Password { get; set; }
-
         /// <summary>
         /// 延迟
         /// </summary>
@@ -42,8 +49,29 @@ namespace Simple.Core.Domain.Model
                 ProxyType.NGINX => $"http://{this.Proxy}/?",
                 ProxyType.HTTP => $"http://{this.Proxy}",
                 ProxyType.SOCKS5 => $"socks5://{this.Proxy}",
-                _ => throw new System.Exception($"代理地址获取错误"),
+                _ => throw new Exception($"代理地址获取错误"),
             };
+        }
+        public void GetProxyUrl(ref string url)
+        {
+            switch (Type)
+            {
+                case ProxyType.NGINX:
+                    {
+                        url = $"http://{this.Proxy}/?{url.Trim()}";
+                    }
+                    break;
+                case ProxyType.HTTP:
+                    break;
+                case ProxyType.HTTPS:
+                    break;
+                case ProxyType.SOCKS5:
+                    break;
+                case ProxyType.FF:
+                    break;
+                default:
+                    break;
+            }
         }
         public string GetProxyFormat()
         {
