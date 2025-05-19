@@ -69,8 +69,7 @@ namespace Simple.Core.Http
             {
                 try
                 {
-                    lastResponse = await _httpClient.SendAsync(
-                        method, url, content, headers, cancellationToken).ConfigureAwait(false);
+                    lastResponse = await _httpClient.SendAsync(method, url, content, headers, cancellationToken).ConfigureAwait(false);
 
                     // 如果状态码是5xx则重试
                     if ((int)lastResponse.StatusCode >= 500 && retryCount < _maxRetries)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.SqlTypes;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -20,6 +21,39 @@ namespace Simple.Core.Encryption
                 }
             }
         }
+        //public class lib
+        //{
+        //    public class WordArray
+        //    {
+        //        public static byte[] Create(byte[] bytes)
+        //        {
+        //            // 计算需要多少个32位字来存储这些字节
+        //            int wordCount = (bytes.Length + 3) / 4; // 向上取整
+
+        //            uint[] words = new uint[wordCount];
+        //            int sigBytes = bytes.Length;
+
+        //            // 将字节数组转换为字数组（大端序）
+        //            for (int i = 0; i < sigBytes; i++)
+        //            {
+        //                int wordIndex = i / 4;
+        //                int bytePos = 24 - (i % 4) * 8;
+        //                words[wordIndex] |= (uint)bytes[i] << bytePos;
+        //            }
+
+
+        //            byte[] buffer = new byte[sigBytes];
+        //            for (int i = 0; i < sigBytes; i++)
+        //            {
+        //                int wordIndex = i / 4;
+        //                int bytePos = 24 - (i % 4) * 8;
+        //                buffer[i] = (byte)(words[wordIndex] >> bytePos);
+        //            }
+        //            return buffer;
+
+        //        }
+        //    }
+        //}
         public class DES
         {
             public static string Encrypt(string plainText, byte[] key, CryptoOptions options)
@@ -114,6 +148,30 @@ namespace Simple.Core.Encryption
                     rmd.Padding = options.Padding;
                     ICryptoTransform decryptor = rmd.CreateDecryptor(rmd.Key, rmd.IV);
                     using (MemoryStream stram = new MemoryStream(Convert.FromBase64String(plainText)))
+                    {
+                        using (CryptoStream decrypt = new CryptoStream(stram, decryptor, CryptoStreamMode.Read))
+                        {
+                            using (StreamReader sr = new StreamReader(decrypt))
+                            {
+                                return sr.ReadToEnd();
+                            }
+                        }
+                    }
+                }
+            }
+            public static string Decrypt(byte[] plainText, byte[] key, CryptoOptions options)
+            {
+                using (RijndaelManaged rmd = new RijndaelManaged())
+                {
+                    rmd.Key = key;
+                    if (options.IV != null)
+                    {
+                        rmd.IV = options.IV;
+                    }
+                    rmd.Mode = options.Mode;
+                    rmd.Padding = options.Padding;
+                    ICryptoTransform decryptor = rmd.CreateDecryptor(rmd.Key, rmd.IV);
+                    using (MemoryStream stram = new MemoryStream(plainText))
                     {
                         using (CryptoStream decrypt = new CryptoStream(stram, decryptor, CryptoStreamMode.Read))
                         {
