@@ -18,16 +18,22 @@ namespace Simple.Core.Http
         public static HttpClientSingleton Instance(ProxySetting proxySetting)
         {
             string key = MD5Encryption.Encryption($"{proxySetting.IP}:{proxySetting.Port}:{proxySetting.UserName}:{proxySetting.Password}");
-            if (_instance.ContainsKey(proxySetting.IP))
+            if (_instance.ContainsKey(key))
             {
-                return _instance[proxySetting.IP];
+                return _instance[key];
             }
             lock (_instance)
             {
-                _instance.TryAdd(proxySetting.IP, new HttpClientSingleton(proxySetting: proxySetting));
+                _instance.TryAdd(key, new HttpClientSingleton(proxySetting: proxySetting));
             }
-            return _instance[proxySetting.IP];
+            return _instance[key];
         }
+        public static void Remove(ProxySetting proxySetting)
+        {
+            string key = MD5Encryption.Encryption($"{proxySetting.IP}:{proxySetting.Port}:{proxySetting.UserName}:{proxySetting.Password}");
+            _instance.TryRemove(key, out _);
+        }
+
         private readonly HighPerformanceHttpClient _httpClient;
         private readonly int _maxRetries;
         private readonly TimeSpan _retryDelay;
