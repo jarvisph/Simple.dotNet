@@ -35,6 +35,28 @@ namespace Simple.Core.Helper
                 return HttpContextAccessor.HttpContext.GetIp();
             }
         }
+
+        /// <summary>
+        /// 提取IP跟端口格式
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        /// <exception cref="FormatException"></exception>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public static (string ip, int port) GetStandardFormat(string input)
+        {
+            var match = Regex.Match(input, @"^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):(\d{1,5})$");
+            if (!match.Success)
+                throw new FormatException("无效的IP:端口格式");
+
+            var ip = IPAddress.Parse(match.Groups[1].Value);
+            var port = int.Parse(match.Groups[2].Value);
+
+            if (port < 0 || port > 65535)
+                throw new ArgumentOutOfRangeException("端口号必须在0-65535之间");
+
+            return (ip.ToString(), port);
+        }
         public static string Host
         {
             get
@@ -121,5 +143,6 @@ namespace Simple.Core.Helper
                 return Guid.Empty;
             }
         }
+
     }
 }
