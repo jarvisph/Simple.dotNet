@@ -28,6 +28,10 @@ namespace Simple.Core.Http
             }
             return _instance[key];
         }
+        public static HttpClientSingleton Instance()
+        {
+            return new HttpClientSingleton();
+        }
         public static void Remove(ProxySetting proxySetting)
         {
             string key = MD5Encryption.Encryption($"{proxySetting.IP}:{proxySetting.Port}:{proxySetting.UserName}:{proxySetting.Password}");
