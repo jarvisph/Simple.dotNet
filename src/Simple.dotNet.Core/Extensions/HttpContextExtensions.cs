@@ -245,7 +245,7 @@ namespace Simple.Core.Extensions
         public static T GetHeader<T>(this HttpContext context, string key)
         {
             if (context == null || key.IsNullOrWhiteSpace()) return default;
-            StringValues values = context.Request.Headers.Where(c => c.Key == key).FirstOrDefault().Value;
+            StringValues values = context.Request.Headers.Where(c => c.Key.ToLower() == key.ToLower()).FirstOrDefault().Value;
             return values.Count > 0 ? values.ToString().ToValue<T>() : default;
         }
         /// <summary>
