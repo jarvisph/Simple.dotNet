@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System;
 using System.Data.SqlTypes;
 using System.IO;
 using System.Security.Cryptography;
@@ -97,6 +98,18 @@ namespace Simple.Core.Encryption
                 HMACSHA256 hasher = new HMACSHA256(baSalt);
                 byte[] baHashedText = hasher.ComputeHash(baText2BeHashed);
                 return Convert.ToHexString(baHashedText).ToLower();
+            }
+
+            public static string Sha384(string plaintext, string salt)
+            {
+                byte[] keyBytes = Encoding.UTF8.GetBytes(salt);
+                byte[] messageBytes = Encoding.UTF8.GetBytes(plaintext);
+
+                using (var hmac = new HMACSHA384(keyBytes))
+                {
+                    byte[] hashBytes = hmac.ComputeHash(messageBytes);
+                    return BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
+                }
             }
         }
         public class AES
