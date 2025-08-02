@@ -26,6 +26,7 @@ namespace Simple.Core.Logger
         /// <param name="exception"></param>
         /// <returns></returns>
         bool Error(Guid guid, Exception exception);
+        bool Error(Exception exception);
         bool Error(Guid guid, HttpContext context, Exception exception);
         /// <summary>
         /// 警告

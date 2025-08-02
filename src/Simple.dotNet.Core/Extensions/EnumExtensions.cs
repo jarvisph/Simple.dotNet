@@ -223,11 +223,13 @@ namespace Simple.Core.Extensions
                 }
                 else
                 {
+
                     form = property.PropertyType.IsEnum ? FormType.Radio : property.PropertyType.Name switch
                     {
                         "String" => FormType.Text,
                         "DateTime" => FormType.DateTime,
                         "Enum" => FormType.Radio,
+                        "Boolean" => FormType.Switch,
                         _ => FormType.Text
                     };
                 }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Simple.Core.Domain.Enums
+﻿namespace Simple.Core.Domain.Enums
 {
     /// <summary>
     /// 表单类型
@@ -16,5 +10,6 @@ namespace Simple.Core.Domain.Enums
         Radio = 3,
         Checkbox = 4,
         DateTime = 5,
+        Switch = 6,
     }
 }
