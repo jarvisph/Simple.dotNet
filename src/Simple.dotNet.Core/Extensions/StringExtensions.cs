@@ -360,6 +360,14 @@ namespace Simple.Core.Extensions
             return Regex.Replace(str, "[a-z][A-Z]", m => m.Value[0] + " " + char.ToLower(m.Value[1], culture));
         }
 
+        public static string UnicodeToString(this string input)
+        {
+            return Regex.Replace(input, @"\\u([0-9A-Fa-f]{4})", match =>
+            {
+                return ((char)int.Parse(match.Groups[1].Value, NumberStyles.HexNumber)).ToString();
+            });
+        }
+
         /// <summary>
         /// Converts camelCase string to PascalCase string.
         /// </summary>

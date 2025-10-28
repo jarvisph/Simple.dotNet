@@ -26,6 +26,10 @@ namespace Simple.Core.Domain
         {
             return DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         }
+        public static long GetTimestamp(this DateTime time)
+        {
+            return GetTimestamps(time) / 1000;
+        }
 
 
         /// <summary>

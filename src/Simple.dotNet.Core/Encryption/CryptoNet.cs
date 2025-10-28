@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System;
-using System.Data.SqlTypes;
+﻿using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -19,6 +17,35 @@ namespace Simple.Core.Encryption
                     byte[] keyBytes = new byte[8];
                     Array.Copy(secretBytes, keyBytes, Math.Min(secretBytes.Length, keyBytes.Length));
                     return keyBytes;
+                }
+            }
+            public class Base64
+            {
+                public static string Stringify(byte[] byteArray)
+                {
+                    return Convert.ToBase64String(byteArray);
+                }
+            }
+            public class Hex
+            {
+                public static byte[] Parse(string hexString)
+                {
+                    // 移除可能存在的连字符或空格
+                    hexString = hexString.Replace("-", "").Replace(" ", "");
+
+                    // 确保字符串长度为偶数
+                    if (hexString.Length % 2 != 0)
+                    {
+                        throw new ArgumentException("十六进制字符串长度必须为偶数");
+                    }
+                    // 将十六进制字符串转换为字节数组
+                    byte[] bytes = new byte[hexString.Length / 2];
+                    for (int i = 0; i < bytes.Length; i++)
+                    {
+                        bytes[i] = Convert.ToByte(hexString.Substring(i * 2, 2), 16);
+                    }
+
+                    return bytes;
                 }
             }
         }
