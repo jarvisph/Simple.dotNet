@@ -19,5 +19,17 @@ namespace Simple.Core.Extensions
             //ToPositiveInfinity 当一个数字是其他两个数字的中间值时，会将其舍入为最接近且不小于无限精确的结果。
             //ToZero  当一个数字是其他两个数字的中间值时，会将其舍入为最接近结果，而不是无限精确的结果。
         }
+        public static decimal RoundToZero(this decimal value)
+        {
+            return Math.Round(value / 10, MidpointRounding.AwayFromZero) * 10;
+        }
+        public static T RoundToZero<T>(this T value) where T : struct, IConvertible
+        {
+            // 转换为 decimal 进行处理，避免精度问题
+            decimal decimalValue = Convert.ToDecimal(value);
+            decimal rounded = Math.Round(decimalValue / 10, MidpointRounding.AwayFromZero) * 10;
+
+            return (T)Convert.ChangeType(rounded, typeof(T));
+        }
     }
 }

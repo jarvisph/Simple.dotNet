@@ -223,6 +223,50 @@ namespace Simple.Core.Encryption
                     }
                 }
             }
+
+            public static string EncryptOFB(string plainText, string key, string iv)
+            {
+                byte[] keyBytes = Encoding.UTF8.GetBytes(key);
+                byte[] ivBytes = Encoding.UTF8.GetBytes(iv);
+                byte[] plainBytes = Encoding.UTF8.GetBytes(plainText);
+
+                using (Aes aes = Aes.Create())
+                {
+                    aes.Key = keyBytes;
+                    aes.Mode = CipherMode.ECB; // OFB 模式下使用 ECB 作为底层
+                    aes.Padding = PaddingMode.None;
+
+                    // 手动实现 OFB 模式
+                    int blockSize = aes.BlockSize / 8; // 16 bytes for AES
+                    byte[] output = new byte[plainBytes.Length];
+
+                    // 创建加密器
+                    using (ICryptoTransform encryptor = aes.CreateEncryptor())
+                    {
+                        byte[] feedback = new byte[blockSize];
+                        Array.Copy(ivBytes, feedback, Math.Min(blockSize, ivBytes.Length));
+
+                        // 处理每个块
+                        for (int i = 0; i < plainBytes.Length; i += blockSize)
+                        {
+                            // 加密反馈寄存器
+                            byte[] encryptedFeedback = encryptor.TransformFinalBlock(feedback, 0, blockSize);
+
+                            // 明文与加密反馈异或
+                            int length = Math.Min(blockSize, plainBytes.Length - i);
+                            for (int j = 0; j < length; j++)
+                            {
+                                output[i + j] = (byte)(plainBytes[i + j] ^ encryptedFeedback[j]);
+                            }
+
+                            // 更新反馈寄存器（OFB 模式使用加密后的反馈）
+                            Array.Copy(encryptedFeedback, feedback, blockSize);
+                        }
+                    }
+
+                    return BitConverter.ToString(output).Replace("-", "").ToLower();
+                }
+            }
         }
 
     }

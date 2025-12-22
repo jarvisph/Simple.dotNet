@@ -104,7 +104,7 @@ namespace Simple.Core.Http
                     await _webSocket.ConnectAsync(_serverUri, _cts.Token);
 
                     OnConnected?.Invoke(this, EventArgs.Empty);
-                    Console.WriteLine($"WebSocket connected to {_serverUri} via proxy: {_proxy != null}");
+                    //Console.WriteLine($"WebSocket connected to {_serverUri} via proxy: {_proxy != null}");
 
                     // 启动接收消息任务
                     _ = Task.Run(() => ReceiveMessagesAsync(_cts.Token), _cts.Token);

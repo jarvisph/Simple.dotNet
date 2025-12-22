@@ -54,6 +54,10 @@ namespace Simple.Core.Helper
         public static int RandomNumber(int min, int max)
         {
             Random random = new Random();
+            if (min > max)
+            {
+                min = max;
+            }
             return random.Next(min, max);
         }
         /// <summary>
