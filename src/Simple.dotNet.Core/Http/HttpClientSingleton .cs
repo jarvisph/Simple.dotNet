@@ -17,7 +17,7 @@ namespace Simple.Core.Http
         private static readonly ConcurrentDictionary<string, HttpClientSingleton> _instance = new ConcurrentDictionary<string, HttpClientSingleton>();
         public static HttpClientSingleton Instance(ProxySetting proxySetting)
         {
-            string key = MD5Encryption.Encryption($"{proxySetting.IP}:{proxySetting.Port}:{proxySetting.UserName}:{proxySetting.Password}");
+            string key = MD5Encryption.Encryption($"{proxySetting.IP}:{proxySetting.Port}:{proxySetting.UserName}:{proxySetting.Password}:{proxySetting.AllowAutoRedirect}");
             if (_instance.ContainsKey(key))
             {
                 return _instance[key];

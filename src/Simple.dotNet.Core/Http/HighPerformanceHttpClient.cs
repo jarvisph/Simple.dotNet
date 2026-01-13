@@ -133,6 +133,7 @@ namespace Simple.Core.Http
                     StatusCode = response.StatusCode,
                     Content = responseContent,
                     Headers = ConvertHeaders(response.Headers),
+                    RequestUri = response.RequestMessage.RequestUri.ToString(),
                     ElapsedTime = stopwatch.Elapsed
                 };
             }
@@ -172,5 +173,9 @@ namespace Simple.Core.Http
         public string Content { get; set; }
         public Dictionary<string, string> Headers { get; set; }
         public TimeSpan ElapsedTime { get; set; }
+        /// <summary>
+        /// 最终实际请求的URL
+        /// </summary>
+        public string RequestUri { get; set; }
     }
 }
