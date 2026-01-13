@@ -64,6 +64,7 @@ namespace Simple.Core.Http
                 {
                     handler.Proxy = CreateWebProxy(setting);
                     handler.UseProxy = true;
+                    handler.AllowAutoRedirect = setting.AllowAutoRedirect;
                 }
             }
 
@@ -127,7 +128,6 @@ namespace Simple.Core.Http
 
                 // 读取响应内容
                 var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
                 return new HttpResponse
                 {
                     StatusCode = response.StatusCode,

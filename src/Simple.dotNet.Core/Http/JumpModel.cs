@@ -22,6 +22,12 @@ namespace Simple.Core.Http
         /// 请求类型
         /// </summary>
         public ContentType ContentType { get; set; }
+
+        /// <summary>
+        /// 响应头返回
+        /// </summary>
+        public string[] ResponseHeaders { get; set; }
+
         /// <summary>
         /// 请求内容
         /// </summary>

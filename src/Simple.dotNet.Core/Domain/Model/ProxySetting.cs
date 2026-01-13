@@ -37,6 +37,8 @@ namespace Simple.Core.Domain.Model
         /// </summary>
         public TimeSpan Delay { get; set; } = TimeSpan.FromSeconds(10);
 
+        public bool AllowAutoRedirect { get; set; } = true;
+
         /// <summary>
         /// 代理格式
         /// </summary>
