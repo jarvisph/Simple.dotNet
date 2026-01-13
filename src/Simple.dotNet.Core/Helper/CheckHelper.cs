@@ -276,6 +276,7 @@ namespace Simple.Core.Helper
 
         public static bool IsJson(string jsonStr)
         {
+            if (string.IsNullOrWhiteSpace(jsonStr)) return false;
             try
             {
                 JsonConvert.DeserializeObject(jsonStr);
