@@ -87,6 +87,80 @@ namespace Simple.Core.Extensions
             }
             return "Unknown";
         }
+
+        /// <summary>
+        /// 获取浏览器系统
+        /// </summary>
+        /// <param name="userAgent"></param>
+        /// <returns></returns>
+        public static string GetBrowserOs(this string userAgent)
+        {
+            if (userAgent.IsMobileBrowser())
+            {
+                if (userAgent.Contains("iPhone") || userAgent.Contains("iPod") || userAgent.Contains("iPad"))
+                {
+                    return "IOS";
+                }
+                else
+                {
+                    return "Android";
+                }
+            }
+            else
+            {
+                if (userAgent.Contains("Win"))
+                {
+                    return "Windows";
+                }
+                else if (userAgent.Contains("Mac"))
+                {
+                    return "MacOs";
+                }
+                else if (userAgent.Contains("Linux"))
+                {
+                    return "Linux";
+                }
+                else if (userAgent.Contains(""))
+                {
+                    return "Unix";
+                }
+                else if (userAgent.Contains("SunOS"))
+                {
+                    return "SunOS";
+                }
+                return "Unknown";
+            }
+        }
+
+
+        /// <summary>
+        /// 获取浏览器类型
+        /// </summary>
+        /// <param name="userAgent"></param>
+        /// <returns></returns>
+        public static string GetBrowserType(this string userAgent)
+        {
+            if (string.IsNullOrWhiteSpace(userAgent)) return string.Empty;
+            if (userAgent.Contains("Chrome"))
+            {
+                return "Chrome";
+            }
+            else if (userAgent.Contains("Edg"))
+            {
+                return "Edg";
+            }
+            else if (userAgent.Contains("Firefox"))
+            {
+                return "Firefox";
+            }
+            else
+            {
+                return "Unknown";
+            }
+        }
+
+
+
         /// <summary>
         /// 获取客户端请求操作系统，若无http代理，则返回本地系统类型
         /// </summary>
