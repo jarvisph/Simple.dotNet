@@ -156,7 +156,10 @@ namespace Simple.Core.Encryption
                 using (RijndaelManaged rmd = new RijndaelManaged())
                 {
                     rmd.Key = key;
-                    rmd.IV = options.IV;
+                    if (options.IV != null)
+                    {
+                        rmd.IV = options.IV;
+                    }
                     rmd.Mode = options.Mode;
                     rmd.Padding = options.Padding;
                     ICryptoTransform encryptor = rmd.CreateEncryptor(rmd.Key, rmd.IV);
