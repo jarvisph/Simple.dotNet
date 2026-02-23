@@ -81,6 +81,15 @@ namespace Simple.Web.Mvc
             string json = new PagedResult<TResult>(items.AsEnumerable().Select(selector).ToList(), total, extend).ToString();
             return Ok(json);
         }
+
+        protected ActionResult PageResult<T, TResult>(IOrderedQueryable<T> query, int page, int limit, Func<T, TResult> selector)
+        {
+            long total = query.LongCount();
+            var items = query.PageBy(page, limit);
+            //action?.Invoke(items);
+            string json = new PagedResult<TResult>(items.AsEnumerable().Select(selector).ToList(), total, null).ToString();
+            return Ok(json);
+        }
         /// <summary>
         /// json返回，返回数据源
         /// </summary>

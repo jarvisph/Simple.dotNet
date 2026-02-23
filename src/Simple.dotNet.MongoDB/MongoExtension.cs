@@ -47,6 +47,12 @@ namespace Simple.MongoDB
             UpdateResult result = collection.UpdateMany(expression, bson);
             return result.ModifiedCount > 0;
         }
+        public static bool Update<TDocument>(this IMongoDatabase db, TDocument document, FilterDefinition<TDocument> filter, ReplaceOptions? options = null)
+        {
+            IMongoCollection<TDocument> collection = db.GetCollection<TDocument>();
+            var result = collection.ReplaceOne(filter, document, options);
+            return result.ModifiedCount > 0;
+        }
         public static bool Update<TDocument, TValue>(this IMongoDatabase db, TValue value, Expression<Func<TDocument, TValue>> field, Expression<Func<TDocument, bool>> expression)
         {
             IMongoCollection<TDocument> collection = db.GetCollection<TDocument>();
