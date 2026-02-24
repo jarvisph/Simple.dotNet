@@ -81,13 +81,14 @@ namespace Simple.Web.Mvc
             string json = new PagedResult<TResult>(items.AsEnumerable().Select(selector).ToList(), total, extend).ToString();
             return Ok(json);
         }
-
-        protected ActionResult PageResult<T, TResult>(IOrderedQueryable<T> query, int page, int limit, Func<T, TResult> selector)
+        protected ActionResult PageResult<T, TResult>(IOrderedQueryable<T> query, int page, int limit, Func<T, TResult> selector) => PageResult(query, page, limit, selector, null, null);
+        protected ActionResult PageResult<T, TResult>(IOrderedQueryable<T> query, int page, int limit, Func<T, TResult> selector, object? extend = null) => PageResult(query, page, limit, selector, null, extend);
+        protected ActionResult PageResult<T, TResult>(IOrderedQueryable<T> query, int page, int limit, Func<T, TResult> selector, Action<IEnumerable<T>>? action = null, object? extend = null)
         {
             long total = query.LongCount();
             var items = query.PageBy(page, limit);
-            //action?.Invoke(items);
-            string json = new PagedResult<TResult>(items.AsEnumerable().Select(selector).ToList(), total, null).ToString();
+            action?.Invoke(items);
+            string json = new PagedResult<TResult>(items.AsEnumerable().Select(selector).ToList(), total, extend).ToString();
             return Ok(json);
         }
         /// <summary>
