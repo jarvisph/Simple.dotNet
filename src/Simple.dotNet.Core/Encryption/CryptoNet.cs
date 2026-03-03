@@ -272,5 +272,16 @@ namespace Simple.Core.Encryption
             }
         }
 
+        public class SHA256
+        {
+            public static byte[] Encrypt(string plainText)
+            {
+                using (System.Security.Cryptography.SHA256 sha = System.Security.Cryptography.SHA256.Create())
+                {
+                    byte[] data = Encoding.UTF8.GetBytes(plainText);
+                    return sha.ComputeHash(data);
+                }
+            }
+        }
     }
 }
