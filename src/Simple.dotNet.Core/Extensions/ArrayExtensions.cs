@@ -45,5 +45,18 @@ namespace Simple.Core.Extensions
             int num = Math.Abs(Guid.NewGuid().GetHashCode());
             return list.ElementAt(num % count);
         }
+
+        public static T ClosestTo<T>(this IEnumerable<T> source, T target) where T : struct, IComparable<T>, IConvertible
+        {
+            if (!source.Any())
+                throw new InvalidOperationException("序列不包含任何元素");
+
+            return source.Aggregate((current, next) =>
+            {
+                double currentDiff = Math.Abs(Convert.ToDouble(current) - Convert.ToDouble(target));
+                double nextDiff = Math.Abs(Convert.ToDouble(next) - Convert.ToDouble(target));
+                return nextDiff < currentDiff ? next : current;
+            });
+        }
     }
 }
