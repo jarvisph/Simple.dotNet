@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Simple.Core.Encryption
 {
@@ -270,6 +272,52 @@ namespace Simple.Core.Encryption
                     return BitConverter.ToString(output).Replace("-", "").ToLower();
                 }
             }
+
+            public static string DecryptOFB(byte[] ciphertext, string key, string iv)
+            {
+                byte[] keyBytes = Encoding.UTF8.GetBytes(key);
+                byte[] ivBytes = Encoding.UTF8.GetBytes(iv);
+                using (var aes = Aes.Create())
+                {
+                    aes.KeySize = 128;
+                    aes.BlockSize = 128;
+                    aes.Mode = CipherMode.ECB; // OFB模式基于ECB实现
+                    aes.Padding = PaddingMode.None;
+
+                    using (var encryptor = aes.CreateEncryptor(keyBytes, new byte[16])) // 使用空IV
+                    {
+                        // OFB模式：通过对IV加密生成密钥流
+                        byte[] keystream = new byte[16];
+                        byte[] output = new byte[ciphertext.Length];
+
+                        // 初始化反馈为IV
+                        byte[] feedback = new byte[16];
+                        Array.Copy(ivBytes, feedback, iv.Length);
+
+                        int processed = 0;
+
+                        while (processed < ciphertext.Length)
+                        {
+                            // 加密反馈寄存器
+                            encryptor.TransformBlock(feedback, 0, feedback.Length, keystream, 0);
+
+                            // 更新反馈为上一个密钥流（OFB特性）
+                            Array.Copy(keystream, feedback, feedback.Length);
+
+                            // 使用密钥流解密当前块
+                            for (int i = 0; i < 16 && processed + i < ciphertext.Length; i++)
+                            {
+                                output[processed + i] = (byte)(ciphertext[processed + i] ^ keystream[i]);
+                            }
+
+                            processed += 16;
+                        }
+
+                        // 移除可能的填充（如果需要）
+                        return Encoding.UTF8.GetString(output).TrimEnd('\0');
+                    }
+                }
+            }
         }
 
         public class SHA256
@@ -280,6 +328,72 @@ namespace Simple.Core.Encryption
                 {
                     byte[] data = Encoding.UTF8.GetBytes(plainText);
                     return sha.ComputeHash(data);
+                }
+            }
+        }
+
+        public class RSA
+        {
+            public static string CleanPemKey(string pemKey)
+            {
+                // 移除可能的BOM和空白字符
+                pemKey = pemKey.Trim().Replace("\r\n", "\n");
+
+                // 确保有正确的PEM头尾
+                if (!pemKey.Contains("-----BEGIN PUBLIC KEY-----"))
+                {
+                    // 尝试从Base64字符串重建
+                    string base64 = Regex.Replace(pemKey, @"-+[A-Z ]+-+|\s+", "");
+
+                    var sb = new StringBuilder();
+                    sb.AppendLine("-----BEGIN PUBLIC KEY-----");
+
+                    // 每64字符换行
+                    for (int i = 0; i < base64.Length; i += 64)
+                    {
+                        int len = Math.Min(64, base64.Length - i);
+                        sb.AppendLine(base64.Substring(i, len));
+                    }
+
+                    sb.AppendLine("-----END PUBLIC KEY-----");
+                    return sb.ToString();
+                }
+
+                return pemKey;
+            }
+
+            public static byte[] GetBytesFromPem(string pem, string section)
+            {
+                string header = $"-----BEGIN {section}-----";
+                string footer = $"-----END {section}-----";
+
+                int start = pem.IndexOf(header) + header.Length;
+                int end = pem.IndexOf(footer, start);
+
+                string base64 = pem[start..end].Replace("\n", "").Replace("\r", "");
+
+                return Convert.FromBase64String(base64);
+            }
+            public static string Encrypt(string plainText, string publicKey)
+            {
+                using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider())
+                {
+                    // 导入公钥
+                    rsa.ImportFromPem(publicKey.ToCharArray());
+                    byte[] dataBytes = Encoding.UTF8.GetBytes(plainText);
+                    // 使用公钥加密数据
+                    byte[] encryptedData = rsa.Encrypt(dataBytes, false);
+                    return Convert.ToBase64String(encryptedData);
+                }
+            }
+            public static string Encrypt(byte[] plainText, byte[] publicKey)
+            {
+                using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider())
+                {
+                    // 导入公钥
+                    rsa.ImportPkcs8PrivateKey(publicKey, out _);
+                    byte[] encrypted = rsa.Encrypt(plainText, RSAEncryptionPadding.Pkcs1);
+                    return Convert.ToBase64String(encrypted);
                 }
             }
         }
