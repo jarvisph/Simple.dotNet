@@ -98,7 +98,8 @@ namespace Simple.Core.Http
             string url,
             HttpContent content = null,
             Dictionary<string, string> headers = null,
-            CancellationToken cancellationToken = default)
+            CancellationToken cancellationToken = default,
+            string responseType = "string")
         {
             await _concurrencyLimiter.WaitAsync(cancellationToken).ConfigureAwait(false);
 
@@ -125,9 +126,17 @@ namespace Simple.Core.Http
                 var stopwatch = System.Diagnostics.Stopwatch.StartNew();
                 using var response = await _httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
                 stopwatch.Stop();
-
+                object responseContent;
+                if (responseType == "array")
+                {
+                    responseContent = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
+                }
+                else
+                {
+                    responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                }
                 // 读取响应内容
-                var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
                 return new HttpResponse
                 {
                     StatusCode = response.StatusCode,
@@ -170,7 +179,7 @@ namespace Simple.Core.Http
     public class HttpResponse
     {
         public HttpStatusCode StatusCode { get; set; }
-        public string Content { get; set; }
+        public object Content { get; set; }
         public Dictionary<string, string> Headers { get; set; }
         public TimeSpan ElapsedTime { get; set; }
         /// <summary>

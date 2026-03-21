@@ -29,6 +29,11 @@ namespace Simple.Core.Http
         public string[] ResponseHeaders { get; set; }
 
         /// <summary>
+        /// 响应类型
+        /// </summary>
+        public string ResponseType { get; set; } = "string";
+
+        /// <summary>
         /// 请求内容
         /// </summary>
         public string Content { get; set; }
