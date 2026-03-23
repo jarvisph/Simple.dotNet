@@ -126,21 +126,26 @@ namespace Simple.Core.Http
                 var stopwatch = System.Diagnostics.Stopwatch.StartNew();
                 using var response = await _httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
                 stopwatch.Stop();
-                object responseContent;
+                string responseContent = string.Empty;
+                byte[] responseArray = new byte[] { };
+                // 读取响应内容
                 if (responseType == "array")
                 {
-                    responseContent = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
+                    responseArray = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
                 }
                 else
                 {
                     responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 }
-                // 读取响应内容
+                // 获取原始响应的 Content-Type
+                var contentType = response.Content.Headers.ContentType?.ToString() ?? "application/octet-stream";
 
                 return new HttpResponse
                 {
                     StatusCode = response.StatusCode,
                     Content = responseContent,
+                    ByteArray = responseArray,
+                    ContentType = contentType,
                     Headers = ConvertHeaders(response.Headers),
                     RequestUri = response.RequestMessage.RequestUri.ToString(),
                     ElapsedTime = stopwatch.Elapsed
@@ -179,7 +184,9 @@ namespace Simple.Core.Http
     public class HttpResponse
     {
         public HttpStatusCode StatusCode { get; set; }
-        public object Content { get; set; }
+        public string Content { get; set; }
+        public byte[] ByteArray { get; set; }
+        public string ContentType { get; set; }
         public Dictionary<string, string> Headers { get; set; }
         public TimeSpan ElapsedTime { get; set; }
         /// <summary>
