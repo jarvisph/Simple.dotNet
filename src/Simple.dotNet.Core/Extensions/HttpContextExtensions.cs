@@ -457,7 +457,7 @@ namespace Simple.Core.Extensions
         /// <summary>
         /// 获取request 流
         /// </summary>
-        /// <param name="request"></param>
+        /// <param name="context"></param>
         /// <returns></returns>
         public static byte[] GetData(this HttpContext context)
         {
@@ -465,7 +465,6 @@ namespace Simple.Core.Extensions
             byte[] data = null;
             try
             {
-                //context.Request.EnableRewind();//流复制
                 using (MemoryStream ms = new MemoryStream((int)context.Request.ContentLength))
                 {
                     context.Request.Body.CopyToAsync(ms).Wait();

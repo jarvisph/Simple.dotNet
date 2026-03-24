@@ -34,6 +34,19 @@ namespace Simple.Core.Extensions
             }
             return Enum.IsDefined(type, value) ? (T)Enum.Parse(type, value) : default(T);
         }
+        public static T ToFlagEnum<T>(this IEnumerable<string> permissionNames) where T : struct, Enum
+        {
+            var flags = default(T);
+            if (permissionNames == null) return flags;
+            foreach (var name in permissionNames)
+            {
+                if (Enum.TryParse<T>(name, true, out var value)) // true 表示忽略大小写
+                {
+                    flags = (T)(object)((int)(object)flags | (int)(object)value);
+                }
+            }
+            return flags;
+        }
 
         private static T ToFlagEnum<T>(object[] enums) where T : IComparable, IFormattable, IConvertible
         {
