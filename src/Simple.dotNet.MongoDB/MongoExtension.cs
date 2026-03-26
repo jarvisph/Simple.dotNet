@@ -28,11 +28,11 @@ namespace Simple.MongoDB
             return true;
         }
 
-        public static bool Delete<TDocument>(this IMongoDatabase db, Expression<Func<TDocument, bool>> expression)
+        public static long Delete<TDocument>(this IMongoDatabase db, Expression<Func<TDocument, bool>> expression)
         {
             IMongoCollection<TDocument> collection = db.GetCollection<TDocument>();
             DeleteResult result = collection.DeleteMany(expression);
-            return result.DeletedCount > 0;
+            return result.DeletedCount;
         }
         public static bool Update<TDocument>(this IMongoDatabase db, TDocument document, Expression<Func<TDocument, object>> fields, Expression<Func<TDocument, bool>> expression)
         {
