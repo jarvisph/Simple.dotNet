@@ -36,16 +36,33 @@ namespace Simple.Core.Extensions
         }
         public static T ToFlagEnum<T>(this IEnumerable<string> permissionNames) where T : struct, Enum
         {
-            var flags = default(T);
-            if (permissionNames == null) return flags;
+            if (permissionNames == null) return default;
+
+            // 获取枚举的数值类型
+            var underlyingType = Enum.GetUnderlyingType(typeof(T));
+            var result = Activator.CreateInstance(underlyingType);
+
             foreach (var name in permissionNames)
             {
-                if (Enum.TryParse<T>(name, true, out var value)) // true 表示忽略大小写
+                if (Enum.TryParse<T>(name, true, out var value))
                 {
-                    flags = (T)(object)((int)(object)flags | (int)(object)value);
+                    // 使用动态类型进行位运算
+                    result = underlyingType switch
+                    {
+                        Type t when t == typeof(byte) => (byte)((byte)result | (byte)(object)value),
+                        Type t when t == typeof(sbyte) => (sbyte)((sbyte)result | (sbyte)(object)value),
+                        Type t when t == typeof(short) => (short)((short)result | (short)(object)value),
+                        Type t when t == typeof(ushort) => (ushort)((ushort)result | (ushort)(object)value),
+                        Type t when t == typeof(int) => (int)((int)result | (int)(object)value),
+                        Type t when t == typeof(uint) => (uint)((uint)result | (uint)(object)value),
+                        Type t when t == typeof(long) => (long)((long)result | (long)(object)value),
+                        Type t when t == typeof(ulong) => (ulong)((ulong)result | (ulong)(object)value),
+                        _ => throw new NotSupportedException($"Unsupported enum underlying type: {underlyingType}")
+                    };
                 }
             }
-            return flags;
+
+            return (T)Enum.ToObject(typeof(T), result);
         }
 
         private static T ToFlagEnum<T>(object[] enums) where T : IComparable, IFormattable, IConvertible
