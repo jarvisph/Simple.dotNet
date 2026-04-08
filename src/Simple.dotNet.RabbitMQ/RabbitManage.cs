@@ -1,16 +1,11 @@
-﻿using Newtonsoft.Json;
-using RabbitMQ.Client;
-using System;
-using System.Text;
+﻿using Simple.Core.Dependency;
 using Simple.Core.Extensions;
-using System.Diagnostics;
 using Simple.Core.Helper;
-using RabbitMQ.Client.Events;
-using System.Threading;
-using System.Threading.Tasks;
-using Simple.Core.Dependency;
+using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Simple.RabbitMQ
 {
@@ -77,7 +72,6 @@ namespace Simple.RabbitMQ
                         Console.WriteLine($"消费：{type.Name}，已启动，耗时：{sw.ElapsedMilliseconds}ms");
                     }
                 });
-
             }
         }
     }
