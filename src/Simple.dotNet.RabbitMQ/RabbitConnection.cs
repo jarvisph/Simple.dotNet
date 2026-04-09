@@ -1,5 +1,6 @@
 ﻿using RabbitMQ.Client;
 using Simple.Core.Dependency;
+using System;
 
 namespace Simple.RabbitMQ
 {
@@ -8,9 +9,10 @@ namespace Simple.RabbitMQ
     /// </summary>
     public abstract class RabbitConnection
     {
-        private readonly RabbitOption _options;
+        protected readonly RabbitOption _options;
         protected readonly ConnectionFactory _factory;
         protected readonly IConnection _connection;
+        protected IModel _channel;
 
         public RabbitConnection()
         {
@@ -25,6 +27,36 @@ namespace Simple.RabbitMQ
                 AutomaticRecoveryEnabled = true
             };
             _connection = _factory.CreateConnection();
+
+        }
+        public void Open()
+        {
+            if (_channel == null || !_channel.IsOpen) _channel = _connection.CreateModel();
+        }
+        /// <summary>
+        /// 关闭
+        /// </summary>
+        public void Close()
+        {
+            try
+            {
+                if (_channel != null)
+                {
+                    _channel.Close();
+                    _channel.Dispose();
+                    _channel = null;
+                }
+
+            }
+            catch
+            {
+                if (_channel != null)
+                {
+                    _channel.Dispose();
+                    _channel = null;
+                }
+            }
+
         }
     }
 }
