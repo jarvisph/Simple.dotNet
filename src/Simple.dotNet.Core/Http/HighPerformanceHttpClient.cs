@@ -56,6 +56,7 @@ namespace Simple.Core.Http
                 AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
                 UseCookies = false,
                 UseProxy = setting != null,
+                SslProtocols = System.Security.Authentication.SslProtocols.Tls12
             };
 
             if (setting != null)
