@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -9,16 +10,25 @@ namespace Simple.Core.Encryption
 {
     public static class CryptoNet
     {
+        public static string RandomBytesToHex(int byteLength)
+        {
+            // 1. 使用密码学安全的随机数生成器 (CSPRNG) 生成随机字节
+            byte[] randomBytes = RandomNumberGenerator.GetBytes(byteLength);
+
+            // 2. 将字节数组转换为十六进制字符串
+            // 使用 Convert.ToHexString，在 .NET 5+ 中可用且性能极佳
+            return Convert.ToHexString(randomBytes).ToLowerInvariant();
+        }
         public class enc
         {
             public class Utf8
             {
                 public static byte[] Parse(string key)
                 {
-                    byte[] secretBytes = Encoding.UTF8.GetBytes(key);
-                    byte[] keyBytes = new byte[8];
-                    Array.Copy(secretBytes, keyBytes, Math.Min(secretBytes.Length, keyBytes.Length));
-                    return keyBytes;
+                    return Encoding.UTF8.GetBytes(key);
+                    //byte[] keyBytes = new byte[8];
+                    //Array.Copy(secretBytes, keyBytes, Math.Min(secretBytes.Length, keyBytes.Length));
+                    //return keyBytes;
                 }
             }
             public class Base64
@@ -108,6 +118,18 @@ namespace Simple.Core.Encryption
 
         public class HMAC
         {
+            // 如果需要 Base64 格式
+            public static string SHA1Base64(string message, string key)
+            {
+                byte[] messageBytes = Encoding.UTF8.GetBytes(message ?? "");
+                byte[] keyBytes = Encoding.UTF8.GetBytes(key ?? "");
+
+                using (HMACSHA1 hmac = new HMACSHA1(keyBytes))
+                {
+                    byte[] hashBytes = hmac.ComputeHash(messageBytes);
+                    return Convert.ToBase64String(hashBytes);
+                }
+            }
             public static string Sha256(string plaintext, string salt)
             {
                 var enc = Encoding.Default;
@@ -148,9 +170,6 @@ namespace Simple.Core.Encryption
             /// </summary>
             /// <param name="plainText">明文</param>
             /// <param name="key"></param>
-            /// <param name="iv"></param>
-            /// <param name="cipher">默认CBC</param>
-            /// <param name="pading">默认PKCS7</param>
             /// <returns></returns>
             public static string Encrypt(string plainText, byte[] key, CryptoOptions options)
             {
