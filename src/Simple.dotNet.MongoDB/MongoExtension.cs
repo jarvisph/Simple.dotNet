@@ -3,6 +3,7 @@ using MongoDB.Driver;
 using Simple.Core.Extensions;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Linq.Expressions;
 
@@ -34,17 +35,36 @@ namespace Simple.MongoDB
             DeleteResult result = collection.DeleteMany(expression);
             return result.DeletedCount;
         }
-        public static bool Update<TDocument>(this IMongoDatabase db, TDocument document, Expression<Func<TDocument, object>> fields, Expression<Func<TDocument, bool>> expression)
+        public static bool Update<TDocument>(this IMongoDatabase db, TDocument document, Expression<Func<TDocument, object>> fields, Expression<Func<TDocument, bool>> where)
         {
             IMongoCollection<TDocument> collection = db.GetCollection<TDocument>();
-            BsonDocument bson = new BsonDocument();
-            Dictionary<string, object> value = new Dictionary<string, object>();
-            foreach (var item in fields.GetPropertys())
+
+            // 1. 构建更新定义（使用 Builders）
+            var updateBuilder = Builders<TDocument>.Update;
+            var updateDefinitions = new List<UpdateDefinition<TDocument>>();
+
+            // 2. 获取要更新的字段信息
+            var memberInfos = fields.GetPropertys(); // 假设这个方法正确返回 MemberInfo 列表
+
+            foreach (var memberInfo in memberInfos)
             {
-                value.Add(item.Name, item.GetValue(document));
+                // 获取字段名
+                string fieldName = memberInfo.GetFieldName<ColumnAttribute>();
+
+                // 获取字段对应的值
+                var value = memberInfo.GetValue(document);
+
+                // 添加更新定义
+                updateDefinitions.Add(updateBuilder.Set(fieldName, value));
             }
-            bson.Add(value);
-            UpdateResult result = collection.UpdateMany(expression, bson);
+
+            // 3. 组合所有更新操作
+            var combinedUpdate = updateBuilder.Combine(updateDefinitions);
+
+            // 4. 执行更新（修正：使用 where 表达式而不是未定义的 expression）
+            UpdateResult result = collection.UpdateMany(where, combinedUpdate);
+
+            // 5. 返回是否更新成功
             return result.ModifiedCount > 0;
         }
         public static bool Update<TDocument>(this IMongoDatabase db, TDocument document, FilterDefinition<TDocument> filter, ReplaceOptions? options = null)

@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <AssemblyName>Simple.dotNet.MongoDB</AssemblyName>
     <RootNamespace>Simple.MongoDB</RootNamespace>
-    <Version>1.0.0</Version>
+    <Version>9.0</Version>
     <PackageId>Simple.dotNet.MongoDB</PackageId>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Authors>jarvis</Authors>
@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MongoDB.Driver" Version="2.21.0" />
+    <PackageReference Include="MongoDB.Driver" Version="3.8.0" />
   </ItemGroup>
 
   <ItemGroup>
