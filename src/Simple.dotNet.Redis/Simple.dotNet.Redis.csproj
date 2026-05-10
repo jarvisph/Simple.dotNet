@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
 		<DisableImplicitNamespaceImports>true</DisableImplicitNamespaceImports>
 		<Nullable>enable</Nullable>
-		<Version>1.0.6</Version>
+		<Version>9.0</Version>
 		<Authors>jarvis</Authors>
 		<Product>Simple.dotNet</Product>
 		<PackageProjectUrl>https://github.com/jarvisph/Simple.git</PackageProjectUrl>
@@ -25,7 +25,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="NReJSON" Version="4.0.0" />
+	  <PackageReference Include="StackExchange.Redis" Version="2.12.14" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -1,6 +1,10 @@
-﻿using Simple.Core.Dependency;
+﻿using Microsoft.IdentityModel.Tokens;
+using Simple.Core.Dependency;
 using StackExchange.Redis;
 using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace Simple.Redis
 {
@@ -17,8 +21,6 @@ namespace Simple.Redis
         /// <returns></returns>
         public IDatabase Redis => Connection().GetDatabase(this.Db);
 
-        private const string LOGIN = "LOGIN:";
-        private const string TOKEN = "TOKEN:";
         /// <summary>
         /// 库 
         /// </summary>
@@ -39,6 +41,7 @@ namespace Simple.Redis
                     ConfigurationOptions opt = ConfigurationOptions.Parse(_connectionString.ConnectionString);
                     opt.SyncTimeout = int.MaxValue;
                     opt.AllowAdmin = true;
+                    opt.AbortOnConnectFail = true;
                     _connectionMultiplexer = ConnectionMultiplexer.Connect(opt);
                 }
             }
@@ -48,92 +51,58 @@ namespace Simple.Redis
 
         public T GetHash<T>(string key, string hashKey) => this.Redis.HashGet(key, hashKey).GetRedisValue<T>();
 
-        /// <summary>
-        /// 获取登录键
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        private string GetLoginKey(int userId)
-        {
-            return $"{LOGIN}{userId % 10}";
-        }
 
-        protected string GetToken(int userId)
-        {
-            string key = GetLoginKey(userId);
-            return this.Redis.HashGet(key, userId).GetRedisValue<string>();
-        }
+        protected const string LOGIN_TOKEN = "LOGIN_TOKEN";
 
-        /// <summary>
-        /// 获取token键
-        /// </summary>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        private string GetTokenKey(string token)
+        public string GenerateToken(string userId, string userName, TimeSpan expires)
         {
-            return TOKEN + token.Substring(0, 2).ToUpper();
-        }
-        /// <summary>
-        /// 登录并生成Token
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        protected string Login(int userId)
-        {
-            //获取会员登录键
-            string loginKey = this.GetLoginKey(userId);
-            //生成token
-            string token = Guid.NewGuid().ToString("N");
-            //通过token生成token键
-            string tokenKey = this.GetTokenKey(token);
-            //获取旧token
-            RedisValue value = this.Redis.HashGet(loginKey, userId);
-            IBatch batch = this.Redis.CreateBatch();
-            //如果之前有登陆，销毁旧token内容
-            if (!value.IsNull)
+            // 1. 创建 Claims（用户信息）
+            var claims = new[]
             {
-                string oldKey = this.GetTokenKey(value);
-                batch.HashDeleteAsync(oldKey, value.GetRedisValue<string>());
-            }
-            batch.HashSetAsync(loginKey, userId, token);
-            batch.HashSetAsync(tokenKey, token, userId);
-            batch.Execute();
+                new Claim(JwtRegisteredClaimNames.Sub, userId),
+                new Claim(JwtRegisteredClaimNames.Name, userName),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                //new Claim(ClaimTypes.Role, "User"),
+                //new Claim("tenant_id", "12345")
+            };
+
+            // 2. 从配置获取密钥
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("134c5503debc47b0a258370fb9839b09"));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            // 3. 创建 Token
+            var token = new JwtSecurityToken(
+                issuer: string.Empty,
+                audience: string.Empty,
+                claims: claims,
+                expires: DateTime.UtcNow.Add(expires),
+                signingCredentials: creds
+            );
+            // 4. 生成 Token 字符串
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        protected string Login(int userId, TimeSpan expires)
+        {
+            string login_token = $"{LOGIN_TOKEN}:{userId}";
+            string token = GenerateToken(userId.ToString(), userId.ToString(), expires);
+            this.Redis.StringSet(login_token, token, expires);
             return token;
         }
-        /// <summary>
-        /// 获取登录用户ID
-        /// </summary>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        protected int GetTokenID(string token)
-        {
-            string key = this.GetTokenKey(token);
-            RedisValue value = this.Redis.HashGet(key, token);
-            if (value.IsNullOrEmpty)
-            {
-                return 0;
-            }
-            return value.GetRedisValue<int>();
-        }
-        /// <summary>
-        /// 退出
-        /// </summary>
-        /// <param name="userId"></param>
+
+
         protected void Logout(int userId)
         {
-            //获取会员登录键
-            string loginKey = this.GetLoginKey(userId);
-            //获取旧token
-            RedisValue value = this.Redis.HashGet(loginKey, userId);
-            IBatch batch = this.Redis.CreateBatch();
-            batch.HashDeleteAsync(loginKey, userId);
-            //如果之前有登陆，销毁旧token内容
-            if (!value.IsNull)
-            {
-                string oldKey = this.GetTokenKey(value);
-                batch.HashDeleteAsync(oldKey, value.GetRedisValue<string>());
-            }
-            batch.Execute();
+            string login_token = $"{LOGIN_TOKEN}:{userId}";
+            this.Redis.KeyDelete(login_token);
+        }
+
+        protected bool CheckToken(int userId, string token)
+        {
+            string login_token = $"{LOGIN_TOKEN}:{userId}";
+            RedisValue value = this.Redis.StringGet(login_token);
+            if (value.IsNullOrEmpty) return false;
+            return value.GetRedisValue<string>() == token;
         }
     }
 }

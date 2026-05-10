@@ -12,7 +12,7 @@ namespace Simple.RabbitMQ
         protected readonly RabbitOption _options;
         protected readonly ConnectionFactory _factory;
         protected readonly IConnection _connection;
-        protected IModel _channel;
+        protected IChannel _channel;
 
         public RabbitConnection()
         {
@@ -26,12 +26,12 @@ namespace Simple.RabbitMQ
                 Port = _options.Port,
                 AutomaticRecoveryEnabled = true
             };
-            _connection = _factory.CreateConnection();
+            _connection = _factory.CreateConnectionAsync().Result;
 
         }
         public void Open()
         {
-            if (_channel == null || !_channel.IsOpen) _channel = _connection.CreateModel();
+            if (_channel == null || !_channel.IsOpen) _channel = _connection.CreateChannelAsync().Result;
         }
         /// <summary>
         /// 关闭
@@ -42,7 +42,7 @@ namespace Simple.RabbitMQ
             {
                 if (_channel != null)
                 {
-                    _channel.Close();
+                    _channel.CloseAsync().Wait();
                     _channel.Dispose();
                     _channel = null;
                 }

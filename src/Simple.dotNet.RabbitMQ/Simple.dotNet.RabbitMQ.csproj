@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <DisableImplicitNamespaceImports>true</DisableImplicitNamespaceImports>
     <Nullable>enable</Nullable>
     <RootNamespace>Simple.RabbitMQ</RootNamespace>
     <AssemblyName>Simple.dotNet.RabbitMQ</AssemblyName>
     <PackageId>Simple.dotNet.RabbitMQ</PackageId>
-    <Version>1.0.6</Version>
+    <Version>9.0</Version>
     <Authors>jarvis</Authors>
     <Product>Simple.dotNet</Product>
     <PackageProjectUrl>https://github.com/jarvisph/Simple.git</PackageProjectUrl>
@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-	  <PackageReference Include="RabbitMQ.Client" Version="5.1.2" />
+	  <PackageReference Include="RabbitMQ.Client" Version="7.2.1" />
   </ItemGroup>
 
   <ItemGroup>
