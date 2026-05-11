@@ -8,7 +8,6 @@ using Simple.Core.Logger;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Result = Simple.Core.Domain.Dto.Result;
 
 namespace Simple.Web.Mvc
 {
@@ -78,8 +77,17 @@ namespace Simple.Web.Mvc
             long total = query.LongCount();
             var items = query.PageBy(this.PageSize, this.LimitCount);
             action?.Invoke(items);
-            string json = new PagedResult<TResult>(items.AsEnumerable().Select(selector).ToList(), total, extend).ToString();
-            return Ok(json);
+            return Ok(new
+            {
+                success = 1,
+                msg = "操作成功",
+                data = new
+                {
+                    items,
+                    extend,
+                    total
+                }
+            });
         }
         protected ActionResult PageResult<T, TResult>(IOrderedQueryable<T> query, int page, int limit, Func<T, TResult> selector) => PageResult(query, page, limit, selector, null, null);
         protected ActionResult PageResult<T, TResult>(IOrderedQueryable<T> query, int page, int limit, Func<T, TResult> selector, object? extend = null) => PageResult(query, page, limit, selector, null, extend);
@@ -118,7 +126,12 @@ namespace Simple.Web.Mvc
         /// <returns></returns>
         protected ActionResult JsonResult(bool success, string msg, object? info)
         {
-            return Ok(new Result(success, msg, info).ToString());
+            return Ok(new
+            {
+                success = success ? 1 : 0,
+                msg,
+                data = info
+            });
         }
         protected ActionResult JsonResult(bool success, object data) => this.JsonResult(success, string.Empty, data);
         /// <summary>
