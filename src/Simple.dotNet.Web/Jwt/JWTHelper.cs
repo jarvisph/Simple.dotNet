@@ -1,10 +1,9 @@
 ﻿using Microsoft.IdentityModel.Tokens;
+using Simple.Core.Authorization;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
-using Simple.Core.Authorization;
 using System.Text;
 
 namespace Simple.Web.Jwt
@@ -36,6 +35,21 @@ namespace Simple.Web.Jwt
             });
             //生成令牌字符串
             return handler.WriteToken(securityToken);
+        }
+
+        public static JwtSecurityToken ParseJwt(string token)
+        {
+
+            var handler = new JwtSecurityTokenHandler();
+
+            // 检查 Token 格式是否正确
+            if (!handler.CanReadToken(token))
+            {
+                throw new AuthorizationException("无效的Token");
+            }
+
+            // 解析 Token
+            return handler.ReadJwtToken(token);
         }
     }
 }
