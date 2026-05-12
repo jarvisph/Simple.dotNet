@@ -159,7 +159,11 @@ namespace Simple.Web.Mvc
         /// <param name="message"></param>
         protected ActionResult ErrorResult(string message)
         {
-            return Ok(new Result(false, message).ToString());
+            return Ok(new
+            {
+                success = 0,
+                msg = message,
+            });
         }
     }
 }
