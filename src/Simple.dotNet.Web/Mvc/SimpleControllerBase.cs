@@ -83,7 +83,7 @@ namespace Simple.Web.Mvc
                 msg = "操作成功",
                 data = new
                 {
-                    items,
+                    items = items.AsEnumerable().Select(selector).ToList(),
                     extend,
                     total
                 }
@@ -151,7 +151,11 @@ namespace Simple.Web.Mvc
         /// <returns></returns>
         protected ActionResult TextResult(string message)
         {
-            return Ok(new Result(true, message).ToString());
+            return Ok(new
+            {
+                success = 1,
+                msg = message,
+            });
         }
         /// <summary>
         /// 错误返回
