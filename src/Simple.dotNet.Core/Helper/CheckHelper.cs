@@ -273,10 +273,20 @@ namespace Simple.Core.Helper
             }
             return true;
         }
+        // 正则：快速判断是否为可能的 JSON（对象或数组）
+        private static readonly Regex JsonPattern = new Regex(
+            @"^\s*(\[.*\]|\{.*\})\s*$",
+            RegexOptions.Compiled | RegexOptions.Singleline
+        );
+
 
         public static bool IsJson(string jsonStr)
         {
             if (string.IsNullOrWhiteSpace(jsonStr)) return false;
+            // 步骤1：正则快速过滤
+            if (!JsonPattern.IsMatch(jsonStr))
+                return false;
+
             try
             {
                 JsonConvert.DeserializeObject(jsonStr);
