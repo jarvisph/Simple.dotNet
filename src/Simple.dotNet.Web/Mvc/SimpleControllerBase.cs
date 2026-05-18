@@ -80,7 +80,7 @@ namespace Simple.Web.Mvc
             return Ok(new
             {
                 success = 1,
-                msg = "操作成功",
+                msg = "查询成功",
                 data = new
                 {
                     items = items.AsEnumerable().Select(selector).ToList(),
@@ -96,8 +96,20 @@ namespace Simple.Web.Mvc
             long total = query.LongCount();
             var items = query.PageBy(page, limit);
             action?.Invoke(items);
-            string json = new PagedResult<TResult>(items.AsEnumerable().Select(selector).ToList(), total, extend).ToString();
-            return Ok(json);
+            //string json = new PagedResult<TResult>(items.AsEnumerable().Select(selector).ToList(), total, extend).ToString();
+            //return Ok(json);
+
+            return Ok(new
+            {
+                success = 1,
+                msg = "查询成功",
+                data = new
+                {
+                    items = items.AsEnumerable().Select(selector).ToList(),
+                    extend,
+                    total
+                }
+            });
         }
         /// <summary>
         /// json返回，返回数据源
