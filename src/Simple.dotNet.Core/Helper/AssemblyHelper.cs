@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Simple.Core.Extensions;
+using static Simple.Core.Extensions.EnumExtensions;
 
 namespace Simple.Core.Helper
 {
@@ -25,10 +26,10 @@ namespace Simple.Core.Helper
         /// 获取项目中所有程序集枚举
         /// </summary>
         /// <returns></returns>
-        public static Dictionary<string, Dictionary<string, string>> GetAssemblyEnums()
+        public static Dictionary<string, List<EnumInfo>> GetAssemblyEnums()
         {
             var assemblies = GetAssemblies();
-            Dictionary<string, Dictionary<string, string>> dic = new Dictionary<string, Dictionary<string, string>>();
+            Dictionary<string, List<EnumInfo>> dic = new Dictionary<string, List<EnumInfo>>();
             foreach (var assembly in assemblies)
             {
                 foreach (var item in assembly.GetEnums())
@@ -42,9 +43,9 @@ namespace Simple.Core.Helper
         /// 获取指定程序集枚举
         /// </summary>
         /// <returns></returns>
-        public static Dictionary<string, Dictionary<string, string>> GetAssemblyEnums(params Assembly[] assemblies)
+        public static Dictionary<string, List<EnumInfo>> GetAssemblyEnums(params Assembly[] assemblies)
         {
-            Dictionary<string, Dictionary<string, string>> dic = new Dictionary<string, Dictionary<string, string>>();
+            Dictionary<string, List<EnumInfo>> dic = new Dictionary<string, List<EnumInfo>>();
             foreach (var assembly in assemblies)
             {
                 foreach (var item in assembly.GetEnums())

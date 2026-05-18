@@ -16,6 +16,12 @@ namespace Simple.Core.Extensions
 {
     public static class EnumExtensions
     {
+        public class EnumInfo
+        {
+            public string Name { get; set; }
+            public int Value { get; set; }
+            public string Description { get; set; }
+        }
         /// <summary>
         /// String转换枚举
         /// </summary>
@@ -126,16 +132,24 @@ namespace Simple.Core.Extensions
         /// </summary>
         /// <param name="assembly"></param>
         /// <returns></returns>
-        public static Dictionary<string, Dictionary<string, string>> GetEnums(this Assembly assembly)
+        public static Dictionary<string, List<EnumInfo>> GetEnums(this Assembly assembly)
         {
-            var dic = new Dictionary<string, Dictionary<string, string>>();
+            var dic = new Dictionary<string, List<EnumInfo>>();
             foreach (Type type in assembly.GetTypes().Where(c => c.IsEnum))
             {
                 string name = type.FullName;
-                dic.Add(name, new Dictionary<string, string>());
+                dic.Add(name, new List<EnumInfo>());
                 foreach (object item in Enum.GetValues(type))
                 {
-                    dic[name].Add(item.ToString(), ((Enum)item).GetDescription());
+                    string enum_name = item.ToString();
+                    string enum_description = ((Enum)item).GetDescription();
+                    int enum_value = item.ToValue<int>();
+                    dic[name].Add(new EnumInfo
+                    {
+                        Name = enum_name,
+                        Description = enum_description,
+                        Value = enum_value
+                    });
                 }
             }
             return dic;

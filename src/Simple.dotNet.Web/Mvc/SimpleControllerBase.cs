@@ -25,26 +25,7 @@ namespace Simple.Web.Mvc
         {
             this.Logger = IocCollection.Resolve<ILogger>();
         }
-        /// <summary>
-        /// 页码
-        /// </summary>
-        protected int PageSize
-        {
-            get
-            {
-                return HttpContext.GetFormValue("Page", 1);
-            }
-        }
-        /// <summary>
-        /// 行数
-        /// </summary>
-        protected int LimitCount
-        {
-            get
-            {
-                return HttpContext.GetFormValue("Limit", 20);
-            }
-        }
+       
         /// <summary>
         /// 获取当前http上下文的语种
         /// </summary>
@@ -55,40 +36,7 @@ namespace Simple.Web.Mvc
                 return LanguageType.CHN;
             }
         }
-        protected ActionResult PageResult<T, TResult>(IOrderedQueryable<T> query, Func<T, TResult> selector)
-            => this.PageResult(query, selector, null);
-        protected ActionResult PageResult<T, TResult>(IOrderedQueryable<T> query, Func<T, TResult> selector, object extend)
-         => this.PageResult(query, selector, null, extend);
-        protected ActionResult PageResult<T, TResult>(IOrderedQueryable<T> query, Func<T, TResult> selector, Action<IEnumerable<T>>? action)
-         => this.PageResult(query, selector, action, null);
-
-        /// <summary>
-        /// 返回分页格式（带扩展字段）
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TResult"></typeparam>
-        /// <param name="query"></param>
-        /// <param name="selector"></param>
-        /// <param name="action"></param>
-        /// <param name="extend"></param>
-        /// <returns></returns>
-        protected ActionResult PageResult<T, TResult>(IOrderedQueryable<T> query, Func<T, TResult> selector, Action<IEnumerable<T>>? action, object? extend)
-        {
-            long total = query.LongCount();
-            var items = query.PageBy(this.PageSize, this.LimitCount);
-            action?.Invoke(items);
-            return Ok(new
-            {
-                success = 1,
-                msg = "查询成功",
-                data = new
-                {
-                    items = items.AsEnumerable().Select(selector).ToList(),
-                    extend,
-                    total
-                }
-            });
-        }
+       
         protected ActionResult PageResult<T, TResult>(IOrderedQueryable<T> query, int page, int limit, Func<T, TResult> selector) => PageResult(query, page, limit, selector, null, null);
         protected ActionResult PageResult<T, TResult>(IOrderedQueryable<T> query, int page, int limit, Func<T, TResult> selector, object? extend = null) => PageResult(query, page, limit, selector, null, extend);
         protected ActionResult PageResult<T, TResult>(IOrderedQueryable<T> query, int page, int limit, Func<T, TResult> selector, Action<IEnumerable<T>>? action = null, object? extend = null)
@@ -97,12 +45,10 @@ namespace Simple.Web.Mvc
             var items = query.PageBy(page, limit);
             action?.Invoke(items);
             //string json = new PagedResult<TResult>(items.AsEnumerable().Select(selector).ToList(), total, extend).ToString();
-            //return Ok(json);
-
             return Ok(new
             {
                 success = 1,
-                msg = "查询成功",
+                msg = "操作成功",
                 data = new
                 {
                     items = items.AsEnumerable().Select(selector).ToList(),
