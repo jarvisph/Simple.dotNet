@@ -137,7 +137,7 @@ namespace Simple.Core.Extensions
             var dic = new Dictionary<string, List<EnumInfo>>();
             foreach (Type type in assembly.GetTypes().Where(c => c.IsEnum))
             {
-                string name = type.FullName;
+                string name = type.Name;
                 dic.Add(name, new List<EnumInfo>());
                 foreach (object item in Enum.GetValues(type))
                 {
