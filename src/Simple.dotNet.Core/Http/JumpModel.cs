@@ -9,7 +9,7 @@ namespace Simple.Core.Http
         /// <summary>
         /// 方法
         /// </summary>
-        public string Method { get; set; }
+        public string Method { get; set; } = "POST";
         /// <summary>
         /// 代理
         /// </summary>
