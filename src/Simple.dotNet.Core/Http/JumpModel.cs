@@ -17,7 +17,7 @@ namespace Simple.Core.Http
         /// <summary>
         /// 请求头
         /// </summary>
-        public Dictionary<string, string> Headers { get; set; }
+        public Dictionary<string, string> Headers { get; set; } = new Dictionary<string, string>();
         /// <summary>
         /// 请求类型
         /// </summary>
