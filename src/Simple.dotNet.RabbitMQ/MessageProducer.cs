@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using RabbitMQ.Client;
+using Simple.Core.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,12 +11,11 @@ namespace Simple.RabbitMQ
 {
     public interface IMessageProducer
     {
-        Task PublishAsync<T>(string queueName, T message);
+        Task SendAsync<T>(T message) where T : IMessageQueue;
         Task PublishBatchAsync<T>(string queueName, List<T> messages);
     }
-    public class NewtonsoftProducer : IMessageProducer, IAsyncDisposable
+    public class NewtonsoftProducer : RabbitConnection, IMessageProducer, IAsyncDisposable
     {
-        private readonly IConnection _connection;
         private readonly SemaphoreSlim _channelSemaphore;
         private readonly List<IChannel> _channels;
         private readonly Random _random = new();
@@ -23,7 +23,6 @@ namespace Simple.RabbitMQ
 
         public NewtonsoftProducer(IConnection connection)
         {
-            _connection = connection;
             _channelSemaphore = new SemaphoreSlim(10, 10);
             _channels = new List<IChannel>();
 
@@ -46,23 +45,25 @@ namespace Simple.RabbitMQ
             return _channels[_random.Next(_channels.Count)];
         }
 
-        public async Task PublishAsync<T>(string queueName, T message)
+        public async Task SendAsync<T>(T message) where T : IMessageQueue
         {
             await _channelSemaphore.WaitAsync();
             var channel = GetAvailableChannel();
 
             try
             {
+                ProducerAttribute exchange = typeof(T).GetAttribute<ProducerAttribute>();
+                if (exchange == null)
+                {
+                    Console.WriteLine($"Warning: Type {typeof(T).FullName} does not have a ProducerAttribute. Message will not be published.");
+                    return;
+                }
+                string exchangeName = exchange.Name;
                 // 声明队列
-                await channel.QueueDeclareAsync(
-                    queue: queueName,
-                    durable: true,
-                    exclusive: false,
-                    autoDelete: false);
+                await channel.ExchangeDeclareAsync(exchangeName, exchange.Type, true, false, null);
 
-                // 使用 JsonConvert.SerializeObject
-                var jsonStr = JsonConvert.SerializeObject(message);
-                var body = Encoding.UTF8.GetBytes(jsonStr);
+                var msg = JsonConvert.SerializeObject(message);
+                var body = Encoding.UTF8.GetBytes(msg);
 
                 var properties = new BasicProperties
                 {
@@ -72,16 +73,9 @@ namespace Simple.RabbitMQ
                     Timestamp = new AmqpTimestamp(DateTimeOffset.UtcNow.ToUnixTimeSeconds())
                 };
 
-                // 添加自定义头
-                properties.Headers = new Dictionary<string, object?>
-                {
-                    ["x-message-type"] = typeof(T).Name,
-                    ["x-serialize-type"] = "Newtonsoft.Json"
-                };
-
                 await channel.BasicPublishAsync(
-                    exchange: "",
-                    routingKey: queueName,
+                    exchange: exchangeName,
+                    routingKey: string.Empty,
                     mandatory: false,
                     basicProperties: properties,
                     body: body);
