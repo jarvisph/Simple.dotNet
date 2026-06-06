@@ -29,6 +29,7 @@ namespace Simple.Core.Extensions
         /// <returns>Converted object</returns>
         public static T ToValue<T>(this object obj)
         {
+            if (obj == null) return default(T);
             if (typeof(T) == typeof(Guid))
             {
                 if (obj == null)

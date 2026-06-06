@@ -11,14 +11,13 @@ namespace Simple.Core.Data
         /// 注册
         /// </summary>
         /// <param name="services"></param>
-        /// <param name="connectionString">数据库链接字符串</param>
         /// <returns>默认sqlserver</returns>
-        public static IServiceCollection AddSqlServer(this IServiceCollection services)
+        public static IServiceCollection AddMSSQL(this IServiceCollection services)
         {
             services.AddSingleton<ISqlServerConnectionProvider, SqlServerConnectionProvider>();
             return services;
         }
-        public static IServiceCollection AddSqlServer(this IServiceCollection services, string connectionString)
+        public static IServiceCollection AddMSSQL(this IServiceCollection services, string connectionString)
         {
             services.AddScoped<IWriteRepository>(opt => new SqlServerRepository(connectionString));
             services.AddScoped<IReadRepository>(opt => new SqlServerRepository(connectionString));
