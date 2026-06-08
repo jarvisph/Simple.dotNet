@@ -20,7 +20,9 @@ namespace Simple.RabbitMQ
         public static IServiceCollection AddRabbitMQ(this IServiceCollection services, string connection)
         {
             RabbitOption options = new RabbitOption(connection);
-            return services.AddRabbitMQ(options);
+            services.AddRabbitMQ(options);
+            services.AddSingleton<IMessageProducer, NewtonsoftProducer>();
+            return services;
         }
     }
 }

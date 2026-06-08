@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using RabbitMQ.Client;
+using Simple.Core.Dependency;
 using Simple.Core.Extensions;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Simple.RabbitMQ
 {
-    public interface IMessageProducer
+    public interface IMessageProducer 
     {
         Task SendAsync<T>(T message) where T : IMessageQueue;
         Task PublishBatchAsync<T>(string queueName, List<T> messages);
@@ -21,7 +22,7 @@ namespace Simple.RabbitMQ
         private readonly Random _random = new();
         private bool _disposed;
 
-        public NewtonsoftProducer(IConnection connection)
+        public NewtonsoftProducer()
         {
             _channelSemaphore = new SemaphoreSlim(10, 10);
             _channels = new List<IChannel>();

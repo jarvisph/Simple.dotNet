@@ -1,18 +1,17 @@
 ﻿using Microsoft.AspNetCore.Http;
-using System;
-using System.IO;
-using System.Net;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Linq;
-using System.Collections.Generic;
 using Microsoft.Extensions.Primitives;
-using Simple.Core.Helper;
 using Simple.Core.Domain.Enums;
+using Simple.Core.Http;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Reflection;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Web;
-using Simple.Core.Http;
 
 namespace Simple.Core.Extensions
 {
@@ -365,12 +364,11 @@ namespace Simple.Core.Extensions
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static string GetRequestInfo(this HttpContext context, Dictionary<string, string> dic = null)
+        public static string GetRequestInfo(this HttpContext context)
         {
             //没有使用代理服务器的情况返回空字符串
             if (context == null) return string.Empty;
             Dictionary<string, object> param = new Dictionary<string, object>();
-            param.Add("Url", context.Request.Path.ToString());
             param.Add("Headers", context.Request.Headers.Keys.ToDictionary(c => c, c => context.Request.Headers[c].ToString()));
             if (context.Request.HasFormContentType)
             {
@@ -379,17 +377,6 @@ namespace Simple.Core.Extensions
             else
             {
                 param.Add("Data", context.GetString());
-            }
-            if (context.User != null)
-            {
-                param.Add("Claims", context.User.Claims.ToDictionary(c => c.Type, c => c.Value));
-            }
-            if (dic != null)
-            {
-                foreach (var item in dic)
-                {
-                    param.Add(item.Key, item.Value);
-                }
             }
             return param.ToJson();
         }
@@ -445,14 +432,21 @@ namespace Simple.Core.Extensions
         /// <param name="context"></param>
         /// <param name="encoding"></param>
         /// <returns></returns>
-        public static string GetString(this HttpContext context, Encoding encoding = null)
+        public static string GetString(this HttpContext context)
         {
-            if (encoding == null) encoding = Encoding.UTF8;
-            byte[] data = context.GetData();
-            if (data == null) return null;
-            if (data.Length == 0) return context.Request.ContentLength.ToString();
-            if (data == null) return "null";
-            return encoding.GetString(data);
+            // 1. 启用缓冲，允许重新读取Body流，且支持同步/异步读取
+            context.Request.EnableBuffering();
+            // 2. 读取Body流内容
+            // 使用 LeaveOpen 参数为 true，确保读取完毕后不会关闭底层流
+            using (var reader = new StreamReader(
+                context.Request.Body,
+                encoding: Encoding.UTF8,
+                detectEncodingFromByteOrderMarks: false,
+                bufferSize: 1024,
+                leaveOpen: true))
+            {
+                return reader.ReadToEndAsync().Result;
+            }
         }
         /// <summary>
         /// 获取request 流
@@ -461,7 +455,6 @@ namespace Simple.Core.Extensions
         /// <returns></returns>
         public static byte[] GetData(this HttpContext context)
         {
-            if (context.Request.Method != "POST" || context.Request.ContentLength == null || context.Request.ContentLength == 0) return null;
             byte[] data = null;
             try
             {

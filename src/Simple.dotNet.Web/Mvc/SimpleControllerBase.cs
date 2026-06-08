@@ -25,7 +25,7 @@ namespace Simple.Web.Mvc
         {
             this.Logger = IocCollection.Resolve<ILogger>();
         }
-       
+
         /// <summary>
         /// 获取当前http上下文的语种
         /// </summary>
@@ -36,7 +36,7 @@ namespace Simple.Web.Mvc
                 return LanguageType.CHN;
             }
         }
-       
+
         protected ActionResult PageResult<T, TResult>(IOrderedQueryable<T> query, int page, int limit, Func<T, TResult> selector) => PageResult(query, page, limit, selector, null, null);
         protected ActionResult PageResult<T, TResult>(IOrderedQueryable<T> query, int page, int limit, Func<T, TResult> selector, object? extend = null) => PageResult(query, page, limit, selector, null, extend);
         protected ActionResult PageResult<T, TResult>(IOrderedQueryable<T> query, int page, int limit, Func<T, TResult> selector, Action<IEnumerable<T>>? action = null, object? extend = null)
@@ -87,7 +87,7 @@ namespace Simple.Web.Mvc
             return Ok(new
             {
                 success = success ? 1 : 0,
-                msg,
+                msg = string.IsNullOrWhiteSpace(msg) ? (success ? "操作成功" : "操作失败") : msg,
                 data = info
             });
         }

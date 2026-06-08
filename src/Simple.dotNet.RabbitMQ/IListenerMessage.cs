@@ -4,6 +4,7 @@ using Simple.Core.Dependency;
 using Simple.Core.Helper;
 using Simple.Core.Logger;
 using System;
+using System.Threading.Tasks;
 
 namespace Simple.RabbitMQ
 {
@@ -12,7 +13,7 @@ namespace Simple.RabbitMQ
     /// </summary>
     public interface IListenerMessage
     {
-        void Invoke(string message, object sender, BasicDeliverEventArgs args);
+        Task Invoke(string message, object sender, BasicDeliverEventArgs args);
         void Faild(string error, object sender, BasicDeliverEventArgs args);
     }
     public abstract class ListenerMessage<TMessageQueue> : IListenerMessage where TMessageQueue : IMessageQueue
@@ -27,23 +28,24 @@ namespace Simple.RabbitMQ
 
         }
 
-        public void Invoke(string message, object sender, BasicDeliverEventArgs args)
+        public Task Invoke(string message, object sender, BasicDeliverEventArgs args)
         {
             try
             {
 
-                if (string.IsNullOrEmpty(message)) return;
+                if (string.IsNullOrEmpty(message)) return Task.CompletedTask;
                 TMessageQueue? model = JsonConvert.DeserializeObject<TMessageQueue>(message);
-                if (model == null) return;
-                this.Invoke(model);
+                if (model == null) return Task.CompletedTask;
+                return this.Invoke(model);
 
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
                 ConsoleHelper.WriteLine(message, ConsoleColor.Red);
+                return Task.CompletedTask;
             }
         }
-        public abstract void Invoke(TMessageQueue message);
+        public abstract Task Invoke(TMessageQueue message);
     }
 }

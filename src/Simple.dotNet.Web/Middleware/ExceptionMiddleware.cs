@@ -31,6 +31,8 @@ namespace Simple.Web.Middleware
         }
         public virtual async Task Invoke(HttpContext context)
         {
+            // 启用请求内容缓冲，允许重复读取流
+            context.Request.EnableBuffering();
             try
             {
                 StopwatchHelper.StartTime();
