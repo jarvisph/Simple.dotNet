@@ -106,6 +106,10 @@ namespace Simple.Core.Http
             {
                 using (HttpClient client = new HttpClient())
                 {
+                    foreach (var header in headers)
+                    {
+                        client.DefaultRequestHeaders.TryAddWithoutValidation(header.Key, header.Value);
+                    }
                     message = client.PostAsync(url, content, cts.Token).Result;
                     return message.Content.ReadAsStringAsync().Result;
                 }
