@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Simple.Core.Dependency;
 using Simple.Core.Domain.Enums;
 using Simple.Core.Extensions;
 using Simple.Core.Helper;
-using Simple.Core.Http;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Simple.Core.Domain.Dto
 {
@@ -24,7 +22,7 @@ namespace Simple.Core.Domain.Dto
         }
         public Result(bool success, string message, object data)
         {
-            this.Success = success;
+            this.Success = success ? 1 : 0;
             this.Message = message;
             this.Data = data;
             this.Type = ContentType.JSON;
@@ -36,7 +34,7 @@ namespace Simple.Core.Domain.Dto
         /// <param name="data"></param>
         public Result(ContentType type, object data)
         {
-            this.Success = true;
+            this.Success = 1;
             this.Message = string.Empty;
             this.Data = data;
             this.Type = type;
@@ -45,16 +43,16 @@ namespace Simple.Core.Domain.Dto
         /// 是否成功
         /// </summary>
         [JsonProperty(PropertyName = "success")]
-        public bool Success;
+        public int Success;
         /// <summary>
         /// 提示消息
         /// </summary>
-        [JsonProperty(PropertyName = "msg")]
+        [JsonProperty(PropertyName = "message")]
         public string Message;
         /// <summary>
         /// 数据信息
         /// </summary>
-        [JsonProperty(PropertyName = "info")]
+        [JsonProperty(PropertyName = "data")]
         public object Data;
         /// <summary>
         /// 输出类型
@@ -67,7 +65,6 @@ namespace Simple.Core.Domain.Dto
             switch (this.Type)
             {
                 case ContentType.JSON:
-                    int success = this.Success ? 1 : 0;
                     if (this.Message.IsNullOrWhiteSpace())
                     {
                         HttpContext httpContext = Http.HttpContextAccessor.HttpContext;
@@ -77,10 +74,10 @@ namespace Simple.Core.Domain.Dto
                         }
                         else
                         {
-                         
+
                         }
                     }
-                    result = "{\"success\":" + success + ",\"msg\":\"" + this.Message + "\",\"info\":" + this.Data.ToJson(JsonSettings.JsonSerializerSettings()) + "}";
+                    result = JsonConvert.SerializeObject(this);
                     break;
                 case ContentType.Form:
                     break;
@@ -146,7 +143,7 @@ namespace Simple.Core.Domain.Dto
                 {
                     if (@enum.HasFlag(v)) list.Add(v.ToString());
                 }
-                writer.WriteRawValue($"[{ string.Join(",", list.Select(t => $"\"{t}\"")) }]");
+                writer.WriteRawValue($"[{string.Join(",", list.Select(t => $"\"{t}\""))}]");
             }
             else
             {
