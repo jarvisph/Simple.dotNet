@@ -28,14 +28,17 @@ namespace Simple.Core.Http
         {
             headers = new Dictionary<string, string>();
             string response;
-            using (HttpClient client = new HttpClient())
+            using (CancellationTokenSource cts = new CancellationTokenSource(jumpModel?.Proxy.Delay ?? TimeSpan.FromSeconds(10)))
             {
-                StringContent content = new StringContent(JsonConvert.SerializeObject(jumpModel), Encoding.UTF8, ContentType.JSON.GetDescription());
-                message = client.PostAsync(jumpUrl, content).Result;
-                response = message.Content.ReadAsStringAsync().Result;
-                headers = ConvertHeaders(message.Headers);
+                using (HttpClient client = new HttpClient())
+                {
+                    StringContent content = new StringContent(JsonConvert.SerializeObject(jumpModel), Encoding.UTF8, ContentType.JSON.GetDescription());
+                    message = client.PostAsync(jumpUrl, content).Result;
+                    response = message.Content.ReadAsStringAsync().Result;
+                    headers = ConvertHeaders(message.Headers);
+                }
+                return response;
             }
-            return response;
         }
         public static string Send(string jumpUrl, JumpModel jumpModel, HttpClientHandler handler, out HttpResponseMessage message, out Dictionary<string, string> headers)
         {
