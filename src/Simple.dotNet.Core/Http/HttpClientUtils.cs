@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Simple.Core.Http
 {
@@ -55,18 +56,14 @@ namespace Simple.Core.Http
 
             // 始终忽略证书验证（根据你的需求）
             handler.ServerCertificateCustomValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
-
-            if (setting.Type != ProxyType.NGINX)
+            string proxyURL = setting.GetProxyUrl();
+            WebProxy proxy = new()
             {
-                string proxyURL = setting.GetProxyUrl();
-                WebProxy proxy = new()
-                {
-                    Address = new Uri(proxyURL),
-                    Credentials = new NetworkCredential(setting.UserName, setting.Password)
-                };
-                handler.Proxy = proxy;
-                handler.UseProxy = true;
-            }
+                Address = new Uri(proxyURL),
+                Credentials = new NetworkCredential(setting.UserName, setting.Password)
+            };
+            handler.Proxy = proxy;
+            handler.UseProxy = true;
 
             return handler;
         }
@@ -92,6 +89,23 @@ namespace Simple.Core.Http
                 {
                     message = client.GetAsync(url, cts.Token).Result;
                     return message.Content.ReadAsStringAsync().Result;
+                }
+            }
+        }
+
+        public static async Task<string> PostAsync(string url, StringContent content, Dictionary<string, string> headers, ProxySetting proxy)
+        {
+            HttpClientHandler handler = CreateHttpClientHandler(proxy);
+            using (CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromSeconds(10)))
+            {
+                using (HttpClient client = new HttpClient(handler))
+                {
+                    foreach (var header in headers)
+                    {
+                        client.DefaultRequestHeaders.TryAddWithoutValidation(header.Key, header.Value);
+                    }
+                    HttpResponseMessage message = await client.PostAsync(url, content, cts.Token);
+                    return await message.Content.ReadAsStringAsync();
                 }
             }
         }

@@ -21,10 +21,6 @@ namespace Simple.Core.Domain.Model
         /// </summary>
         public int Port { get; set; }
         /// <summary>
-        /// 代理地址
-        /// </summary>
-        public string Proxy { get; set; }
-        /// <summary>
         /// 用户名（需要验证）
         /// </summary>
         public string UserName { get; set; }
@@ -48,21 +44,15 @@ namespace Simple.Core.Domain.Model
         {
             return Type switch
             {
-                ProxyType.NGINX => $"http://{this.Proxy}/?",
-                ProxyType.HTTP => $"http://{this.Proxy}",
-                ProxyType.SOCKS5 => $"socks5://{this.Proxy}",
-                _ => throw new Exception($"代理地址获取错误：{this.Proxy}"),
+                ProxyType.HTTP => $"http://{this.IP}:{this.Port}",
+                ProxyType.SOCKS5 => $"socks5://{this.IP}:{this.Port}",
+                _ => throw new Exception($"代理地址获取错误：{this.IP}"),
             };
         }
         public void GetProxyUrl(ref string url)
         {
             switch (Type)
             {
-                case ProxyType.NGINX:
-                    {
-                        url = $"http://{this.Proxy}/?{url.Trim()}";
-                    }
-                    break;
                 case ProxyType.HTTP:
                     break;
                 case ProxyType.HTTPS:
@@ -79,9 +69,9 @@ namespace Simple.Core.Domain.Model
         {
             return Type switch
             {
-                ProxyType.HTTP => $"http://{this.UserName}:{this.Password}@{this.Proxy}",
-                ProxyType.SOCKS5 => $"socks5://{this.UserName}:{this.Password}@{this.Proxy}",
-                ProxyType.FF => this.Proxy.Split(":")[0],
+                ProxyType.HTTP => $"http://{this.UserName}:{this.Password}@{this.IP}:{this.Port}",
+                ProxyType.SOCKS5 => $"socks5://{this.UserName}:{this.Password}@{this.IP}:{this.Port}",
+                ProxyType.FF => this.IP,
                 _ => "",
             };
         }
@@ -89,7 +79,7 @@ namespace Simple.Core.Domain.Model
         public bool Check()
         {
             if (this == null) return false;
-            if (string.IsNullOrWhiteSpace(Proxy))
+            if (string.IsNullOrWhiteSpace(this.IP))
             {
                 return false;
             }

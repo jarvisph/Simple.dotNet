@@ -80,8 +80,8 @@ namespace Simple.Core.Domain.Enums
     /// </summary>
     public enum ProxyType : byte
     {
-        [Description("NGINX")]
-        NGINX = 1,
+        //[Description("NGINX")]
+        //NGINX = 1,
         [Description("HTTP")]
         HTTP = 2,
         [Description("HTTPS")]
