@@ -80,6 +80,22 @@ namespace Simple.Core.Http
                 }
             }
         }
+        public static async Task<string> GetAsync(string url, Dictionary<string, string> headers, ProxySetting setting)
+        {
+            HttpClientHandler handler = CreateHttpClientHandler(setting);
+            using (CancellationTokenSource cts = new CancellationTokenSource(setting.Delay))
+            {
+                using (HttpClient client = new HttpClient(handler))
+                {
+                    foreach (var header in headers)
+                    {
+                        client.DefaultRequestHeaders.TryAddWithoutValidation(header.Key, header.Value);
+                    }
+                    var message = await client.GetAsync(url, cts.Token);
+                    return await message.Content.ReadAsStringAsync();
+                }
+            }
+        }
 
         public static string Get(string url, out HttpResponseMessage message)
         {
