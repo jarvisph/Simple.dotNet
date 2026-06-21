@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using Simple.Core.Domain.Dto.Page;
+using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Simple.Core.Domain.Dto.Page;
 
 namespace Simple.Core.Extensions
 {
@@ -63,28 +64,37 @@ namespace Simple.Core.Extensions
         /// <typeparam name="T"></typeparam>
         /// <param name="query"></param>
         /// <param name="field"></param>
-        /// <param name="type"></param>
+        /// <param name="order"></param>
         /// <returns></returns>
-        public static IQueryable<T> Sort<T>(this IQueryable<T> query, string field, string type)
+        public static IQueryable<T> Sort<T, TKey>(this IQueryable<T> query, Expression<Func<T, TKey>> expression, string field, string order)
         {
-            if (field.IsNullOrWhiteSpace() || type.IsNullOrWhiteSpace()) return query;
-            string sorting = string.Empty;
-            if (type.ToUpper().Trim() == "ASC")
-            {
-                sorting = "OrderBy";
-            }
-            else if (type.ToUpper().Trim() == "DESC")
-            {
-                sorting = "OrderByDescending";
-            }
-            ParameterExpression param = Expression.Parameter(typeof(T), field);
-            PropertyInfo property = typeof(T).GetProperty(field);
-            if (property == null) return query;
-            Type[] types = new Type[2];
-            types[0] = typeof(T);
-            types[1] = property.PropertyType;
-            Expression exp = Expression.Call(typeof(Queryable), sorting, types, query.Expression, Expression.Lambda(Expression.Property(param, field), param));
-            return query.AsQueryable().Provider.CreateQuery<T>(exp);
+            // 验证参数
+            if (string.IsNullOrWhiteSpace(field) || string.IsNullOrWhiteSpace(order))
+                return query.OrderByDescending(expression);
+
+            // 解析排序方向
+            var isAscending = order.Trim().Equals("ASC", StringComparison.OrdinalIgnoreCase);
+            var methodName = isAscending ? "OrderBy" : "OrderByDescending";
+
+            // 获取属性信息
+            var property = typeof(T).GetProperty(field, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+            if (property == null)
+                return query.OrderByDescending(expression);
+
+            // 构建表达式树
+            var parameter = Expression.Parameter(typeof(T), "x");
+            var propertyAccess = Expression.MakeMemberAccess(parameter, property);
+            var lambda = Expression.Lambda(propertyAccess, parameter);
+
+            // 调用排序方法
+            var resultExpression = Expression.Call(
+                typeof(Queryable),
+                methodName,
+                new[] { typeof(T), property.PropertyType },
+                query.Expression,
+                Expression.Quote(lambda));
+
+            return query.Provider.CreateQuery<T>(resultExpression);
         }
         /// <summary>
         /// 倒序
@@ -94,12 +104,11 @@ namespace Simple.Core.Extensions
         /// <param name="query"></param>
         /// <param name="expression"></param>
         /// <param name="field"></param>
-        /// <param name="type"></param>
+        /// <param name="order"></param>
         /// <returns></returns>
-        public static IOrderedQueryable<T> OrderByDescending<T, TKey>(this IQueryable<T> query, Expression<Func<T, TKey>> expression, string field, string type)
+        public static IOrderedQueryable<T> OrderByDescending<T, TKey>(this IQueryable<T> query, Expression<Func<T, TKey>> expression, string field, string order)
         {
-            if (field.IsNullOrWhiteSpace() || type.IsNullOrWhiteSpace()) return query.OrderByDescending(expression);
-            return (IOrderedQueryable<T>)query.Sort(field, type);
+            return (IOrderedQueryable<T>)query.Sort(expression, field, order);
         }
         /// <summary>
         /// 升序
@@ -111,10 +120,9 @@ namespace Simple.Core.Extensions
         /// <param name="field"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static IOrderedQueryable<T> OrderBy<T, TKey>(this IQueryable<T> query, Expression<Func<T, TKey>> expression, string field, string type)
+        public static IOrderedQueryable<T> OrderBy<T, TKey>(this IQueryable<T> query, Expression<Func<T, TKey>> expression, string field, string order)
         {
-            if (field.IsNullOrWhiteSpace() || type.IsNullOrWhiteSpace()) return query.OrderBy(expression);
-            return (IOrderedQueryable<T>)query.Sort(field, type);
+            return (IOrderedQueryable<T>)query.Sort(expression, field, order);
         }
     }
 }

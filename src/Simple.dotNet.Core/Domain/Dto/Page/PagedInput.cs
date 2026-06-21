@@ -13,5 +13,15 @@
         /// 最大显示记录数（默认10条）
         /// </summary>
         public virtual int Limit { get; set; } = 10;
+
+        /// <summary>
+        /// 排序类型
+        /// </summary>
+        public virtual string Order { get; set; }
+
+        /// <summary>
+        /// 排序字段
+        /// </summary>
+        public virtual string Field { get; set; }
     }
 }
