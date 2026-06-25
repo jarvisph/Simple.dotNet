@@ -80,6 +80,18 @@ namespace Simple.Core.Http
                 }
             }
         }
+
+        public static string Get(string url)
+        {
+            using (CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromSeconds(10)))
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    var message = client.GetAsync(url, cts.Token).Result;
+                    return message.Content.ReadAsStringAsync().Result;
+                }
+            }
+        }
         public static async Task<string> GetAsync(string url, Dictionary<string, string> headers, ProxySetting setting)
         {
             HttpClientHandler handler = CreateHttpClientHandler(setting);
@@ -132,6 +144,18 @@ namespace Simple.Core.Http
                 using (HttpClient client = new HttpClient())
                 {
                     message = client.PostAsync(url, content, cts.Token).Result;
+                    return message.Content.ReadAsStringAsync().Result;
+                }
+            }
+        }
+
+        public static string Post(string url, StringContent content, Dictionary<string, string> headers)
+        {
+            using (CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromSeconds(10)))
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    var message = client.PostAsync(url, content, cts.Token).Result;
                     return message.Content.ReadAsStringAsync().Result;
                 }
             }
