@@ -91,6 +91,18 @@ namespace Simple.Core.Http
             }
         }
 
+        public static string Get(string url)
+        {
+            using (CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromSeconds(10)))
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    var message = client.GetAsync(url, cts.Token).Result;
+                    return message.Content.ReadAsStringAsync().Result;
+                }
+            }
+        }
+
         public static string Post(string url, StringContent content, out HttpResponseMessage message)
         {
             using (CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromSeconds(10)))
