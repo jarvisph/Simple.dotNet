@@ -24,18 +24,14 @@ namespace Simple.Core.Http
             }
             return result;
         }
-        public static string Send(string jumpUrl, JumpModel jumpModel, out HttpResponseMessage message, out Dictionary<string, string> headers)
+        public static HttpResponseMessage Send(string jumpUrl, JumpModel jumpModel) => SendAsync(jumpUrl, jumpModel).Result;
+        public static async Task<HttpResponseMessage> SendAsync(string jumpUrl, JumpModel jumpModel)
         {
-            headers = new Dictionary<string, string>();
-            string response;
             using (HttpClient client = new HttpClient())
             {
                 StringContent content = new StringContent(JsonConvert.SerializeObject(jumpModel), Encoding.UTF8, ContentType.JSON.GetDescription());
-                message = client.PostAsync(jumpUrl, content).Result;
-                response = message.Content.ReadAsStringAsync().Result;
-                headers = ConvertHeaders(message.Headers);
+                return await client.PostAsync(jumpUrl, content);
             }
-            return response;
         }
         public static string Send(string jumpUrl, JumpModel jumpModel, HttpClientHandler handler, out HttpResponseMessage message, out Dictionary<string, string> headers)
         {
@@ -92,10 +88,13 @@ namespace Simple.Core.Http
                 }
             }
         }
-        public static string Get(string url, Dictionary<string, string> headers) => GetAsync(url, headers).Result;
-        public static async Task<string> GetAsync(string url, Dictionary<string, string> headers)
+        public static HttpResponseMessage Get(string url, Dictionary<string, string> headers) => GetAsync(url, headers).Result;
+        public static HttpResponseMessage Get(string url, Dictionary<string, string> headers, TimeSpan time) => GetAsync(url, headers, time).Result;
+
+        public static async Task<HttpResponseMessage> GetAsync(string url, Dictionary<string, string> headers) => await GetAsync(url, headers, TimeSpan.FromSeconds(10));
+        public static async Task<HttpResponseMessage> GetAsync(string url, Dictionary<string, string> headers, TimeSpan time)
         {
-            using (CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromSeconds(10)))
+            using (CancellationTokenSource cts = new CancellationTokenSource(time))
             {
                 using (HttpClient client = new HttpClient())
                 {
@@ -103,8 +102,7 @@ namespace Simple.Core.Http
                     {
                         client.DefaultRequestHeaders.TryAddWithoutValidation(header.Key, header.Value);
                     }
-                    var message = await client.GetAsync(url, cts.Token);
-                    return await message.Content.ReadAsStringAsync();
+                    return await client.GetAsync(url, cts.Token);
                 }
             }
         }
@@ -154,26 +152,14 @@ namespace Simple.Core.Http
                 }
             }
         }
-        public static string Post(string url, StringContent content, Dictionary<string, string> headers, out HttpResponseMessage message)
+        public static HttpResponseMessage Post(string url, StringContent content, Dictionary<string, string> headers) => Post(url, content, headers, TimeSpan.FromSeconds(10));
+        public static HttpResponseMessage Post(string url, StringContent content, Dictionary<string, string> headers, TimeSpan time)
         {
-            using (CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromSeconds(10)))
+            using (CancellationTokenSource cts = new CancellationTokenSource(time))
             {
                 using (HttpClient client = new HttpClient())
                 {
-                    message = client.PostAsync(url, content, cts.Token).Result;
-                    return message.Content.ReadAsStringAsync().Result;
-                }
-            }
-        }
-
-        public static string Post(string url, StringContent content, Dictionary<string, string> headers)
-        {
-            using (CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromSeconds(10)))
-            {
-                using (HttpClient client = new HttpClient())
-                {
-                    var message = client.PostAsync(url, content, cts.Token).Result;
-                    return message.Content.ReadAsStringAsync().Result;
+                    return client.PostAsync(url, content, cts.Token).Result;
                 }
             }
         }

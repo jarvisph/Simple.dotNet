@@ -41,7 +41,7 @@ namespace Simple.Core.Jobs
                         JobServiceBase service = (JobServiceBase)Activator.CreateInstance(type);
                         if (service != null)
                         {
-                            service.Start();
+                            service.Start(args);
                         }
                     });
                 }

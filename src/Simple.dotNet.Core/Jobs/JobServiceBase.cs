@@ -35,7 +35,7 @@ namespace Simple.Core.Jobs
         /// <summary>
         /// 开始任务
         /// </summary>
-        public void Start()
+        public void Start(string[] args)
         {
             while (Status)
             {
@@ -43,7 +43,7 @@ namespace Simple.Core.Jobs
                 Stopwatch.Start();
                 try
                 {
-                    this.Invoke();
+                    this.Invoke(args);
                 }
                 catch (Exception ex)
                 {
@@ -70,7 +70,7 @@ namespace Simple.Core.Jobs
         {
             this.Status = true;
         }
-        public abstract void Invoke();
+        public abstract void Invoke(string[] args);
 
         /// <summary>
         /// 分批执行操作
