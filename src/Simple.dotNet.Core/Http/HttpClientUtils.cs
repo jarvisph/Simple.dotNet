@@ -107,7 +107,7 @@ namespace Simple.Core.Http
             }
         }
 
-        public static async Task<string> GetAsync(string url, Dictionary<string, string> headers, ProxySetting setting)
+        public static async Task<HttpResponseMessage> GetAsync(string url, Dictionary<string, string> headers, ProxySetting setting)
         {
             HttpClientHandler handler = CreateHttpClientHandler(setting);
             using (CancellationTokenSource cts = new CancellationTokenSource(setting.Delay))
@@ -118,8 +118,7 @@ namespace Simple.Core.Http
                     {
                         client.DefaultRequestHeaders.TryAddWithoutValidation(header.Key, header.Value);
                     }
-                    var message = await client.GetAsync(url, cts.Token);
-                    return await message.Content.ReadAsStringAsync();
+                    return await client.GetAsync(url, cts.Token);
                 }
             }
         }
@@ -159,6 +158,10 @@ namespace Simple.Core.Http
             {
                 using (HttpClient client = new HttpClient())
                 {
+                    foreach (var header in headers)
+                    {
+                        client.DefaultRequestHeaders.TryAddWithoutValidation(header.Key, header.Value);
+                    }
                     return client.PostAsync(url, content, cts.Token).Result;
                 }
             }
