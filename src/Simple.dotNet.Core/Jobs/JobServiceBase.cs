@@ -1,5 +1,4 @@
 ﻿using Simple.Core.Dependency;
-using Simple.Core.Helper;
 using Simple.Core.Logger;
 using System;
 using System.Diagnostics;
