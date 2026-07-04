@@ -223,7 +223,16 @@ namespace Simple.Core.Helper
                 message = "长度超过限制";
                 return false;
             }
-            if (!Regex.IsMatch(content, @"[^\u4e00-\u9fa5_，,！!.。？?@“”()（）{}a-zA-Z0-9]"))
+            if (Regex.IsMatch(content, """
+                ['";=]|--|\/\*|\*\/|\\b(OR|AND)\\b
+                """))
+            {
+                message = $"存在非法字符  原文：{content}";
+                return false;
+            }
+            if (Regex.IsMatch(content, """
+                [<>"/'`]|javascript:|on\w+=|script
+                """))
             {
                 message = $"存在非法字符  原文：{content}";
                 return false;

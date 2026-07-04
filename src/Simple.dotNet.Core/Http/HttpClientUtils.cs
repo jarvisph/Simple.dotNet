@@ -64,10 +64,19 @@ namespace Simple.Core.Http
             return handler;
         }
 
-        public static HttpResponseMessage Get(string url, ProxySetting setting, Dictionary<string, string> headers)
+        private static HttpClientHandler CreateHttpClientHandler()
         {
-            HttpClientHandler handler = CreateHttpClientHandler(setting);
-            using (CancellationTokenSource cts = new CancellationTokenSource(setting.Delay))
+            HttpClientHandler handler = new HttpClientHandler();
+
+            // 始终忽略证书验证（根据你的需求）
+            handler.ServerCertificateCustomValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
+            return handler;
+        }
+
+        public static HttpResponseMessage Get(string url, ProxySetting proxy, Dictionary<string, string> headers)
+        {
+            HttpClientHandler handler = CreateHttpClientHandler(proxy);
+            using (CancellationTokenSource cts = new CancellationTokenSource(proxy.Delay))
             {
                 using (HttpClient client = new HttpClient(handler))
                 {
@@ -153,9 +162,10 @@ namespace Simple.Core.Http
         public static HttpResponseMessage Post(string url, StringContent content, Dictionary<string, string> headers) => Post(url, content, headers, TimeSpan.FromSeconds(10));
         public static HttpResponseMessage Post(string url, StringContent content, Dictionary<string, string> headers, TimeSpan time)
         {
+            HttpClientHandler handler = CreateHttpClientHandler();
             using (CancellationTokenSource cts = new CancellationTokenSource(time))
             {
-                using (HttpClient client = new HttpClient())
+                using (HttpClient client = new HttpClient(handler))
                 {
                     foreach (var header in headers)
                     {
