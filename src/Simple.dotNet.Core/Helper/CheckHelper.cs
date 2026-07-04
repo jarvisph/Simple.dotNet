@@ -218,9 +218,14 @@ namespace Simple.Core.Helper
                 message = "不能为空";
                 return false;
             }
-            if (!Regex.IsMatch(content, "^[\u4e00-\u9fa5_，,！!.。-？-?@“”()（）{}a-zA-Z0-9]{" + min + "," + max + "}"))
+            if (content.Length < min || content.Length > max)
             {
-                message = $"格式错误，存在非法字符，长度为{min}-{max}字符 原文：{content}";
+                message = "长度超过限制";
+                return false;
+            }
+            if (!Regex.IsMatch(content, @"[^\u4e00-\u9fa5_，,！!.。？?@“”()（）{}a-zA-Z0-9]"))
+            {
+                message = $"存在非法字符  原文：{content}";
                 return false;
             }
             return true;

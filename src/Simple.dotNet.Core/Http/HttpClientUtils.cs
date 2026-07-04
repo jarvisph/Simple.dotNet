@@ -64,15 +64,14 @@ namespace Simple.Core.Http
             return handler;
         }
 
-        public static string Get(string url, ProxySetting setting, out HttpResponseMessage message)
+        public static HttpResponseMessage Get(string url, ProxySetting setting, Dictionary<string, string> headers)
         {
             HttpClientHandler handler = CreateHttpClientHandler(setting);
             using (CancellationTokenSource cts = new CancellationTokenSource(setting.Delay))
             {
                 using (HttpClient client = new HttpClient(handler))
                 {
-                    message = client.GetAsync(url, cts.Token).Result;
-                    return message.Content.ReadAsStringAsync().Result;
+                    return client.GetAsync(url, cts.Token).Result;
                 }
             }
         }
