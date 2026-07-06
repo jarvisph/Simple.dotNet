@@ -22,14 +22,14 @@ namespace Simple.Core.Http
             int timeoutSeconds = 30,
             int maxRetries = 3,
             TimeSpan? retryDelay = null,
-            ProxySetting proxySetting = null,
-            Dictionary<string, string> defaultHeaders = null)
+            ProxySetting proxy = null,
+            Dictionary<string, string> headers = null)
         {
             _httpClient = new HighPerformanceHttpClient(
                 maxConcurrentRequests,
                 timeoutSeconds,
-                proxySetting,
-                defaultHeaders);
+                proxy,
+                headers);
 
             _maxRetries = maxRetries;
             _retryDelay = retryDelay ?? TimeSpan.FromSeconds(1);
