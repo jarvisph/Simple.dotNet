@@ -105,8 +105,8 @@ namespace Simple.Core.Http
         public static HttpResponseMessage Get(string url, Dictionary<string, string> headers) => GetAsync(url, headers).Result;
         public static HttpResponseMessage Get(string url, Dictionary<string, string> headers, TimeSpan time) => GetAsync(url, headers, time).Result;
 
-        public static Task<HttpResponseMessage> GetAsync(string url, Dictionary<string, string> headers) => GetAsync(url, headers, TimeSpan.FromSeconds(10));
-        public static Task<HttpResponseMessage> GetAsync(string url, Dictionary<string, string> headers, TimeSpan time)
+        public static async Task<HttpResponseMessage> GetAsync(string url, Dictionary<string, string> headers) => await GetAsync(url, headers, TimeSpan.FromSeconds(10));
+        public static async Task<HttpResponseMessage> GetAsync(string url, Dictionary<string, string> headers, TimeSpan time)
         {
             HttpClientHandler handler = CreateHttpClientHandler();
             using (CancellationTokenSource cts = new CancellationTokenSource(time))
@@ -117,12 +117,12 @@ namespace Simple.Core.Http
                     {
                         client.DefaultRequestHeaders.TryAddWithoutValidation(header.Key, header.Value);
                     }
-                    return client.GetAsync(url, cts.Token);
+                    return await client.GetAsync(url, cts.Token);
                 }
             }
         }
 
-        public static Task<HttpResponseMessage> GetAsync(string url, Dictionary<string, string> headers, ProxySetting setting)
+        public static async Task<HttpResponseMessage> GetAsync(string url, Dictionary<string, string> headers, ProxySetting setting)
         {
             HttpClientHandler handler = CreateHttpClientHandler(setting);
             using (CancellationTokenSource cts = new CancellationTokenSource(setting.Delay))
@@ -133,11 +133,12 @@ namespace Simple.Core.Http
                     {
                         client.DefaultRequestHeaders.TryAddWithoutValidation(header.Key, header.Value);
                     }
-                    return client.GetAsync(url, cts.Token);
+                    return await client.GetAsync(url, cts.Token);
                 }
             }
         }
-        public static Task<HttpResponseMessage> PostAsync(string url, StringContent content, Dictionary<string, string> headers)
+
+        public static async Task<HttpResponseMessage> PostAsync(string url, StringContent content, Dictionary<string, string> headers)
         {
             HttpClientHandler handler = CreateHttpClientHandler();
             using (CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromSeconds(10)))
@@ -148,12 +149,12 @@ namespace Simple.Core.Http
                     {
                         client.DefaultRequestHeaders.TryAddWithoutValidation(header.Key, header.Value);
                     }
-                    return client.PostAsync(url, content, cts.Token);
+                    return await client.PostAsync(url, content, cts.Token);
                 }
             }
         }
 
-        public static Task<HttpResponseMessage> PostAsync(string url, StringContent content, Dictionary<string, string> headers, ProxySetting proxy)
+        public static async Task<HttpResponseMessage> PostAsync(string url, StringContent content, Dictionary<string, string> headers, ProxySetting proxy)
         {
             HttpClientHandler handler = CreateHttpClientHandler(proxy);
             using (CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromSeconds(10)))
@@ -164,7 +165,7 @@ namespace Simple.Core.Http
                     {
                         client.DefaultRequestHeaders.TryAddWithoutValidation(header.Key, header.Value);
                     }
-                    return client.PostAsync(url, content, cts.Token);
+                    return await client.PostAsync(url, content);
                 }
             }
         }
