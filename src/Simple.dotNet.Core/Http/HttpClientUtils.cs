@@ -60,10 +60,6 @@ namespace Simple.Core.Http
             return response;
         }
 
-        public static Socks5HttpHandler CreateHttpClientSockt5Handler(ProxySetting proxy)
-        {
-            return new Socks5HttpHandler(proxy.IP, proxy.Port, proxy.UserName, proxy.Password);
-        }
         public static HttpClientHandler CreateHttpClientHandler(ProxySetting setting)
         {
             var handler = CreateHttpClientHandler();
@@ -80,7 +76,8 @@ namespace Simple.Core.Http
             return handler;
         }
 
-        private static HttpClientHandler CreateHttpClientHandler()
+
+        public static HttpClientHandler CreateHttpClientHandler()
         {
             HttpClientHandler handler = new HttpClientHandler();
             if (handler.SupportsAutomaticDecompression)
