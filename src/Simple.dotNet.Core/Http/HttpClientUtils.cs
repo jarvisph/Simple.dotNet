@@ -59,9 +59,13 @@ namespace Simple.Core.Http
             }
             return response;
         }
+
+        public static Socks5HttpHandler CreateHttpClientSockt5Handler(ProxySetting proxy)
+        {
+            return new Socks5HttpHandler(proxy.IP, proxy.Port, proxy.UserName, proxy.Password);
+        }
         public static HttpClientHandler CreateHttpClientHandler(ProxySetting setting)
         {
-
             var handler = CreateHttpClientHandler();
 
             string proxyURL = setting.GetProxyUrl();
@@ -81,7 +85,7 @@ namespace Simple.Core.Http
             HttpClientHandler handler = new HttpClientHandler();
             if (handler.SupportsAutomaticDecompression)
             {
-                handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli;
+                handler.AutomaticDecompression = DecompressionMethods.All;
             }
             // 始终忽略证书验证（根据你的需求）
             handler.ServerCertificateCustomValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
