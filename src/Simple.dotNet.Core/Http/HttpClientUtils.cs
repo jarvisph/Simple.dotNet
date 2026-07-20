@@ -3,6 +3,7 @@ using Simple.Core.Domain.Enums;
 using Simple.Core.Domain.Model;
 using Simple.Core.Extensions;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -15,6 +16,78 @@ namespace Simple.Core.Http
 {
     public static class HttpClientUtils
     {
+
+        /// <summary>
+        /// HttpClient缓存池，按代理配置区分
+        /// </summary>
+        private static readonly ConcurrentDictionary<string, HttpClient> _httpClientCache = new();
+
+        /// <summary>
+        /// 规范化代理缓存键
+        /// </summary>
+        private static string NormalizeProxyKey(ProxySetting proxy)
+        {
+            if (proxy == null) return "default";
+            // 使用最小必要字段作为缓存键，避免因为无关字段导致无限增长
+            string proxyHost = string.IsNullOrEmpty(proxy.Format) ? "noProxy" : proxy.Format;
+            int allowRedirect = proxy.AllowAutoRedirect ? 1 : 0;
+            return $"{proxyHost}|{allowRedirect}";
+        }
+
+        /// <summary>
+        /// 创建支持SSL的HttpClient
+        /// </summary>
+        public static HttpClient GetSslEnabledHttpClient(ProxySetting proxy)
+        {
+            string cacheKey = NormalizeProxyKey(proxy);
+
+            return _httpClientCache.GetOrAdd(cacheKey, _ =>
+            {
+                var handler = new SocketsHttpHandler
+                {
+                    // 忽略SSL证书验证错误（按需使用，生产环境要谨慎）
+                    SslOptions = new System.Net.Security.SslClientAuthenticationOptions
+                    {
+                        RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
+                    },
+
+                    // 支持自动解压缩
+                    AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli,
+
+                    // 允许重定向
+                    AllowAutoRedirect = proxy?.AllowAutoRedirect ?? true,
+                    MaxAutomaticRedirections = 10,
+
+                    // 连接池设置：适当缩短 PooledConnectionLifetime，避免 DNS/后端变更导致长期失效的连接
+                    PooledConnectionLifetime = TimeSpan.FromMinutes(1),
+                    PooledConnectionIdleTimeout = TimeSpan.FromMinutes(1),
+                    MaxConnectionsPerServer = 100
+                };
+
+                // 配置代理（仅当提供 proxy.Proxy 时）
+                if (proxy != null && !string.IsNullOrEmpty(proxy.Format))
+                {
+                    handler.Proxy = new WebProxy
+                    {
+                        Address = new Uri(proxy.Format),
+                        BypassProxyOnLocal = false,
+                        UseDefaultCredentials = false
+                    };
+
+                    if (!string.IsNullOrEmpty(proxy.UserName) && !string.IsNullOrEmpty(proxy.Password))
+                    {
+                        handler.Proxy.Credentials = new NetworkCredential(proxy.UserName, proxy.Password);
+                    }
+                }
+
+                var timeout = proxy?.Delay > TimeSpan.Zero ? proxy.Delay : TimeSpan.FromSeconds(30);
+                return new HttpClient(handler)
+                {
+                    Timeout = timeout
+                };
+            });
+        }
+
         public static async Task<string> ReadWithCorrectEncoding(HttpResponseMessage response)
         {
             // 1. 先拿原始字节（此时已经解压完成）
@@ -106,7 +179,7 @@ namespace Simple.Core.Http
         public static HttpResponseMessage Get(string url, Dictionary<string, string> headers) => GetAsync(url, headers).Result;
         public static HttpResponseMessage Get(string url, Dictionary<string, string> headers, TimeSpan time) => GetAsync(url, headers, time).Result;
 
-        public static async Task<HttpResponseMessage> GetAsync(string url, Dictionary<string, string> headers) => await GetAsync(url, headers, TimeSpan.FromSeconds(10));
+        public static async Task<HttpResponseMessage> GetAsync(string url, Dictionary<string, string> headers) => await GetAsync(url, headers, TimeSpan.FromSeconds(30));
         public static async Task<HttpResponseMessage> GetAsync(string url, Dictionary<string, string> headers, TimeSpan time)
         {
             HttpClientHandler handler = CreateHttpClientHandler();
@@ -170,7 +243,7 @@ namespace Simple.Core.Http
                 }
             }
         }
-        public static HttpResponseMessage Post(string url, StringContent content, Dictionary<string, string> headers) => Post(url, content, headers, TimeSpan.FromSeconds(10));
+        public static HttpResponseMessage Post(string url, StringContent content, Dictionary<string, string> headers) => Post(url, content, headers, TimeSpan.FromSeconds(30));
         public static HttpResponseMessage Post(string url, StringContent content, Dictionary<string, string> headers, TimeSpan time)
         {
             HttpClientHandler handler = CreateHttpClientHandler();
