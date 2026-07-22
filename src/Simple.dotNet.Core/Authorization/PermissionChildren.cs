@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 
 namespace Simple.Core.Authorization
@@ -14,13 +13,20 @@ namespace Simple.Core.Authorization
         /// </summary>
         public string Name { get; set; }
         /// <summary>
-        /// 描述
+        /// 路径
         /// </summary>
-        public string DisplayName { get; set; }
+        public string Path { get; set; }
+
+        /// <summary>
+        /// 组件
+        /// </summary>
+        public string Component { get; set; }
+
         /// <summary>
         /// 权限类型
         /// </summary>
         public PermissionType Type { get; set; }
+
         /// <summary>
         /// 自定义属性
         /// </summary>
@@ -29,19 +35,21 @@ namespace Simple.Core.Authorization
         /// 子级
         /// </summary>
         public IReadOnlyList<PermissionChildren> Children => _children.ToImmutableList();
+
         private readonly List<PermissionChildren> _children;
-        public PermissionChildren(string name, string displayName) : this(name, displayName, PermissionType.Action, null)
+        public PermissionChildren(string name, string path) : this(name, path, null, PermissionType.Action, null)
         {
 
         }
-        public PermissionChildren(string name, string displayName, PermissionMeta meta) : this(name, displayName, PermissionType.Memu, meta)
+        public PermissionChildren(string name, string path, string component, PermissionMeta meta) : this(name, path, component, PermissionType.Memu, meta)
         {
 
         }
-        public PermissionChildren(string name, string displayName, PermissionType type, PermissionMeta meta)
+        public PermissionChildren(string name, string path, string component, PermissionType type, PermissionMeta meta)
         {
             this.Name = name;
-            this.DisplayName = displayName;
+            this.Path = path;
+            this.Component = component;
             this.Type = type;
             this.Meta = meta;
             _children = new List<PermissionChildren>();
@@ -52,20 +60,20 @@ namespace Simple.Core.Authorization
         /// <param name="name"></param>
         /// <param name="displayName"></param>
         /// <returns></returns>
-        public PermissionChildren CreateChildPermission(string name, string displayName)
+        public PermissionChildren CreateChildPermission(string name, string path)
         {
-            return this.CreateChildPermission(name, displayName, PermissionType.Action, null);
+            return this.CreateChildPermission(name, path, path, PermissionType.Action, null);
         }
         /// <summary>
         /// 创建层级关系（默认权限类型：Menu）
         /// </summary>
         /// <param name="name"></param>
-        /// <param name="displayName"></param>
+        /// <param name="path"></param>
         /// <param name="meta"></param>
         /// <returns></returns>
-        public PermissionChildren CreateChildPermission(string name, string displayName, PermissionMeta meta)
+        public PermissionChildren CreateChildPermission(string name, string path, PermissionMeta meta)
         {
-            return this.CreateChildPermission(name, displayName, PermissionType.Memu, meta);
+            return this.CreateChildPermission(name, path, path, PermissionType.Memu, meta);
         }
         /// <summary>
         /// 创建层级关系
@@ -75,9 +83,9 @@ namespace Simple.Core.Authorization
         /// <param name="type"></param>
         /// <param name="meta"></param>
         /// <returns></returns>
-        public PermissionChildren CreateChildPermission(string name, string displayName, PermissionType type, PermissionMeta meta)
+        public PermissionChildren CreateChildPermission(string name, string path, string component, PermissionType type, PermissionMeta meta)
         {
-            var permission = new PermissionChildren(name, displayName, type, meta);
+            var permission = new PermissionChildren(name, path, component, type, meta);
             _children.Add(permission);
             return permission;
         }

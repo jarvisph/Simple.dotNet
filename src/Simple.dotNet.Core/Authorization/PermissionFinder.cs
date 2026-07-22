@@ -62,7 +62,8 @@ namespace Simple.Core.Authorization
             if (description == null)
             {
                 return permission;
-            };
+            }
+            ;
             return description.Description;
         }
     }
@@ -88,7 +89,7 @@ namespace Simple.Core.Authorization
             {
                 if (permissions.Contains(item.Key) && item.Value.Type == PermissionType.Memu)
                 {
-                    permission.Add(item.Key, this.GetMemuFitler(item.Value, new PermissionChildren(item.Value.Name, item.Value.DisplayName, item.Value.Type, item.Value.Meta), permissions));
+                    permission.Add(item.Key, this.GetMemuFitler(item.Value, new PermissionChildren(item.Value.Name, item.Value.Path, item.Value.Component, item.Value.Type, item.Value.Meta), permissions));
                 }
             }
             return permission.Values.ToImmutableList();
@@ -99,7 +100,7 @@ namespace Simple.Core.Authorization
             {
                 if (permissions.Contains(item.Name) && item.Type == PermissionType.Memu)
                 {
-                    this.GetMemuFitler(item, children.CreateChildPermission(item.Name, item.DisplayName, item.Type, item.Meta), permissions);
+                    this.GetMemuFitler(item, children.CreateChildPermission(item.Name, item.Path, item.Component, item.Type, item.Meta), permissions);
                 }
             }
             return children;
