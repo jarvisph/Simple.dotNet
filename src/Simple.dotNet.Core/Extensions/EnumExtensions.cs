@@ -20,6 +20,7 @@ namespace Simple.Core.Extensions
         {
             public string Name { get; set; }
             public int Value { get; set; }
+            public string Label { get; set; }
             public string Description { get; set; }
         }
         /// <summary>
@@ -148,6 +149,7 @@ namespace Simple.Core.Extensions
                     {
                         Name = enum_name,
                         Description = enum_description,
+                        Label = enum_description,
                         Value = enum_value
                     });
                 }
