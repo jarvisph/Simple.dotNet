@@ -22,6 +22,12 @@ namespace Simple.MongoDB
             collection.InsertOne(document);
             return true;
         }
+        public static bool Insert<TDocument>(this IMongoDatabase db, List<TDocument> documents)
+        {
+            IMongoCollection<TDocument> collection = db.GetCollection<TDocument>();
+            collection.InsertMany(documents);
+            return true;
+        }
         public static bool Insert<TDocument>(this IMongoDatabase db, IEnumerable<TDocument> document)
         {
             IMongoCollection<TDocument> collection = db.GetCollection<TDocument>();
