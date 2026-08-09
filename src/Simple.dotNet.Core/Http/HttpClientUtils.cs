@@ -101,7 +101,7 @@ namespace Simple.Core.Http
 
             return encoding.GetString(bytes);
         }
-        private static Dictionary<string, string> ConvertHeaders(HttpResponseHeaders headers)
+        public static Dictionary<string, string> ConvertHeaders(HttpResponseHeaders headers)
         {
             var result = new Dictionary<string, string>();
             foreach (var header in headers)
