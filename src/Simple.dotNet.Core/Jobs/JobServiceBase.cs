@@ -25,7 +25,6 @@ namespace Simple.Core.Jobs
         /// </summary>
         private bool Status = true;
 
-        public Stopwatch Stopwatch { get; set; } = new Stopwatch();
         public ILogger Logger { get; }
 
         public JobServiceBase()
@@ -39,11 +38,9 @@ namespace Simple.Core.Jobs
         {
             while (Status)
             {
-                Stopwatch.Restart();
-                Stopwatch.Start();
                 try
                 {
-                    this.Invoke(args);
+                    this.InvokeAsync(args).GetAwaiter().GetResult();
                 }
                 catch (Exception ex)
                 {
@@ -56,21 +53,8 @@ namespace Simple.Core.Jobs
                 }
             }
         }
-        /// <summary>
-        /// 停止任务
-        /// </summary>
-        public void End()
-        {
-            this.Status = false;
-        }
-        /// <summary>
-        /// 重启任务
-        /// </summary>
-        public void Reset()
-        {
-            this.Status = true;
-        }
-        public abstract void Invoke(string[] args);
+
+        public abstract Task InvokeAsync(string[] args);
 
         /// <summary>
         /// 分批执行操作
