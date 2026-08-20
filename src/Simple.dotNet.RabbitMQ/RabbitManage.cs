@@ -20,10 +20,10 @@ namespace Simple.RabbitMQ
         /// <typeparam name="TMessageQueue"></typeparam>
         /// <param name="message"></param>
         /// <exception cref="RabbitException"></exception>
-        public static void Send<TMessageQueue>(this TMessageQueue message) where TMessageQueue : IMessageQueue
+        public static Task SendAsync<TMessageQueue>(this TMessageQueue message) where TMessageQueue : IMessageQueue
         {
             IMessageProducer producer = IocCollection.Resolve<IMessageProducer>();
-            producer.SendAsync(message).ConfigureAwait(false);
+            return producer.SendAsync(message);
         }
 
         public static void Consumer(string[] args)

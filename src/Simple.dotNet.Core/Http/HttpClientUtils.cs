@@ -212,10 +212,10 @@ namespace Simple.Core.Http
             }
         }
 
-        public static async Task<HttpResponseMessage> PostAsync(string url, StringContent content, Dictionary<string, string> headers)
+        public static async Task<HttpResponseMessage> PostAsync(string url, StringContent content, Dictionary<string, string> headers, TimeSpan time)
         {
             HttpClientHandler handler = CreateHttpClientHandler();
-            using (CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromSeconds(10)))
+            using (CancellationTokenSource cts = new CancellationTokenSource(time))
             {
                 using (HttpClient client = new HttpClient(handler))
                 {
