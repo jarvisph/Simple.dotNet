@@ -43,7 +43,7 @@ namespace Simple.Core.SensitiveWord
         static SensitiveWord()
         {
             // 一次性加载
-            _search = LoadFromMultipleFiles(new[] { "COVID-19词库.txt", "GFW补充词库.txt", "暴恐词库.txt", "补充词库.txt", "反动词库.txt", "非法网址.txt", "广告类型.txt", "零时-Tencent.txt", "民生词库.txt", "其他词库.txt", "色情词库.txt", "色情类型.txt", "涉枪涉爆.txt", "贪腐词库.txt", "网易前端过滤敏感词库.txt", "新思想启蒙.txt", "政治类型.txt" });
+            _search = LoadFromMultipleFiles(new[] { /*"COVID-19词库.txt", "GFW补充词库.txt", */"暴恐词库.txt",/* "补充词库.txt", "反动词库.txt", "非法网址.txt", "广告类型.txt", "零时-Tencent.txt", "民生词库.txt", "其他词库.txt",*/ "色情词库.txt", "色情类型.txt", "涉枪涉爆.txt", "贪腐词库.txt", /*"网易前端过滤敏感词库.txt", */"新思想启蒙.txt", "政治类型.txt" });
         }
 
         public static bool Search(string input)
