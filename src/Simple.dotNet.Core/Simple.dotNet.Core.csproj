@@ -18,47 +18,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="SensitiveWord\COVID-19词库.txt" />
-    <None Remove="SensitiveWord\GFW补充词库.txt" />
-    <None Remove="SensitiveWord\其他词库.txt" />
-    <None Remove="SensitiveWord\反动词库.txt" />
-    <None Remove="SensitiveWord\广告类型.txt" />
-    <None Remove="SensitiveWord\政治类型.txt" />
-    <None Remove="SensitiveWord\新思想启蒙.txt" />
-    <None Remove="SensitiveWord\暴恐词库.txt" />
-    <None Remove="SensitiveWord\民生词库.txt" />
-    <None Remove="SensitiveWord\涉枪涉爆.txt" />
-    <None Remove="SensitiveWord\网易前端过滤敏感词库.txt" />
-    <None Remove="SensitiveWord\色情类型.txt" />
-    <None Remove="SensitiveWord\色情词库.txt" />
-    <None Remove="SensitiveWord\补充词库.txt" />
-    <None Remove="SensitiveWord\贪腐词库.txt" />
-    <None Remove="SensitiveWord\零时-Tencent.txt" />
-    <None Remove="SensitiveWord\非法网址.txt" />
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <EmbeddedResource Include="SensitiveWord\COVID-19词库.txt" />
-    <EmbeddedResource Include="SensitiveWord\GFW补充词库.txt" />
-    <EmbeddedResource Include="SensitiveWord\其他词库.txt" />
-    <EmbeddedResource Include="SensitiveWord\反动词库.txt" />
-    <EmbeddedResource Include="SensitiveWord\广告类型.txt" />
-    <EmbeddedResource Include="SensitiveWord\政治类型.txt" />
-    <EmbeddedResource Include="SensitiveWord\新思想启蒙.txt" />
-    <EmbeddedResource Include="SensitiveWord\暴恐词库.txt" />
-    <EmbeddedResource Include="SensitiveWord\民生词库.txt" />
-    <EmbeddedResource Include="SensitiveWord\涉枪涉爆.txt" />
-    <EmbeddedResource Include="SensitiveWord\网易前端过滤敏感词库.txt" />
-    <EmbeddedResource Include="SensitiveWord\色情类型.txt" />
-    <EmbeddedResource Include="SensitiveWord\色情词库.txt" />
-    <EmbeddedResource Include="SensitiveWord\补充词库.txt" />
-    <EmbeddedResource Include="SensitiveWord\贪腐词库.txt" />
-    <EmbeddedResource Include="SensitiveWord\零时-Tencent.txt" />
-    <EmbeddedResource Include="SensitiveWord\非法网址.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="GoogleAuthenticator" Version="3.3.0-beta1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.15" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.15" />
