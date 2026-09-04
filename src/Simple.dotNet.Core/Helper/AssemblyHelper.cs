@@ -34,7 +34,7 @@ namespace Simple.Core.Helper
             {
                 foreach (var item in assembly.GetEnums())
                 {
-                    dic.Add(item.Key, item.Value);
+                    dic.TryAdd(item.Key, item.Value);
                 }
             }
             return dic;
