@@ -139,14 +139,14 @@ namespace Simple.Core.Extensions
             foreach (Type type in assembly.GetTypes().Where(c => c.IsEnum))
             {
                 string name = type.Name;
-                dic.Add(name, new List<EnumInfo>());
+                dic.TryAdd(name, new List<EnumInfo>());
                 foreach (object item in Enum.GetValues(type))
                 {
                     string enum_name = item.ToString();
                     string enum_description = ((Enum)item).GetDescription();
                     int enum_value = item.ToValue<int>();
                     dic[name].Add(new EnumInfo
-                    {
+                    {   
                         Name = enum_name,
                         Description = enum_description,
                         Label = enum_description,
