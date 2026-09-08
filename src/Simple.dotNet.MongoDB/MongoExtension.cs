@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace Simple.MongoDB
 {
@@ -39,6 +40,12 @@ namespace Simple.MongoDB
         {
             IMongoCollection<TDocument> collection = db.GetCollection<TDocument>();
             DeleteResult result = collection.DeleteMany(expression);
+            return result.DeletedCount;
+        }
+        public static async Task<long> DeleteAsync<TDocument>(this IMongoDatabase db, Expression<Func<TDocument, bool>> expression)
+        {
+            IMongoCollection<TDocument> collection = db.GetCollection<TDocument>();
+            DeleteResult result = await collection.DeleteManyAsync(expression);
             return result.DeletedCount;
         }
         public static bool Update<TDocument>(this IMongoDatabase db, TDocument document, Expression<Func<TDocument, object>> fields, Expression<Func<TDocument, bool>> where)
