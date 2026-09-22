@@ -23,6 +23,12 @@ namespace Simple.MongoDB
             collection.InsertOne(document);
             return true;
         }
+
+        public static Task InsertAsync<TDocument>(this IMongoDatabase db, TDocument document)
+        {
+            IMongoCollection<TDocument> collection = db.GetCollection<TDocument>();
+            return collection.InsertOneAsync(document);
+        }
         public static bool Insert<TDocument>(this IMongoDatabase db, List<TDocument> documents)
         {
             IMongoCollection<TDocument> collection = db.GetCollection<TDocument>();

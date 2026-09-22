@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
+using Simple.Core.Domain.Model;
 using Simple.Core.Extensions;
 using Simple.Core.Http;
 using System.Net;
 using System.Net.Sockets;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Simple.Core.Helper
 {
@@ -76,6 +78,31 @@ namespace Simple.Core.Helper
         public static bool IsIpAddress(string ip)
         {
             return IPRegex.IsMatch(ip);
+        }
+
+        /// <summary>
+        /// 检测代理是否可用（TCP连通性检测），可用于检测尚未录入数据库的代理配置
+        /// </summary>
+        /// <param name="proxy">代理配置（仅需要 IP、Port，无需已保存到数据库）</param>
+        /// <param name="timeout">超时时间，默认5秒</param>
+        /// <returns></returns>
+        public static async Task<bool> CheckProxyAsync(ProxySetting proxy, TimeSpan? timeout = null)
+        {
+            if (proxy == null || !proxy.Check()) return false;
+            try
+            {
+                using (TcpClient client = new TcpClient())
+                {
+                    Task connectTask = client.ConnectAsync(proxy.IP, proxy.Port);
+                    Task completed = await Task.WhenAny(connectTask, Task.Delay(timeout ?? TimeSpan.FromSeconds(5)));
+                    if (completed != connectTask || !client.Connected) return false;
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
+            }
         }
         /// <summary>
         /// 本地缓存库
