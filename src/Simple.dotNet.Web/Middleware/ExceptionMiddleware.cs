@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using Simple.Core.Authorization;
 using Simple.Core.Dependency;
-using Simple.Core.Domain.Dto;
+using Simple.Core.Domain;
 using Simple.Core.Domain.Enums;
 using Simple.Core.Extensions;
 using Simple.Core.Helper;
@@ -62,7 +63,7 @@ namespace Simple.Web.Middleware
             Console.WriteLine(exception);
             if (exception is MessageException)
             {
-                return context.Response.WriteAsync(new Result(false, exception.Message).ToString());
+                return context.Response.WriteAsync(JsonConvert.SerializeObject(new JsonResult() { Message = exception.Message, Success = false, Code = 500 }));
             }
             else if (exception is AuthorizationException)
             {
@@ -72,7 +73,7 @@ namespace Simple.Web.Middleware
             else
             {
                 _logger?.Error(guid, context, exception);
-                return context.Response.WriteAsync(new Result(false, guid.ToString("N")).ToString());
+                return context.Response.WriteAsync(JsonConvert.SerializeObject(new JsonResult() { Message = exception.Message, Success = false, Code = 500, Data = new { ErrorId = guid } }));
             }
         }
     }

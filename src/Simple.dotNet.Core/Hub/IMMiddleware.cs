@@ -10,6 +10,8 @@ using Simple.Core.Domain.Dto;
 using Simple.Core.Domain.Enums;
 using Simple.Core.Extensions;
 using Simple.Core.Helper;
+using Newtonsoft.Json;
+using Simple.Core.Domain;
 
 namespace Simple.Core.Hub
 {
@@ -49,7 +51,7 @@ namespace Simple.Core.Hub
                 {
                     context.Response.StatusCode = 500;
                     context.Response.ContentType = ContentType.JSON.GetDescription();
-                    await context.Response.WriteAsync(new Result(false, ex.Message).ToString());
+                    await context.Response.WriteAsync(JsonConvert.SerializeObject(new JsonResult() { Success = false, Message = ex.Message, Code = 500 }));
                 }
                 return;
             }
