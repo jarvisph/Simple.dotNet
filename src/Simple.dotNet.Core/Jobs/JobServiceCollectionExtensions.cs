@@ -1,11 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Simple.Core.Extensions;
+using Simple.Core.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Simple.Core.Helper;
-using Simple.Core.Extensions;
 
 namespace Simple.Core.Jobs
 {
@@ -17,9 +16,9 @@ namespace Simple.Core.Jobs
         /// <summary>
         /// 注入定时任务
         /// </summary>
-        /// <param name="service"></param>
+        /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddJob(this IServiceCollection services, string[] args = null)
+        public static IServiceCollection AddJob(this IServiceCollection services, string[] args)
         {
             foreach (var assemblie in AssemblyHelper.GetAssemblies())
             {

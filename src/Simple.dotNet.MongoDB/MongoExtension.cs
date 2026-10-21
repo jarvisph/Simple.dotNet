@@ -29,6 +29,11 @@ namespace Simple.MongoDB
             IMongoCollection<TDocument> collection = db.GetCollection<TDocument>();
             return collection.InsertOneAsync(document);
         }
+        public static async Task InsertManyAsync<TDocument>(this IMongoDatabase db, IEnumerable<TDocument> documents)
+        {
+            IMongoCollection<TDocument> collection = db.GetCollection<TDocument>();
+            await collection.InsertManyAsync(documents);
+        }
         public static bool Insert<TDocument>(this IMongoDatabase db, List<TDocument> documents)
         {
             IMongoCollection<TDocument> collection = db.GetCollection<TDocument>();

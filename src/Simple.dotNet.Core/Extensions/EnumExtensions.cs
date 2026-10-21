@@ -156,6 +156,14 @@ namespace Simple.Core.Extensions
             }
             return dic;
         }
+
+        public static T[] GetFlags<T>(this T value) where T : Enum
+        {
+            return Enum.GetValues(typeof(T))
+                .Cast<T>()
+                .Where(flag => !flag.Equals(default(T)) && value.HasFlag(flag))
+                .ToArray();
+        }
         /// <summary>
         /// 枚举的备注信息缓存
         /// </summary>

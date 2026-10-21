@@ -1,9 +1,10 @@
-﻿using StackExchange.Redis;
+﻿using Simple.Core.Extensions;
+using StackExchange.Redis;
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Collections.Generic;
-using Simple.Core.Extensions;
 
 namespace Simple.Redis
 {
@@ -196,64 +197,66 @@ namespace Simple.Redis
         }
 
         /// <summary>
-        /// redis哈希数组转结构体（反射赋值性能有所耗损）
+        /// 缓存：属性信息（public、实例、可写、非索引器、非静态）
         /// </summary>
-        /// <typeparam name="TStruct"></typeparam>
-        /// <param name="hash"></param>
-        /// <returns></returns>
-        public static TStruct GetReidsHashValue<TStruct>(this HashEntry[] hash) where TStruct : struct
-        {
-            object itme = Activator.CreateInstance<TStruct>();
-            Dictionary<string, RedisValue> values = new Dictionary<string, RedisValue>();
-            foreach (HashEntry item in hash)
-            {
-                values.Add(item.Name, item.Value);
-            }
-            if (values.Count == 0) return (TStruct)itme;
+        private static readonly ConcurrentDictionary<Type, PropertyInfo[]> _propertyCache = new();
 
-            FieldInfo[] fields = typeof(TStruct).GetFields();
-            foreach (FieldInfo field in fields)
-            {
-                if (values.ContainsKey(field.Name))
-                {
-                    object value = values[field.Name].GetRedisValue(field.FieldType);
-                    field.SetValue(itme, value);
-                }
-                else
-                {
-                    field.SetValue(itme, field.FieldType.GetDefaultValue());
-                }
-
-            }
-            return (TStruct)itme;
-        }
-        private static Dictionary<Type, FieldInfo[]> _fieldCache = new Dictionary<Type, FieldInfo[]>();
-        private static FieldInfo[] GetFields(Type type)
-        {
-            if (!_fieldCache.ContainsKey(type))
-            {
-                lock (_fieldCache)
-                {
-                    _fieldCache.Add(type, type.GetFields());
-                }
-            }
-            return _fieldCache[type];
-        }
         /// <summary>
-        /// 结构体转redis哈希数组（反射赋值性能有所耗损）
+        /// 获取可写入的公共实例属性
         /// </summary>
-        /// <typeparam name="TStruct"></typeparam>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static HashEntry[] GetRedisHashEntry<TStruct>(this TStruct value) where TStruct : struct
+        private static PropertyInfo[] GetProperties(Type type) =>
+            _propertyCache.GetOrAdd(type, static t =>
+                t.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                 .Where(p => p.CanWrite                                   // 必须可写，反序列化要 SetValue
+                          && p.GetSetMethod() is not null                // 有公共 setter
+                          && p.GetIndexParameters().Length == 0          // 排除索引器 this[int]
+                          && p.GetGetMethod() is not { IsStatic: true }  // 排除静态属性
+                          && p.GetSetMethod() is not { IsStatic: true })
+                 .ToArray());
+
+        /// <summary>
+        /// 对象（class）转 Redis 哈希数组（反射赋值性能有所耗损）
+        /// </summary>
+        public static HashEntry[] GetRedisHashEntry<T>(this T value) where T : class
         {
-            List<HashEntry> span = new List<HashEntry>();
-            FieldInfo[] fields = GetFields(typeof(TStruct));
-            foreach (FieldInfo field in fields)
+            if (value is null)
+                throw new ArgumentNullException(nameof(value));
+
+            PropertyInfo[] properties = GetProperties(typeof(T));
+            var entries = new HashEntry[properties.Length];
+            for (int i = 0; i < properties.Length; i++)
             {
-                span.Add(new HashEntry(field.Name, field.GetValue(value).GetRedisValue()));
+                PropertyInfo property = properties[i];
+                entries[i] = new HashEntry(property.Name, property.GetValue(value)!.GetRedisValue());
             }
-            return span.ToArray();
+            return entries;
+        }
+
+        /// <summary>
+        /// redis 哈希数组转对象（class，反射赋值性能有所耗损）
+        /// </summary>
+        public static T GetReidsHashValue<T>(this HashEntry[] hash) where T : class, new()
+        {
+            if (hash is null) throw new ArgumentNullException(nameof(hash));
+
+            T item = new T();                       // new() 约束保证有公共无参构造
+            if (hash.Length == 0) return item;
+
+            // 建字典：索引器覆盖，避免重复 key 抛异常
+            var values = new Dictionary<string, RedisValue>(hash.Length);
+            foreach (HashEntry entry in hash)
+                values[entry.Name] = entry.Value;
+
+            PropertyInfo[] properties = GetProperties(typeof(T));
+            foreach (PropertyInfo property in properties)
+            {
+                object? raw = values.TryGetValue(property.Name, out RedisValue v)
+                    ? v.GetRedisValue(property.PropertyType)
+                    : property.PropertyType.GetDefaultValue();
+
+                property.SetValue(item, raw);
+            }
+            return item;
         }
     }
 }

@@ -263,7 +263,7 @@ namespace Simple.Core.Helper
 
             return char.ToUpper(input[0]) + input.Substring(1);
         }
-        private const string Chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+        private const string Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         public static string Generate(int length = 8)
         {
             var bytes = new byte[length];

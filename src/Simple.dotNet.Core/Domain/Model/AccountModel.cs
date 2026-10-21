@@ -7,7 +7,7 @@ namespace Simple.Core.Domain.Model
         /// <summary>
         /// 账号ID
         /// </summary>
-        public int AccountID { get; set; }
+        public int AccountId { get; set; }
         /// <summary>
         /// 账号名称
         /// </summary>
@@ -15,12 +15,12 @@ namespace Simple.Core.Domain.Model
         /// <summary>
         /// 角色ID
         /// </summary>
-        public int RoleID { get; set; }
+        public int RoleId { get; set; }
         public OperateType Type { get; set; }
 
         public static implicit operator int(AccountModel account)
         {
-            return account.AccountID;
+            return account.AccountId;
         }
     }
 }

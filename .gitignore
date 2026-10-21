@@ -307,3 +307,8 @@
 /src/Simple.dotNet.Tool/bin
 /._.DS_Store
 /.DS_Store
+/src/Simple.dotNet.MongoDB/bin_verify
+/src/Simple.dotNet.Core/bin_verify
+/src/Simple.dotNet.RabbitMQ/bin_verify
+/src/Simple.dotNet.Redis/bin_verify
+/src/Simple.dotNet.Web/bin_verify

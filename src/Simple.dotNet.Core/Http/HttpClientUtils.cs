@@ -92,7 +92,6 @@ namespace Simple.Core.Http
         {
             // 1. 先拿原始字节（此时已经解压完成）
             byte[] bytes = await response.Content.ReadAsByteArrayAsync();
-
             // 2. 获取正确的字符编码
             string charset = response.Content.Headers.ContentType?.CharSet;
             Encoding encoding = string.IsNullOrEmpty(charset)

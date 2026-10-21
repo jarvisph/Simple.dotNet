@@ -73,7 +73,7 @@ namespace Simple.Web.Middleware
             else
             {
                 _logger?.Error(guid, context, exception);
-                return context.Response.WriteAsync(JsonConvert.SerializeObject(new JsonResult() { Message = exception.Message, Success = false, Code = 500, Data = new { ErrorId = guid } }));
+                return context.Response.WriteAsync(JsonConvert.SerializeObject(new JsonResult() { Message = exception.Message, Success = false, Code = 500, Data = new { errorId = guid } }));
             }
         }
     }

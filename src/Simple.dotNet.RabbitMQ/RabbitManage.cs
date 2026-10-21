@@ -26,6 +26,12 @@ namespace Simple.RabbitMQ
             return producer.SendAsync(message);
         }
 
+        public static void Send<TMessageQueue>(this TMessageQueue message) where TMessageQueue : IMessageQueue
+        {
+            IMessageProducer producer = IocCollection.Resolve<IMessageProducer>();
+            producer.SendAsync(message).GetAwaiter().GetResult();
+        }
+
         public static void Consumer(string[] args)
         {
             string[]? tasks = null;

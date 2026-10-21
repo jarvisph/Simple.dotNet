@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Simple.Core.Dependency;
-using Simple.Core.Domain.Dto;
 using Simple.Core.Domain.Enums;
 using Simple.Core.Extensions;
 using Simple.Core.Languages;
@@ -48,7 +47,7 @@ namespace Simple.Web.Mvc
             return Ok(new
             {
                 success = 1,
-                msg = "操作成功",
+                message = "操作成功",
                 data = new
                 {
                     items = items.AsEnumerable().Select(selector).ToList(),
@@ -80,15 +79,15 @@ namespace Simple.Web.Mvc
         /// </summary>
         /// <param name="success"></param>
         /// <param name="msg"></param>
-        /// <param name="info"></param>
+        /// <param name="data"></param>
         /// <returns></returns>
-        protected ActionResult JsonResult(bool success, string msg, object? info)
+        protected ActionResult JsonResult(bool success, string msg, object? data)
         {
             return Ok(new
             {
                 success = success ? 1 : 0,
-                msg = string.IsNullOrWhiteSpace(msg) ? (success ? "操作成功" : "操作失败") : msg,
-                data = info
+                message = string.IsNullOrWhiteSpace(msg) ? (success ? "操作成功" : "操作失败") : msg,
+                data = data
             });
         }
         protected ActionResult JsonResult(bool success, object data) => this.JsonResult(success, string.Empty, data);
@@ -112,7 +111,7 @@ namespace Simple.Web.Mvc
             return Ok(new
             {
                 success = 1,
-                msg = message,
+                message = message,
             });
         }
         /// <summary>
@@ -124,7 +123,7 @@ namespace Simple.Web.Mvc
             return Ok(new
             {
                 success = 0,
-                msg = message,
+                message = message,
             });
         }
     }
