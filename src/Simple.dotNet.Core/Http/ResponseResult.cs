@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Simple.Core.Http
 {
-    internal class ResponseResult
+    public class ResponseResultBase
     {
+
     }
 }

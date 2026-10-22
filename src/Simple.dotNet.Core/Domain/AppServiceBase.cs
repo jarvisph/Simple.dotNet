@@ -1,11 +1,10 @@
 ﻿using Simple.Core.Dapper;
-using Simple.Core.Dependency;
-using System.Data;
+using Simple.Core.Data;
 using Simple.Core.Data.Repository;
 using Simple.Core.Data.Schema;
+using Simple.Core.Dependency;
+using System.Data;
 using System.Linq;
-using Simple.Core.Data;
-using Simple.Core.Logger;
 
 namespace Simple.Core.Domain
 {
@@ -16,7 +15,6 @@ namespace Simple.Core.Domain
     {
         protected IWriteRepository WriteRepository { get; }
         protected IReadRepository ReadRepository { get; }
-        protected ILogger Logger { get; }
 
         /// <summary>
         /// 数据库连接对象
@@ -42,7 +40,6 @@ namespace Simple.Core.Domain
         }
         public AppServiceBase()
         {
-            this.Logger = IocCollection.Resolve<ILogger>();
             this.WriteRepository = IocCollection.Resolve<IWriteRepository>();
             this.ReadRepository = IocCollection.Resolve<IReadRepository>();
         }
