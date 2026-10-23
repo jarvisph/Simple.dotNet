@@ -10,7 +10,7 @@ namespace Simple.Core.Authorization
         /// <param name="name">名称</param>
         /// <param name="path">描述</param>
         /// <returns></returns>
-        PermissionChildren CreatePermission(string name, string path);
+        PermissionChildren CreatePermission(string name, PermissionMeta meta);
         /// <summary>
         /// 创建权限层级（默认Menu类型）
         /// </summary>

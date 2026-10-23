@@ -60,9 +60,9 @@ namespace Simple.Core.Authorization
         /// <param name="name"></param>
         /// <param name="displayName"></param>
         /// <returns></returns>
-        public PermissionChildren CreateChildPermission(string name, string path)
+        public PermissionChildren CreateChildPermission(string name, PermissionMeta meta)
         {
-            return this.CreateChildPermission(name, path, path, PermissionType.Action, null);
+            return this.CreateChildPermission(name, null, null, PermissionType.Action, meta);
         }
         /// <summary>
         /// 创建层级关系（默认权限类型：Menu）

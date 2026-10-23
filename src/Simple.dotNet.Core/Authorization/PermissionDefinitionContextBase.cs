@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Text;
-
-namespace Simple.Core.Authorization
+﻿namespace Simple.Core.Authorization
 {
     internal abstract class PermissionDefinitionContextBase : IPermissionDefinitionContext
     {
@@ -17,9 +11,9 @@ namespace Simple.Core.Authorization
 
 
 
-        public PermissionChildren CreatePermission(string name, string path)
+        public PermissionChildren CreatePermission(string name, PermissionMeta meta)
         {
-            return this.CreatePermission(name, path, null, PermissionType.Action, null);
+            return this.CreatePermission(name, null, null, PermissionType.Action, meta);
         }
 
         public PermissionChildren CreatePermission(string name, string path, string component, PermissionMeta meta)
